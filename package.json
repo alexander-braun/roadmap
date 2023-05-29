@@ -2,7 +2,13 @@
   "name": "@rdmp/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start": "nx serve roadmap",
+    "e2e": "nx run roadmap-e2e:e2e",
+    "build": "nx run roadmap:build",
+    "lint": "nx run roadmap:lint",
+    "test": "nx run roadmap:test"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~16.0.0",
