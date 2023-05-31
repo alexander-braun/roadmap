@@ -4,7 +4,7 @@
 
         <div class="section__side-elements section__side-elements--left section__side-elements--subchild">
             <ng-container *ngFor="let child of generateChildrenOfNode(section, 'left')">
-                <ng-container *ngFor="let subChild of generateChildrenOfNode(child, 'left')">
+                <ng-container *ngFor="let subChild of generateChildrenOfNode(child, 'left', true)">
                     <div class="card card--element card--own-edit card--subchild card--left">
                         SubChild Left {{ subChild }}
                     </div>
@@ -31,7 +31,7 @@
         <div class="section__side-elements section__side-elements--right  section__side-elements--subchild">
             <ng-container *ngFor="let child of generateChildrenOfNode(section, 'right')">
 
-                <ng-container *ngFor="let subChild of generateChildrenOfNode(child, 'right')">
+                <ng-container *ngFor="let subChild of generateChildrenOfNode(child, 'right', true)">
                     <div class="card card--element card--own-edit card--subchild card--right">
                         SubChild Right {{ subChild }}
                     </div>

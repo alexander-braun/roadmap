@@ -37,7 +37,9 @@ export const nodes: Nodes = {
     },
     'c3': {
         mainKnot: false,
-        children: []
+        children: [
+            's7'
+        ]
     },
     's1': {
         mainKnot: false,
@@ -63,4 +65,24 @@ export const nodes: Nodes = {
         mainKnot: false,
         children: []
     },
+    's7': {
+        mainKnot: false,
+        children: []
+    },
+    'p2': {
+        mainKnot: true,
+        children: [
+            'c4'
+        ]
+    },
+    'c4': {
+        mainKnot: false,
+        children: [
+            's8'
+        ]
+    },
+    's8': {
+        mainKnot: false,
+        children: []
+    }
 };
