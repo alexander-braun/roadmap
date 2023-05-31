@@ -1,0 +1,44 @@
+<h3>Map</h3>
+<div class="map">
+    <div *ngFor="let section of sections" class="section">
+
+        <div class="section__side-elements section__side-elements--left section__side-elements--subchild">
+            <ng-container *ngFor="let child of generateChildrenOfNode(section, 'left')">
+                <ng-container *ngFor="let subChild of generateChildrenOfNode(child, 'left')">
+                    <div class="card card--element card--own-edit card--subchild card--left">
+                        SubChild Left {{ subChild }}
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+
+        <div class="section__side-elements section__side-elements--left">
+            <ng-container *ngFor="let child of generateChildrenOfNode(section, 'left')">
+                <div class="card card--element card--recommended card--left">Left Child: {{ child }}</div>
+            </ng-container>
+        </div>
+
+        <div class="section__side-elements  section__side-elements--center-section">
+            <div class="card card--center card--own-edit">Parent Section: {{ section }}</div>
+        </div>
+
+        <div class="section__side-elements section__side-elements--right  ">
+            <ng-container *ngFor="let child of generateChildrenOfNode(section, 'right')">
+                <div class="card card--element card--recommended card--right">Right Child: {{ child }}</div>
+            </ng-container>
+        </div>
+
+        <div class="section__side-elements section__side-elements--right  section__side-elements--subchild">
+            <ng-container *ngFor="let child of generateChildrenOfNode(section, 'right')">
+
+                <ng-container *ngFor="let subChild of generateChildrenOfNode(child, 'right')">
+                    <div class="card card--element card--own-edit card--subchild card--right">
+                        SubChild Right {{ subChild }}
+                    </div>
+                </ng-container>
+
+            </ng-container>
+        </div>
+
+    </div>
+</div>
