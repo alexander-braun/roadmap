@@ -1,6 +1,5 @@
-<ng-container *ngIf="(pathCoords$.asObservable() | async); let coords">
-    <ng-container *ngFor="let coord of coords">
-        <svg:path class="svg-dash" width="100%" [attr.d]="coord" />
-    </ng-container>
+<ng-container *ngIf="pathCoords$.asObservable() | async; let coords">
+  <ng-container *ngFor="let coord of coords">
+    <svg:path class="svg-dash" width="100%" [attr.d]="coord" />
+  </ng-container>
 </ng-container>
-<div>hello</div>
