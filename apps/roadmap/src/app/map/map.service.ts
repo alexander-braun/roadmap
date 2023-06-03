@@ -1,8 +1,17 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { CardPropertyCollection } from './map.model';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
 export class MapService {
-    constructor() { }
+  private cardPropertyCollection$$ = new BehaviorSubject<CardPropertyCollection>([]);
+  public cardPropertyCollection$ = this.cardPropertyCollection$$.asObservable();
+
+  constructor() {}
+
+  public setCardPropertyCollection(collection: CardPropertyCollection) {
+    this.cardPropertyCollection$$.next(collection);
+  }
 }
