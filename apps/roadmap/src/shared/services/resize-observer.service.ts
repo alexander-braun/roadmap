@@ -1,17 +1,14 @@
 import { Injectable } from '@angular/core';
+import { Subject, debounceTime, fromEvent, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ResizeObserverService {
+  public resize$ = new Subject<void>();
   constructor() {
-    const observer = new ResizeObserver((entries) => {
-      entries.forEach((entry) => {
-        console.log('width: ', entry.contentRect.width);
-        console.log('height: ', entry.contentRect.height);
-      });
-    });
-
-    observer.observe(document.body);
+    fromEvent(window, 'resize')
+      .pipe(debounceTime(10))
+      .subscribe(() => this.resize$.next());
   }
 }

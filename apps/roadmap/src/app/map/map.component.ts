@@ -1,6 +1,4 @@
 import {
-  ApplicationRef,
-  ChangeDetectorRef,
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
@@ -10,11 +8,10 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { NodeId, nodes } from '../../assets/data';
-import { BehaviorSubject, Subject, tap } from 'rxjs';
+import { tap } from 'rxjs';
 import { MapService } from './map.service';
-import { CardPropertyCollection } from './map.model';
-
-export type Direction = 'left' | 'right';
+import { CardPropertyCollection, Direction } from './map.model';
+import { ResizeObserverService } from '../../shared/services/resize-observer.service';
 
 @Component({
   selector: 'rdmp-map',
@@ -22,13 +19,24 @@ export type Direction = 'left' | 'right';
   styleUrls: ['./map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MapComponent implements AfterViewInit {
+export class MapComponent implements AfterViewInit, OnInit {
   @ViewChildren('cardContainer') cardContainer?: QueryList<ElementRef<HTMLDivElement>>;
   public nodes = nodes;
   public sections: NodeId[];
 
-  constructor(private mapService: MapService) {
+  constructor(private mapService: MapService, private resizeObserver: ResizeObserverService) {
     this.sections = this.generateSections();
+  }
+
+  ngOnInit(): void {
+    this.resizeObserver.resize$
+      .asObservable()
+      .pipe(
+        tap(() => {
+          this.mapService.setCardPropertyCollection(this.generateCardProperties());
+        })
+      )
+      .subscribe();
   }
 
   ngAfterViewInit(): void {
@@ -47,16 +55,18 @@ export class MapComponent implements AfterViewInit {
       const parent = this.getHtmlElementFromId(htmlCollection, pair[0] as NodeId);
       const child = this.getHtmlElementFromId(htmlCollection, pair[1] as NodeId);
 
-      if (!parent || !child) continue;
+      if (!parent || !child) {
+        continue;
+      }
 
       const parentRect = parent?.getBoundingClientRect();
       const childRect = child?.getBoundingClientRect();
       const isLastCenterElement = !(this.sections[this.sections.length - 1].indexOf(pair[0]) < 0);
       const center =
         (parent.classList.contains('card--center') && child.classList.contains('card--center')) || isLastCenterElement;
-      console.log(pair, center);
+
       if (
-        width <= 1100 &&
+        width < 1100 &&
         parent.classList.contains('card--center') &&
         !child.classList.contains('card--center') &&
         this.sections[this.sections.length - 1].indexOf(pair[0]) < 0

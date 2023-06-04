@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MapService } from './map/map.service';
-import { tap, Observable } from 'rxjs';
+import { tap, Observable, fromEvent } from 'rxjs';
 import { CardPropertyCollection } from './map/map.model';
 import { ResizeObserverService } from '../shared/services/resize-observer.service';
 
@@ -11,6 +11,8 @@ import { ResizeObserverService } from '../shared/services/resize-observer.servic
 })
 export class AppComponent implements OnInit {
   public cardPropertyCollection$: Observable<CardPropertyCollection> = this.mapService.cardPropertyCollection$;
+  public resize$ = this.resizeObserver.resize$;
+
   constructor(
     private mapService: MapService,
     private cr: ChangeDetectorRef,
@@ -18,6 +20,12 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.cardPropertyCollection$.pipe(tap(() => this.cr.detectChanges())).subscribe();
+    this.cardPropertyCollection$
+      .pipe(
+        tap(() => {
+          this.cr.detectChanges();
+        })
+      )
+      .subscribe();
   }
 }
