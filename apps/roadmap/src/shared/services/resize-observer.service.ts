@@ -7,8 +7,6 @@ import { Subject, debounceTime, fromEvent, tap } from 'rxjs';
 export class ResizeObserverService {
   public resize$ = new Subject<void>();
   constructor() {
-    fromEvent(window, 'resize')
-      .pipe(debounceTime(10))
-      .subscribe(() => this.resize$.next());
+    fromEvent(window, 'resize').subscribe(() => this.resize$.next());
   }
 }

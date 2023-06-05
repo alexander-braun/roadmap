@@ -1,48 +1,49 @@
 <h3>Map</h3>
 <div class="map">
-    <div *ngFor="let section of sections" class="section">
-
-        <div #cardContainer
-            class="section__side-elements section__side-elements--left section__side-elements--subchild">
-            <ng-container *ngFor="let child of generateChildrenOfNode(section, 'left')">
-                <ng-container *ngFor="let subChild of generateChildrenOfNode(child, 'left', true)">
-                    <div [id]="subChild" class="card card--element card--own-edit card--subchild card--left">
-                        SubChild Left {{ subChild }}
-                    </div>
-                </ng-container>
-            </ng-container>
-        </div>
-
-        <div #cardContainer class="section__side-elements section__side-elements--left">
-            <ng-container *ngFor="let child of generateChildrenOfNode(section, 'left')">
-                <div [id]="child" class="card card--element card--recommended card--left">Left Child: {{ child
-                    }}
-                </div>
-            </ng-container>
-        </div>
-
-        <div #cardContainer class="section__side-elements  section__side-elements--center-section">
-            <div [id]="section" class="card card--center card--own-edit">Parent Section: {{ section }}</div>
-        </div>
-
-        <div #cardContainer class="section__side-elements section__side-elements--right  ">
-            <ng-container *ngFor="let child of generateChildrenOfNode(section, 'right')">
-                <div [id]="child" class="card card--element card--recommended card--right">Right Child: {{ child
-                    }}
-                </div>
-            </ng-container>
-        </div>
-
-        <div #cardContainer
-            class="section__side-elements section__side-elements--right  section__side-elements--subchild">
-            <ng-container *ngFor="let child of generateChildrenOfNode(section, 'right')">
-                <ng-container *ngFor="let subChild of generateChildrenOfNode(child, 'right', true)">
-                    <div [id]="subChild" class="card card--element card--own-edit card--subchild card--right">
-                        SubChild Right {{ subChild }}
-                    </div>
-                </ng-container>
-            </ng-container>
-        </div>
-
+  <div *ngFor="let section of sections" class="section">
+    <!-- Subchildren left -->
+    <div #cardContainer class="section__side-elements section__side-elements--left section__side-elements--subchild">
+      <ng-container *ngFor="let child of generateChildrenOfNode(section, 'left')">
+        <ng-container *ngFor="let subChild of generateChildrenOfNode(child, 'left', true)">
+          <div [id]="subChild" class="card card--element card--subchild card--left">SubChild Left {{ subChild }}</div>
+        </ng-container>
+      </ng-container>
     </div>
+
+    <!-- Children left -->
+    <div #cardContainer class="section__side-elements section__side-elements--left">
+      <ng-container *ngFor="let child of generateChildrenOfNode(section, 'left')">
+        <div [id]="child" class="card card--element card--recommended card--left">Left Child: {{ child }}</div>
+      </ng-container>
+    </div>
+
+    <!-- Center -->
+    <div
+      #cardContainer
+      class="section__side-elements section__side-elements--center-section"
+      [ngClass]="section === 'ending node' ? 'ending' : ''"
+    >
+      <div *ngIf="section !== 'ending node'" [id]="section" class="card card--center">
+        Parent Section: {{ section }}
+      </div>
+
+      <div *ngIf="section === 'ending node'" [id]="section" class="card card--center"></div>
+    </div>
+
+    <!-- Children right -->
+    <div #cardContainer class="section__side-elements section__side-elements--right">
+      <ng-container *ngFor="let child of generateChildrenOfNode(section, 'right')">
+        <div [id]="child" class="card card--element card--recommended card--right">Right Child: {{ child }}</div>
+      </ng-container>
+    </div>
+
+    <!-- Subchildren right -->
+    <div #cardContainer class="section__side-elements section__side-elements--right section__side-elements--subchild">
+      <ng-container *ngFor="let child of generateChildrenOfNode(section, 'right')">
+        <ng-container *ngFor="let subChild of generateChildrenOfNode(child, 'right', true)">
+          <div [id]="subChild" class="card card--element card--subchild card--right">SubChild Right {{ subChild }}</div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
 </div>

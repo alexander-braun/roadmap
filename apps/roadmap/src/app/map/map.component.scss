@@ -93,6 +93,21 @@
   }
 }
 
+.ending .card {
+  width: 15px;
+  height: 15px;
+  //border: 15px solid transparent;
+  //border-top: 0;
+  //border-bottom: 30px solid #8bb8b5;
+  //background-color: transparent;
+  border-radius: 100%;
+  background-color: #cf3a3a;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+  transform: rotate(180deg);
+}
+
 .card {
   font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
   border: 2px dashed transparent;
@@ -120,6 +135,10 @@
     }
   }
 
+  &--center {
+    color: $color-center;
+  }
+
   &--center &__inner-text {
     text-align: center;
     font-size: 1.75rem;
@@ -145,14 +164,6 @@
     }
   }
 
-  &--own-edit {
-    background-color: $own;
-
-    &:hover {
-      background-color: $own-hover;
-    }
-  }
-
   &--center {
     background-color: $center;
     font-weight: 600;
@@ -174,10 +185,6 @@
 
   &--not-recommended &__indication-circle {
     background-color: $not-recommended;
-  }
-
-  &--own-edit &__indication-circle {
-    background-color: $own-edit;
   }
 
   &__button-container {
@@ -287,10 +294,6 @@
     &--not-recommended {
       background-color: $not-recommended;
     }
-
-    &--own-edit {
-      background-color: $own-edit;
-    }
   }
 
   &__indication-circle:hover + &__recommend-choice &__indication-circle,
@@ -318,14 +321,6 @@
 
       &:hover {
         background-color: #cc18cc;
-      }
-    }
-
-    &--own-edit {
-      animation-delay: 0s;
-
-      &:hover {
-        background-color: #e7e7e7;
       }
     }
 
@@ -539,12 +534,4 @@
     line-height: 1.4;
     cursor: pointer;
   }
-}
-
-.svg-dash {
-  stroke-dasharray: 5, 12;
-  stroke-width: 2.5;
-  stroke: #8bb8b5;
-  stroke-linecap: round;
-  fill: transparent;
 }

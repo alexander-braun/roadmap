@@ -1,9 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { BehaviorSubject, Subject, delay, tap } from 'rxjs';
-import { CardPropertyCollection, PaathCoordinateCollection } from '../map/map.model';
+import { BehaviorSubject, tap } from 'rxjs';
+import { CardProperty, CardPropertyCollection, PaathCoordinate, PaathCoordinateCollection } from '../map/map.model';
 import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
-
-export type Direction = 'left' | 'right';
 
 @Component({
   selector: '[rdmp-svg-path]',
@@ -12,65 +10,73 @@ export type Direction = 'left' | 'right';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SvgPathComponent implements OnInit, OnChanges {
-  @Input() cardPropertyCollection!: CardPropertyCollection;
-  public pathCoords$ = new BehaviorSubject<string[]>([]);
+  @Input() cardPropertyCollection: CardPropertyCollection = [];
+  private pathCoords$$ = new BehaviorSubject<(string | boolean | boolean)[][]>([]);
+  public pathCoords$ = this.pathCoords$$.asObservable();
 
   constructor(private resizeObserver: ResizeObserverService) {}
 
   ngOnInit(): void {
-    this.resizeObserver.resize$
-      .asObservable()
-      .pipe(tap(() => this.assignCoordinates()))
-      .subscribe();
+    this.handleResize();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['cardPropertyCollection']) {
-      this.assignCoordinates();
+      this.calculateNewCoordinates();
     }
   }
 
-  assignCoordinates() {
-    const finalCoords: PaathCoordinateCollection = [];
-    this.cardPropertyCollection?.forEach((pair) => {
-      finalCoords.push(this.calculateFinalCoords(pair));
-    });
-    const newCoordinates = finalCoords.map((coord) => {
-      return `M ${coord.moveToX} ${coord.moveToY} C ${coord.curveX1} ${coord.curveY1}, ${coord.curveX2} ${coord.curveY2}, ${coord.curveX} ${coord.curveY}`;
-    });
-    this.pathCoords$.next(newCoordinates);
+  private handleResize(): void {
+    this.resizeObserver.resize$.asObservable().subscribe(() => this.calculateNewCoordinates());
   }
 
-  calculateFinalCoords(props: { parentRect: DOMRect; childRect: DOMRect; center: boolean; scrollHeight: number }) {
+  private calculateNewCoordinates(): void {
+    const pathDAttributeMapping = this.cardPropertyCollection
+      .map((pair) => this.calculatePaathCoordinate(pair))
+      .map((coord) => [
+        `M ${coord.moveToX} ${coord.moveToY} C ${coord.curveX1} ${coord.curveY1}, ${coord.curveX2} ${coord.curveY2}, ${coord.curveX} ${coord.curveY}`,
+        coord.center,
+      ]);
+
+    this.pathCoords$$.next(pathDAttributeMapping);
+  }
+
+  private calculatePaathCoordinate({ parentRect, childRect, center, scrollHeight }: CardProperty): PaathCoordinate {
     const insetSvgBy = 5;
+    const pathStartDistanceFromCardBorder = 20;
+    const curvingAmount = 50;
 
     const moveToX =
-      props.childRect.x > props.parentRect.x && !props.center
-        ? props.parentRect.x + props.parentRect.width - insetSvgBy - 20
-        : props.center
-        ? props.parentRect.x + props.parentRect.width / 2
-        : props.parentRect.x + insetSvgBy + 20;
+      childRect.x > parentRect.x && !center
+        ? parentRect.x + parentRect.width - insetSvgBy - pathStartDistanceFromCardBorder
+        : center
+        ? parentRect.x + parentRect.width / 2
+        : parentRect.x + insetSvgBy + pathStartDistanceFromCardBorder;
 
-    const moveToY = props.center
-      ? props.parentRect.y + props.parentRect.height + props.scrollHeight
-      : props.parentRect.y + props.parentRect.height / 2 + props.scrollHeight;
+    // 22 is height of center element make var of it
+    const moveToY = center
+      ? parentRect.y + parentRect.height + scrollHeight
+      : parentRect.y + parentRect.height / 2 + scrollHeight;
 
     const curveX =
-      props.childRect.x < props.parentRect.x && !props.center
-        ? props.childRect.x + props.childRect.width
-        : props.center
-        ? props.childRect.x + props.childRect.width / 2
-        : props.childRect.x;
+      childRect.x < parentRect.x && !center
+        ? childRect.x + childRect.width
+        : center
+        ? childRect.x + childRect.width / 2
+        : childRect.x;
 
-    const curveY = props.center
-      ? props.childRect.y + props.scrollHeight
-      : props.childRect.y + props.childRect.height / 2 + props.scrollHeight;
+    // 16 is height of 1 child element -> make var of it
+    const curveY = center ? childRect.y + scrollHeight : childRect.y + childRect.height / 2 + scrollHeight;
 
     const curveX1 =
-      props.childRect.x > props.parentRect.x && !props.center ? moveToX + 20 : props.center ? moveToX : moveToX - 20;
+      childRect.x > parentRect.x && !center
+        ? moveToX + pathStartDistanceFromCardBorder
+        : center
+        ? moveToX
+        : moveToX - pathStartDistanceFromCardBorder;
 
     const curveX2 =
-      props.childRect.x > props.parentRect.x && !props.center ? moveToX + 50 : props.center ? moveToX : moveToX - 50;
+      childRect.x > parentRect.x && !center ? moveToX + curvingAmount : center ? moveToX : moveToX - curvingAmount;
 
     const curveY1 = moveToY;
     const curveY2 = moveToY;
@@ -83,6 +89,7 @@ export class SvgPathComponent implements OnInit, OnChanges {
       curveY,
       curveY1,
       curveY2,
+      center,
     };
   }
 }

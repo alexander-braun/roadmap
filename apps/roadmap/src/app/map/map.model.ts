@@ -14,6 +14,7 @@ export interface PaathCoordinate {
   curveY: number;
   curveY1: number;
   curveY2: number;
+  center: boolean;
 }
 
 export type PaathCoordinateCollection = PaathCoordinate[];

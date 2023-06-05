@@ -11,7 +11,7 @@ export class MapService {
 
   constructor() {}
 
-  public setCardPropertyCollection(collection: CardPropertyCollection) {
+  public setCardPropertyCollection(collection: CardPropertyCollection): void {
     this.cardPropertyCollection$$.next(collection);
   }
 }
