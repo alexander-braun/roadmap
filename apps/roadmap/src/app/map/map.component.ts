@@ -57,7 +57,6 @@ export class MapComponent implements AfterViewInit, OnInit {
 
   private handleResize(): void {
     this.resizeObserver.resize$
-      .asObservable()
       .pipe(
         tap(() => {
           this.setCardPropertyCollection();

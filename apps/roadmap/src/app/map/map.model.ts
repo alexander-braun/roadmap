@@ -6,12 +6,12 @@ export interface CardProperty {
 }
 
 export interface PaathCoordinate {
-  moveToX: number;
-  moveToY: number;
-  curveX: number;
+  startPointX: number;
+  startPointY: number;
+  endPointX: number;
   curveX1: number;
   curveX2: number;
-  curveY: number;
+  endPointY: number;
   curveY1: number;
   curveY2: number;
   center: boolean;

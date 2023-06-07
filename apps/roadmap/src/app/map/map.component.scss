@@ -1,6 +1,9 @@
 @import '../../assets/styles/variables';
 
 .section {
+  &:first-child {
+    margin-top: 0;
+  }
   position: relative;
   margin: 8vh auto;
   display: grid;
