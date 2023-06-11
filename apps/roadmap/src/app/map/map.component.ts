@@ -173,10 +173,6 @@ export class MapComponent implements AfterViewInit, OnInit {
   }
 
   private getElementFromCollection(collection: HTMLCollection, id: NodeId): Element | undefined {
-    console.log(
-      Array.from(collection).find((el) => el.id === id),
-      id
-    );
     return Array.from(collection).find((el) => el.id === id);
   }
 }
