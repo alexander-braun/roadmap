@@ -57,7 +57,7 @@ export class MapComponent implements AfterViewInit, OnInit {
   private appendEndingNode(): void {
     const newNodes = this.mapService.getNodes();
 
-    newNodes['ending node'] = {
+    newNodes['last-node'] = {
       mainKnot: true,
       children: [],
     };
@@ -146,9 +146,10 @@ export class MapComponent implements AfterViewInit, OnInit {
     let list: HTMLCollection[] = [];
 
     if (this.cardContainer) {
-      list = this.cardContainer.toArray().map((element) => element.nativeElement.children);
+      list = this.cardContainer.toArray().map((element) => {
+        return element.nativeElement.children;
+      });
     }
-
     return list;
   }
 
@@ -172,6 +173,10 @@ export class MapComponent implements AfterViewInit, OnInit {
   }
 
   private getElementFromCollection(collection: HTMLCollection, id: NodeId): Element | undefined {
+    console.log(
+      Array.from(collection).find((el) => el.id === id),
+      id
+    );
     return Array.from(collection).find((el) => el.id === id);
   }
 }

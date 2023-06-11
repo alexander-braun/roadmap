@@ -1,7 +1,9 @@
 <h1>Roadmap</h1>
-<rdmp-map style="height: 100%"></rdmp-map>
-<ng-container *ngIf="cardPropertyCollection$ | async; let cardPropertyCollection">
-  <ng-container *ngIf="cardPropertyCollection.length">
-    <svg class="svgs" rdmp-svg-path [cardPropertyCollection]="cardPropertyCollection"></svg>
+<section class="roadmap-container">
+  <rdmp-map style="height: 100%"></rdmp-map>
+  <ng-container *ngIf="cardPropertyCollection$ | async; let cardPropertyCollection">
+    <ng-container *ngIf="cardPropertyCollection.length">
+      <svg rdmp-svg-path class="svg" [cardPropertyCollection]="cardPropertyCollection"></svg>
+    </ng-container>
   </ng-container>
-</ng-container>
+</section>
