@@ -1,8 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MapService } from './map/map.service';
-import { tap, Observable, fromEvent } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CardPropertyCollection } from './map/map.model';
-import { ResizeObserverService } from '../shared/services/resize-observer.service';
 
 @Component({
   selector: 'rdmp-root',
@@ -11,21 +10,16 @@ import { ResizeObserverService } from '../shared/services/resize-observer.servic
 })
 export class AppComponent implements OnInit {
   public cardPropertyCollection$: Observable<CardPropertyCollection> = this.mapService.cardPropertyCollection$;
-  public resize$ = this.resizeObserver.resize$;
 
-  constructor(
-    private mapService: MapService,
-    private cr: ChangeDetectorRef,
-    private resizeObserver: ResizeObserverService
-  ) {}
+  constructor(private mapService: MapService, private cr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    this.cardPropertyCollection$
-      .pipe(
-        tap(() => {
-          this.cr.detectChanges();
-        })
-      )
-      .subscribe();
+    this.handleChangesOnCardPropertyCollectionUpdate();
+  }
+
+  private handleChangesOnCardPropertyCollectionUpdate(): void {
+    this.cardPropertyCollection$.subscribe(() => {
+      this.cr.detectChanges();
+    });
   }
 }

@@ -5,18 +5,18 @@ export interface CardProperty {
   scrollHeight: number;
 }
 
-export interface PaathCoordinate {
+export interface PaathProperty {
   startPointX: number;
   startPointY: number;
   endPointX: number;
-  curveX1: number;
-  curveX2: number;
   endPointY: number;
+  curveX1: number;
   curveY1: number;
+  curveX2: number;
   curveY2: number;
   center: boolean;
 }
 
-export type PaathCoordinateCollection = PaathCoordinate[];
+export type PaathCoordinateCollection = PaathProperty[];
 export type CardPropertyCollection = CardProperty[];
 export type Direction = 'left' | 'right';

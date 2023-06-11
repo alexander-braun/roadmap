@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { CardProperty, CardPropertyCollection, PaathCoordinate } from '../map/map.model';
+import { CardProperty, CardPropertyCollection, PaathCoordinateCollection, PaathProperty } from '../map/map.model';
 import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
 
 @Component({
@@ -12,7 +12,7 @@ import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-o
 export class SvgPathComponent implements OnInit, OnChanges {
   private readonly insetSvg = 25;
   @Input() cardPropertyCollection: CardPropertyCollection = [];
-  private pathCoords$$ = new BehaviorSubject<PaathCoordinate[]>([]);
+  private pathCoords$$ = new BehaviorSubject<PaathCoordinateCollection>([]);
   public pathCoords$ = this.pathCoords$$.asObservable();
 
   constructor(private resizeObserver: ResizeObserverService) {}
@@ -36,9 +36,8 @@ export class SvgPathComponent implements OnInit, OnChanges {
     this.pathCoords$$.next(newPathCoordinates);
   }
 
-  private calculatePaathCoordinate({ parentRect, childRect, center, scrollHeight }: CardProperty): PaathCoordinate {
+  private calculatePaathCoordinate({ parentRect, childRect, center, scrollHeight }: CardProperty): PaathProperty {
     const childIsRightOfParent = childRect.x > parentRect.x;
-
     const startPointX = this.calculateMoveToX(parentRect, center, childIsRightOfParent);
     const startPointY = this.calculateMoveToY(scrollHeight, parentRect, center);
     const endPointX = this.calculateCurveX(childRect, center, childIsRightOfParent);

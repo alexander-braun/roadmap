@@ -2,10 +2,6 @@
 <rdmp-map style="height: 100%"></rdmp-map>
 <ng-container *ngIf="cardPropertyCollection$ | async; let cardPropertyCollection">
   <ng-container *ngIf="cardPropertyCollection.length">
-    <svg
-      style="position: absolute; width: 100%; top: 0; left: 0; height: 100%; z-index: -1"
-      rdmp-svg-path
-      [cardPropertyCollection]="cardPropertyCollection"
-    ></svg>
+    <svg class="svgs" rdmp-svg-path [cardPropertyCollection]="cardPropertyCollection"></svg>
   </ng-container>
 </ng-container>

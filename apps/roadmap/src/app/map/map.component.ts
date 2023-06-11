@@ -7,8 +7,8 @@ import {
   QueryList,
   ViewChildren,
 } from '@angular/core';
-import { NodeId, nodes } from '../../assets/data';
-import { tap } from 'rxjs';
+import { NodeId } from '../../assets/data';
+import { BehaviorSubject, tap } from 'rxjs';
 import { MapService } from './map.service';
 import { CardPropertyCollection, Direction } from './map.model';
 import { ResizeObserverService } from '../../shared/services/resize-observer.service';
@@ -21,8 +21,8 @@ import { ResizeObserverService } from '../../shared/services/resize-observer.ser
 })
 export class MapComponent implements AfterViewInit, OnInit {
   @ViewChildren('cardContainer') cardContainer?: QueryList<ElementRef<HTMLDivElement>>;
-  public nodes = nodes;
   public sections: NodeId[];
+  private htmlCardCollection$$ = new BehaviorSubject<HTMLCollection[]>([]);
 
   constructor(private mapService: MapService, private resizeObserver: ResizeObserverService) {
     this.appendEndingNode();
@@ -34,25 +34,14 @@ export class MapComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit(): void {
-    this.setCardPropertyCollection();
+    this.getCards();
   }
 
-  private appendEndingNode() {
-    this.nodes['ending node'] = {
-      mainKnot: true,
-      children: [],
-    };
-  }
-
-  public generateChildrenOfNode(id: NodeId, direction: Direction, isSubchild = false): NodeId[] {
-    const children = this.nodes[id].children;
-    if (isSubchild) {
-      return children;
-    }
-    const middle = Math.ceil(children.length / 2);
-    const start = direction === 'left' ? 0 : middle;
-    const end = direction === 'left' ? middle : children.length;
-    return children.slice(start, end);
+  private getCards(): void {
+    this.mapService.nodes$.subscribe(() => {
+      this.htmlCardCollection$$.next(this.getAllCardElements());
+      this.setCardPropertyCollection();
+    });
   }
 
   private handleResize(): void {
@@ -65,13 +54,36 @@ export class MapComponent implements AfterViewInit, OnInit {
       .subscribe();
   }
 
-  private setCardPropertyCollection(): void {
-    this.mapService.setCardPropertyCollection(this.generateCardProperties());
+  private appendEndingNode(): void {
+    const newNodes = this.mapService.getNodes();
+
+    newNodes['ending node'] = {
+      mainKnot: true,
+      children: [],
+    };
+    this.mapService.setNodes(newNodes);
   }
 
-  private generateCardProperties(): CardPropertyCollection {
+  public generateChildrenOfNode(id: NodeId, direction: Direction, isSubchild = false): NodeId[] {
+    const nodes = this.mapService.getNodes();
+    const children = nodes[id].children;
+    if (isSubchild) {
+      return children;
+    }
+    const middle = Math.ceil(children.length / 2);
+    const start = direction === 'left' ? 0 : middle;
+    const end = direction === 'left' ? middle : children.length;
+    return children.slice(start, end);
+  }
+
+  private setCardPropertyCollection(): void {
+    const cardPropertyCollection = this.generateCardPropertyCollection();
+    this.mapService.setCardPropertyCollection(cardPropertyCollection);
+  }
+
+  private generateCardPropertyCollection(): CardPropertyCollection {
     const pairs = this.getConnectedCardPairs() as NodeId[][];
-    const htmlCollection = this.getAllCardElements();
+    const htmlCollection = this.htmlCardCollection$$.value;
     const scrollHeight = window.scrollY;
     const width = window.innerWidth;
     const cardPropertyCollection: CardPropertyCollection = [];
@@ -81,23 +93,17 @@ export class MapComponent implements AfterViewInit, OnInit {
       const parent = this.getHtmlElementFromId(htmlCollection, pair[0] as NodeId);
       const child = this.getHtmlElementFromId(htmlCollection, pair[1] as NodeId);
 
-      if (!parent || !child) {
-        continue;
-      }
-
-      const parentRect = parent?.getBoundingClientRect();
-      const childRect = child?.getBoundingClientRect();
-
-      const center = parent.classList.contains('card--center') && child.classList.contains('card--center');
-
       if (
-        width < 1100 &&
-        parent.classList.contains('card--center') &&
-        !child.classList.contains('card--center') &&
-        this.sections[this.sections.length - 1].indexOf(pair[0]) < 0
+        !parent ||
+        !child ||
+        (width < 1100 && parent.classList.contains('card--center') && !child.classList.contains('card--center'))
       ) {
         continue;
       }
+
+      const parentRect = parent.getBoundingClientRect();
+      const childRect = child.getBoundingClientRect();
+      const center = parent.classList.contains('card--center') && child.classList.contains('card--center');
 
       cardPropertyCollection.push({
         parentRect,
@@ -110,12 +116,13 @@ export class MapComponent implements AfterViewInit, OnInit {
   }
 
   private getConnectedCardPairs(): NodeId[][] {
-    const nodeIds = Object.keys(this.nodes) as NodeId[];
+    const nodes = this.mapService.getNodes();
+    const nodeIds = Object.keys(nodes) as NodeId[];
     const pairs: NodeId[][] = [];
     const mainKnots: NodeId[] = [];
 
     for (const id of nodeIds) {
-      const childIds = this.nodes[id].children;
+      const childIds = nodes[id].children;
 
       if (nodes[id].mainKnot) {
         mainKnots.push(id);
@@ -146,8 +153,9 @@ export class MapComponent implements AfterViewInit, OnInit {
   }
 
   private generateSections(): NodeId[] {
-    return Object.keys(this.nodes).reduce((acc, curr) => {
-      return this.nodes[curr].mainKnot ? [...acc, curr] : acc;
+    const nodes = this.mapService.getNodes();
+    return Object.keys(nodes).reduce((acc, curr) => {
+      return nodes[curr].mainKnot ? [...acc, curr] : acc;
     }, [] as string[]);
   }
 
