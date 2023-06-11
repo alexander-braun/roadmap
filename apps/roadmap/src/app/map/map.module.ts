@@ -5,9 +5,9 @@ import { SvgPathComponent } from '../svg-path/svg-path.component';
 import { CardComponent } from './card/card.component';
 
 @NgModule({
-  declarations: [MapComponent, SvgPathComponent, CardComponent],
+  declarations: [MapComponent, CardComponent],
   imports: [BrowserModule],
-  exports: [MapComponent, SvgPathComponent],
+  exports: [MapComponent],
   providers: [],
 })
 export class MapModule {}

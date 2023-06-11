@@ -7,9 +7,10 @@ import { MapModule } from './map/map.module';
 import { MapComponent } from './map/map.component';
 import { MapService } from './map/map.service';
 import { ResizeObserverService } from '../shared/services/resize-observer.service';
+import { SvgPathComponent } from './svg-path/svg-path.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, SvgPathComponent],
   imports: [BrowserModule, MapModule, RouterModule.forRoot(appRoutes, { initialNavigation: 'enabledBlocking' })],
   providers: [MapService, ResizeObserverService],
   bootstrap: [AppComponent],
