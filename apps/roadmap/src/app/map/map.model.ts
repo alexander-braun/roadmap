@@ -1,3 +1,5 @@
+import { NodeId } from '../../assets/data';
+
 export interface CardProperty {
   parentRect: DOMRect;
   childRect: DOMRect;
@@ -17,6 +19,17 @@ export interface PaathProperty {
   center: boolean;
 }
 
+export interface CardData {
+  title: string;
+  date?: string;
+  notes?: string[];
+  category?: string;
+  status?: 'pending' | 'in-progress' | 'done' | 'ignore';
+}
+
 export type PaathCoordinateCollection = PaathProperty[];
 export type CardPropertyCollection = CardProperty[];
 export type Direction = 'left' | 'right';
+export interface CardDataTree {
+  [key: NodeId]: CardData;
+}

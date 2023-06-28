@@ -1,3 +1,5 @@
+import { CardData, CardDataTree } from '../app/map/map.model';
+
 export type Node = {
   children: string[];
   mainKnot?: boolean;
@@ -8,6 +10,23 @@ export interface Nodes {
 }
 
 export type NodeId = string;
+
+export const cardDataTree: CardDataTree = {
+  p1: {
+    title: 'First element',
+  },
+  c1: {
+    title: 'My Title',
+    notes: ['note 1', 'note 2', 'note 3'],
+  },
+  c5: {
+    title: 'I am c5',
+    notes: ['my c5 note', 'and another one'],
+    status: 'in-progress',
+    category: 'MyCategory1',
+    date: '22.01.1988',
+  },
+};
 
 export const nodes: Nodes = {
   p1: {

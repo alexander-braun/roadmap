@@ -1,12 +1,14 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { MapComponent } from './map.component';
-import { SvgPathComponent } from '../svg-path/svg-path.component';
 import { CardComponent } from './card/card.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { SharedModule } from '../../shared/services/shared.modules';
 
 @NgModule({
   declarations: [MapComponent, CardComponent],
-  imports: [BrowserModule],
+  imports: [BrowserModule, ReactiveFormsModule, SharedModule],
   exports: [MapComponent],
   providers: [],
 })

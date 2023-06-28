@@ -1,4 +1,28 @@
-<div [id]="child" class="card card--element card--recommended card--left">
-  {{ position }} Child: {{ child }}
-  <input />
+<div [id]="nodeId">
+  <form [formGroup]="cardForm">
+    <div class="control">
+      <input
+        [ngStyle]="{ color: position === 'center' ? 'white' : 'black' }"
+        value="Edit me!"
+        id="title"
+        type="text"
+        formControlName="title"
+      />
+    </div>
+    <div class="control" *ngIf="position !== 'center'">
+      <input value="Edit me!" id="date" type="text" formControlName="date" />
+    </div>
+    <div class="control" *ngIf="position !== 'center'">
+      <ng-container *ngIf="notes">
+        <ng-container formArrayName="notes">
+          <ng-container *ngFor="let noteControl of notes.controls; let i = index">
+            <span>
+              <input class="note-input" id="date" type="text" [formControl]="noteControl" />
+              <fa-icon class="faTrashAlt" [icon]="faTrashAlt" (click)="removeNote(i)"></fa-icon></span
+          ></ng-container>
+        </ng-container>
+      </ng-container>
+      <button (click)="addNote()">Add Control!</button>
+    </div>
+  </form>
 </div>

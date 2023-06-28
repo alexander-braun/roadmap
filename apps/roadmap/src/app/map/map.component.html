@@ -7,7 +7,7 @@
           <rdmp-card
             [id]="subChild"
             class="card card--element card--subchild card--left"
-            [child]="subChild"
+            [nodeId]="subChild"
             position="subchild-left"
           ></rdmp-card>
         </ng-container>
@@ -20,7 +20,7 @@
         <rdmp-card
           [id]="child"
           class="card card--element card--recommended card--left"
-          [child]="child"
+          [nodeId]="child"
           position="left"
         ></rdmp-card>
       </ng-container>
@@ -36,7 +36,7 @@
         [id]="section"
         *ngIf="section !== 'last-node'"
         class="card card--center"
-        [child]="section"
+        [nodeId]="section"
         position="center"
       ></rdmp-card>
       <div *ngIf="section === 'last-node'" [id]="section" class="card card--center"></div>
@@ -48,7 +48,7 @@
         <rdmp-card
           [id]="child"
           class="card card--element card--recommended card--right"
-          [child]="child"
+          [nodeId]="child"
           position="right"
         ></rdmp-card>
       </ng-container>
@@ -61,7 +61,7 @@
           <rdmp-card
             [id]="subChild"
             class="card card--element card--subchild card--right"
-            [child]="subChild"
+            [nodeId]="subChild"
             position="subchild-right"
           ></rdmp-card>
         </ng-container>

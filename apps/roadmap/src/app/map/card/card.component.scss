@@ -1,3 +1,36 @@
+@import '../../../assets/styles/variables';
+
 input {
   width: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background-color: transparent;
+}
+
+#title {
+  font-weight: bold;
+  font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
+  text-align: center;
+}
+
+.note-input {
+  background-color: #f9f9f9;
+  margin-top: 2px;
+  line-height: 15px;
+  min-height: 15px;
+  width: 80%;
+  padding: 5px;
+  font-family: $raleway;
+}
+
+.faTrashAlt {
+  cursor: pointer;
+  font-size: 2rem;
+  margin-left: 1rem;
+  color: $center;
+
+  &:hover {
+    color: $center-hover;
+  }
 }
