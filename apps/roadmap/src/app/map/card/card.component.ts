@@ -4,6 +4,7 @@ import { CardData } from '../map.model';
 import { MapService } from '../map.service';
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
 
 @Component({
   selector: 'rdmp-card',
@@ -25,7 +26,11 @@ export class CardComponent implements OnInit {
     }),
   });
 
-  constructor(private mapService: MapService, private fb: FormBuilder) {}
+  constructor(
+    private mapService: MapService,
+    private fb: FormBuilder,
+    private resizeObserverService: ResizeObserverService
+  ) {}
 
   ngOnInit(): void {
     this.patchForm();
@@ -58,10 +63,12 @@ export class CardComponent implements OnInit {
 
   public addNote(): void {
     this.notes?.push(this.fb.nonNullable.control<string>(''));
+    this.resizeObserverService.resize$$.next();
   }
 
   public removeNote(i: number): void {
     this.notes?.controls.splice(i, 1);
+    this.resizeObserverService.resize$$.next();
   }
 }
 
