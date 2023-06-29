@@ -1,13 +1,17 @@
 <div [id]="nodeId">
   <form [formGroup]="cardForm">
     <div class="control">
-      <input
-        [ngStyle]="{ color: position === 'center' ? 'white' : 'black' }"
-        value="Edit me!"
-        id="title"
-        type="text"
+      <div
+        [ngStyle]="{
+          'text-align': position === 'center' ? 'center' : 'left',
+          color: position === 'center' ? 'white' : 'black'
+        }"
         formControlName="title"
-      />
+        value="Edit me!"
+        class="title card__inner-text"
+        editable="true"
+        unformattedPaste
+      ></div>
     </div>
     <div class="control" *ngIf="position !== 'center'">
       <input value="Edit me!" id="date" type="text" formControlName="date" />
@@ -16,13 +20,21 @@
       <ng-container *ngIf="notes">
         <ng-container formArrayName="notes">
           <ng-container *ngFor="let noteControl of notes.controls; let i = index">
-            <span>
-              <input class="note-input" id="date" type="text" [formControl]="noteControl" />
+            <span class="note">
+              <div
+                editable="true"
+                unformattedPaste
+                class="date note-input"
+                type="text"
+                [formControl]="noteControl"
+              ></div>
               <fa-icon class="faTrashAlt" [icon]="faTrashAlt" (click)="removeNote(i)"></fa-icon></span
           ></ng-container>
         </ng-container>
       </ng-container>
-      <button (click)="addNote()">Add Control!</button>
+      <button class="add-note" (click)="addNote()">
+        <fa-icon class="faPlus" [icon]="faPlus"></fa-icon> Add Comment
+      </button>
     </div>
   </form>
 </div>

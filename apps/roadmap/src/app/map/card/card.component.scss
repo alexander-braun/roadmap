@@ -8,10 +8,39 @@ input {
   background-color: transparent;
 }
 
-#title {
+.title {
   font-weight: bold;
   font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
   text-align: center;
+
+  border: 1px dashed transparent;
+  color: #202020;
+  cursor: pointer;
+  font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  letter-spacing: -0.1rem;
+  margin-right: auto;
+  min-width: 2rem;
+  padding: 5px 5px 5px 0px;
+  resize: none;
+  text-align: left;
+  transition: border 0.2s, background 0.2s;
+  width: fit-content;
+  word-break: break-all;
+
+  &:hover {
+    background: #f8f8f8;
+    border: 1px dashed rgba(0, 0, 0, 0.514);
+  }
+}
+
+.date {
+  text-align: left;
 }
 
 .note-input {
@@ -24,10 +53,42 @@ input {
   font-family: $raleway;
 }
 
+.note {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.add-note {
+  border: none;
+  text-align: left;
+  width: 100%;
+  background-color: transparent;
+  margin-top: 2rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+
+  &:hover {
+    fa-icon {
+      color: #3b6e9e;
+    }
+  }
+
+  fa-icon {
+    margin-right: 1rem;
+    color: $center;
+    font-size: 16px;
+    font-weight: 400;
+  }
+}
+
 .faTrashAlt {
   cursor: pointer;
   font-size: 2rem;
-  margin-left: 1rem;
+  margin-left: 1.5rem;
   color: $center;
 
   &:hover {

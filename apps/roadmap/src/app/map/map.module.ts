@@ -3,8 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { MapComponent } from './map.component';
 import { CardComponent } from './card/card.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { SharedModule } from '../../shared/services/shared.modules';
+import { SharedModule } from '../../shared/shared.modules';
 
 @NgModule({
   declarations: [MapComponent, CardComponent],

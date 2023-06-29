@@ -3,7 +3,7 @@ import { NodeId } from 'apps/roadmap/src/assets/data';
 import { CardData } from '../map.model';
 import { MapService } from '../map.service';
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
 
 @Component({
@@ -16,6 +16,7 @@ export class CardComponent implements OnInit {
   @Input() nodeId!: NodeId;
   @Input() position!: 'subchild-left' | 'left' | 'center' | 'right' | 'subchild-right';
   faTrashAlt = faTrashAlt;
+  faPlus = faPlus;
   public cardForm = this.fb.group({
     ...(this.position !== 'center' && {
       title: this.fb.control<string>('Edit me!', Validators.required),
@@ -34,6 +35,17 @@ export class CardComponent implements OnInit {
 
   ngOnInit(): void {
     this.patchForm();
+    this.resizeFormOnValueChange();
+  }
+
+  private resizeFormOnValueChange(): void {
+    this.cardForm.valueChanges.subscribe(() => {
+      this.resize();
+    });
+  }
+
+  private resize(): void {
+    this.resizeObserverService.resize$$.next();
   }
 
   private patchForm(): void {
@@ -41,6 +53,10 @@ export class CardComponent implements OnInit {
     this.cardForm.patchValue({
       ...cardData,
     });
+    this.patchNotesFormArray(cardData);
+  }
+
+  private patchNotesFormArray(cardData: CardData): void {
     if (cardData.notes) {
       cardData.notes.forEach((note, i) => {
         if (!this.notes?.controls[i]) {
@@ -63,12 +79,13 @@ export class CardComponent implements OnInit {
 
   public addNote(): void {
     this.notes?.push(this.fb.nonNullable.control<string>(''));
-    this.resizeObserverService.resize$$.next();
+    this.resize();
   }
 
   public removeNote(i: number): void {
     this.notes?.controls.splice(i, 1);
-    this.resizeObserverService.resize$$.next();
+    this.cardForm.updateValueAndValidity();
+    this.resize();
   }
 }
 
