@@ -9,29 +9,33 @@ input {
 }
 
 .title {
-  font-weight: bold;
-  font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
-  text-align: center;
-
+  min-width: 2rem;
+  font-weight: 700;
+  hyphens: auto;
+  resize: none;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem 2rem;
   border: 1px dashed transparent;
+
+  &:hover {
+    background: $center-hover;
+    border: 1px dashed white;
+  }
+}
+
+.title:not(.center) {
+  padding: 5px 5px 5px 0px;
   color: #202020;
   cursor: pointer;
+  border: 1px dashed transparent;
   font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
   font-size: 1.5rem;
-  font-weight: 700;
-  -webkit-hyphens: auto;
-  hyphens: auto;
-  -ms-hyphens: auto;
-  -moz-hyphens: auto;
-  letter-spacing: -0.1rem;
-  margin-right: auto;
-  min-width: 2rem;
-  padding: 5px 5px 5px 0px;
-  resize: none;
-  text-align: left;
   transition: border 0.2s, background 0.2s;
   width: fit-content;
   word-break: break-all;
+  margin-left: 0;
 
   &:hover {
     background: #f8f8f8;
@@ -39,8 +43,17 @@ input {
   }
 }
 
+.date-picker-container {
+  width: fit-content;
+}
+
 .date {
   text-align: left;
+  font-size: 1.25rem;
+  font-style: italic;
+  margin-bottom: 1rem;
+  margin-top: 0.25rem;
+  margin-left: auto;
 }
 
 .note-input {
@@ -51,6 +64,12 @@ input {
   width: 80%;
   padding: 5px;
   font-family: $raleway;
+  border: 1px dashed transparent;
+  text-align: left;
+
+  &:hover {
+    border: 1px dashed rgba(0, 0, 0, 0.35);
+  }
 }
 
 .note {

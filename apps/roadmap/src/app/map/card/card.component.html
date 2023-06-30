@@ -6,6 +6,7 @@
           'text-align': position === 'center' ? 'center' : 'left',
           color: position === 'center' ? 'white' : 'black'
         }"
+        [ngClass]="position === 'center' ? 'center' : ''"
         formControlName="title"
         value="Edit me!"
         class="title card__inner-text"
@@ -14,20 +15,16 @@
       ></div>
     </div>
     <div class="control" *ngIf="position !== 'center'">
-      <input value="Edit me!" id="date" type="text" formControlName="date" />
+      <div class="date-picker-container">
+        <input value="Edit me!" class="date" type="text" formControlName="date" />
+      </div>
     </div>
     <div class="control" *ngIf="position !== 'center'">
       <ng-container *ngIf="notes">
         <ng-container formArrayName="notes">
           <ng-container *ngFor="let noteControl of notes.controls; let i = index">
             <span class="note">
-              <div
-                editable="true"
-                unformattedPaste
-                class="date note-input"
-                type="text"
-                [formControl]="noteControl"
-              ></div>
+              <div editable="true" unformattedPaste class="note-input" type="text" [formControl]="noteControl"></div>
               <fa-icon class="faTrashAlt" [icon]="faTrashAlt" (click)="removeNote(i)"></fa-icon></span
           ></ng-container>
         </ng-container>

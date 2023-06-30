@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { NodeId } from 'apps/roadmap/src/assets/data';
 import { CardData } from '../map.model';
 import { MapService } from '../map.service';
@@ -21,7 +21,7 @@ export class CardComponent implements OnInit {
     ...(this.position !== 'center' && {
       title: this.fb.control<string>('Edit me!', Validators.required),
       date: this.fb.control<string | undefined>(undefined),
-      notes: this.fb.array<FormControl<string>>([this.fb.nonNullable.control<string>('')]),
+      notes: this.fb.array<FormControl<string>>([]),
       category: this.fb.control<string | undefined>(undefined),
       status: this.fb.control<string | undefined>(undefined),
     }),
@@ -30,7 +30,8 @@ export class CardComponent implements OnInit {
   constructor(
     private mapService: MapService,
     private fb: FormBuilder,
-    private resizeObserverService: ResizeObserverService
+    private resizeObserverService: ResizeObserverService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -52,8 +53,17 @@ export class CardComponent implements OnInit {
     const cardData = this.getCardDataFromTree() || {};
     this.cardForm.patchValue({
       ...cardData,
+      date: cardData.date ? cardData.date : this.createDateNow(),
     });
     this.patchNotesFormArray(cardData);
+  }
+
+  createDateNow(): string {
+    const date = new Date(Date.now());
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    return `${year}-${month}-${day}`;
   }
 
   private patchNotesFormArray(cardData: CardData): void {
@@ -84,7 +94,7 @@ export class CardComponent implements OnInit {
 
   public removeNote(i: number): void {
     this.notes?.controls.splice(i, 1);
-    this.cardForm.updateValueAndValidity();
+    this.cdr.detectChanges();
     this.resize();
   }
 }
