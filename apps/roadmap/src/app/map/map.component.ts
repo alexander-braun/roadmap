@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   OnInit,
@@ -12,6 +13,7 @@ import { BehaviorSubject, tap } from 'rxjs';
 import { MapService } from './map.service';
 import { CardPropertyCollection, Direction } from './map.model';
 import { ResizeObserverService } from '../../shared/services/resize-observer.service';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'rdmp-map',
@@ -21,16 +23,23 @@ import { ResizeObserverService } from '../../shared/services/resize-observer.ser
 })
 export class MapComponent implements AfterViewInit, OnInit {
   @ViewChildren('cardContainer') cardContainer?: QueryList<ElementRef<HTMLDivElement>>;
-  public sections: NodeId[];
+  public centerNodes$$ = new BehaviorSubject<NodeId[]>(this.generateCenterNodes());
   private htmlCardCollection$$ = new BehaviorSubject<HTMLCollection[]>([]);
+  faPlus = faPlus;
 
-  constructor(private mapService: MapService, private resizeObserver: ResizeObserverService) {
-    this.appendEndingNode();
-    this.sections = this.generateSections();
-  }
+  constructor(
+    private mapService: MapService,
+    private resizeObserver: ResizeObserverService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
+    this.appendEndingNode();
+    this.centerNodes$$.next(this.generateCenterNodes());
     this.handleResize();
+    this.htmlCardCollection$$.asObservable().subscribe(() => {
+      this.setCardPropertyCollection();
+    });
   }
 
   ngAfterViewInit(): void {
@@ -39,8 +48,9 @@ export class MapComponent implements AfterViewInit, OnInit {
 
   private getCards(): void {
     this.mapService.nodes$.subscribe(() => {
+      this.centerNodes$$.next(this.generateCenterNodes());
+      this.cdr.detectChanges();
       this.htmlCardCollection$$.next(this.getAllCardElements());
-      this.setCardPropertyCollection();
     });
   }
 
@@ -48,7 +58,7 @@ export class MapComponent implements AfterViewInit, OnInit {
     this.resizeObserver.resize$
       .pipe(
         tap(() => {
-          this.setCardPropertyCollection();
+          this.htmlCardCollection$$.next(this.getAllCardElements());
         })
       )
       .subscribe();
@@ -62,6 +72,10 @@ export class MapComponent implements AfterViewInit, OnInit {
       children: [],
     };
     this.mapService.setNodes(newNodes);
+  }
+
+  appendCenterNode(section: any) {
+    this.mapService.addCenterNodeAfterNodeId(section);
   }
 
   public generateChildrenOfNode(id: NodeId, direction: Direction, isSubchild = false): NodeId[] {
@@ -153,7 +167,7 @@ export class MapComponent implements AfterViewInit, OnInit {
     return list;
   }
 
-  private generateSections(): NodeId[] {
+  private generateCenterNodes(): NodeId[] {
     const nodes = this.mapService.getNodes();
     return Object.keys(nodes).reduce((acc, curr) => {
       return nodes[curr].mainKnot ? [...acc, curr] : acc;

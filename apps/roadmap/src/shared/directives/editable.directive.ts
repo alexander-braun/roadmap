@@ -40,7 +40,6 @@ export class EditableDirective implements ControlValueAccessor {
   @HostListener('input')
   callOnChange() {
     if (typeof this.onChange == 'function') {
-      console.log('onChange is func');
       this.onChange(this.elementRef.nativeElement[this.propValueAccessor]);
     }
   }
@@ -48,7 +47,6 @@ export class EditableDirective implements ControlValueAccessor {
   @HostListener('blur')
   callOnTouched() {
     if (typeof this.onTouched == 'function') {
-      console.log('ontouched is func');
       this.onTouched();
     }
   }
@@ -61,7 +59,6 @@ export class EditableDirective implements ControlValueAccessor {
    * See: [ControlValueAccessor](https://angular.io/api/forms/ControlValueAccessor#members)
    */
   writeValue(value: any): void {
-    console.log('write value');
     const normalizedValue = value == null ? '' : value;
     this.renderer.setProperty(this.elementRef.nativeElement, this.propValueAccessor, normalizedValue);
   }
@@ -107,7 +104,6 @@ export class EditableDirective implements ControlValueAccessor {
 
   @HostListener('paste', ['$event'])
   preventFormatedPaste(event: ClipboardEvent) {
-    console.log('paste!');
     if (this.unformattedPaste === null || this.unformattedPaste == 'false' || !this.document.execCommand) {
       return;
     }

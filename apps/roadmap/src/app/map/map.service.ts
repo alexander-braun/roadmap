@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { CardData, CardDataTree, CardPropertyCollection } from './map.model';
 import { NodeId, Nodes, cardDataTree, nodes } from '../../assets/data';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root',
@@ -41,5 +42,24 @@ export class MapService {
 
   public setCardDataTree(cardDataTree: CardDataTree): void {
     this.cardDataTree$$.next(cardDataTree);
+  }
+
+  public addCenterNodeAfterNodeId(nodeId: NodeId): void {
+    const currentNodes = this.nodes$$.value;
+    const newCenterId = uuidv4();
+    const keys = Object.keys(currentNodes);
+    const newNodes = {} as Nodes;
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i] === nodeId) {
+        newNodes[keys[i]] = currentNodes[keys[i]];
+        newNodes[newCenterId] = {
+          children: [],
+          mainKnot: true,
+        };
+      } else {
+        newNodes[keys[i]] = currentNodes[keys[i]];
+      }
+    }
+    this.nodes$$.next(newNodes);
   }
 }
