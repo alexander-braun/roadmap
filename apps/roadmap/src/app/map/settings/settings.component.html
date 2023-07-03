@@ -1,0 +1,14 @@
+<div id="settings-container">
+  <form [formGroup]="settingsForm">
+    <h3>Card-Categories</h3>
+    <div class="control">
+      <ng-container *ngIf="categories" formArrayName="categories">
+        <ng-container *ngFor="let categoriesControl of categories.controls; let i = index">
+          <span class="categories-controls">
+            <rdmp-categories-display [formGroup]="categoriesControl"></rdmp-categories-display>
+          </span>
+        </ng-container>
+      </ng-container>
+    </div>
+  </form>
+</div>

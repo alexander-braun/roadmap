@@ -9,7 +9,7 @@ import { ResizeObserverService } from '../shared/services/resize-observer.servic
 import { SvgPathComponent } from './svg-path/svg-path.component';
 
 @NgModule({
-  declarations: [AppComponent, SvgPathComponent],
+  declarations: [SvgPathComponent, AppComponent],
   imports: [BrowserModule, MapModule, RouterModule.forRoot(appRoutes, { initialNavigation: 'enabledBlocking' })],
   providers: [MapService, ResizeObserverService],
   bootstrap: [AppComponent],

@@ -1,0 +1,114 @@
+$icon-width: 1.5rem;
+$icon-height: 1.5rem;
+$icon-font-size: 2rem;
+
+.icon {
+  font-size: $icon-font-size;
+  color: white;
+  width: $icon-width;
+  height: $icon-height;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-container {
+  width: $icon-width;
+  height: $icon-height;
+  border-radius: 50%;
+  background-color: blue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  transform: scale(0);
+  transition-duration: 0.2s;
+  cursor: pointer;
+
+  &:not(:first-child) {
+    margin-left: 1rem;
+  }
+}
+
+.icon-container-default {
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.1rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+@mixin addDistance {
+  @for $i from 0 to 10 {
+    &:nth-child(#{$i}) {
+      @debug #{$i};
+      animation: FadeInDots 0.2s both #{'0.' + $i + 's'};
+      opacity: 1;
+    }
+  }
+}
+
+.icons-display {
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.icon-collection {
+  position: relative;
+  display: flex;
+  left: 0;
+  padding: 1rem 0 1rem 0;
+  flex: 0 0 100%;
+  margin-top: 1rem;
+}
+
+.icon-hover-trigger {
+  border-radius: 50%;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin-right: 1rem;
+}
+
+.icon-collection:hover .icon-container {
+  @include addDistance;
+}
+
+.isHover {
+  @include addDistance;
+}
+
+.categories-controls {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  .input {
+    margin-left: 1rem;
+    width: 100%;
+  }
+}
+
+input {
+  padding: 1rem 3rem;
+  border-radius: 3rem;
+  border: 2px solid rgba(128, 128, 128, 0.1);
+  box-shadow: inset 0px 0px 20px rgba(0, 0, 0, 0.02);
+  font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
+  margin-right: 1rem;
+}
+
+.color-picker {
+  width: 0;
+  height: 0;
+  padding: 2rem 2rem;
+  position: relative;
+  z-index: 0;
+  cursor: pointer;
+}

@@ -1,4 +1,5 @@
-import { CardData, CardDataTree } from '../app/map/map.model';
+import { CardDataTree } from '../app/map/map.model';
+import { Categories } from '../app/map/settings/settings.model';
 
 export type Node = {
   children: string[];
@@ -90,3 +91,30 @@ export const nodes: Nodes = {
     children: [],
   },
 };
+
+export const categories: Categories = [
+  {
+    categoryIcon: 'faExclamation',
+    categoryName: 'Recommended Option',
+    categoryBgColor: '#ffc743',
+    categoryIconColor: 'white',
+  },
+  {
+    categoryIcon: 'faCheck',
+    categoryName: 'Good Alternative',
+    categoryBgColor: '#2b78e4',
+    categoryIconColor: 'white',
+  },
+  {
+    categoryIcon: 'faXmark',
+    categoryName: 'Not recommended',
+    categoryBgColor: '#b614b6',
+    categoryIconColor: 'white',
+  },
+  {
+    categoryIcon: 'faQuestion',
+    categoryName: 'Optional',
+    categoryBgColor: '#cecece',
+    categoryIconColor: 'white',
+  },
+];

@@ -18,8 +18,8 @@ export class CardComponent implements OnInit {
   faTrashAlt = faTrashAlt;
   faPlus = faPlus;
   public cardForm = this.fb.group({
+    title: this.fb.control<string>('Edit me!', Validators.required),
     ...(this.position !== 'center' && {
-      title: this.fb.control<string>('Edit me!', Validators.required),
       date: this.fb.control<string | undefined>(undefined),
       notes: this.fb.array<FormControl<string>>([]),
       category: this.fb.control<string | undefined>(undefined),

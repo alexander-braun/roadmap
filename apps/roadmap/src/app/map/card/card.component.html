@@ -19,14 +19,15 @@
         <input value="Edit me!" class="date" type="text" formControlName="date" />
       </div>
     </div>
-    <div class="control" *ngIf="position !== 'center'">
+    <div class="control" *ngIf="position !== 'center'" formArrayName="notes">
       <ng-container *ngIf="notes">
-        <ng-container formArrayName="notes">
+        <ng-container>
           <ng-container *ngFor="let noteControl of notes.controls; let i = index">
             <span class="note">
               <div editable="true" unformattedPaste class="note-input" type="text" [formControl]="noteControl"></div>
-              <fa-icon class="faTrashAlt" [icon]="faTrashAlt" (click)="removeNote(i)"></fa-icon></span
-          ></ng-container>
+              <fa-icon class="faTrashAlt" [icon]="faTrashAlt" (click)="removeNote(i)"></fa-icon>
+            </span>
+          </ng-container>
         </ng-container>
       </ng-container>
       <button class="add-note" (click)="addNote()">

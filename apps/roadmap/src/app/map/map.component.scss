@@ -159,7 +159,7 @@
   box-shadow: #c9c9c9 0 5px 30px -15px;
 
   &:hover {
-    //animation: FadeInCardBorder 0.3s forwards;
+    animation: FadeInCardBorder 0.3s forwards;
   }
 
   @media only screen and (min-width: 1100px) {
@@ -178,6 +178,7 @@
   &--center {
     color: $color-center;
     z-index: 1;
+    margin-top: calc(48px + 0.5rem);
   }
 
   &--center &__inner-text {
