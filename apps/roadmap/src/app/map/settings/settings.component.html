@@ -1,14 +1,92 @@
-<div id="settings-container">
-  <form [formGroup]="settingsForm">
+<div class="settings-container">
+  <div class="header">
     <h3>Card-Categories</h3>
-    <div class="control">
-      <ng-container *ngIf="categories" formArrayName="categories">
-        <ng-container *ngFor="let categoriesControl of categories.controls; let i = index">
-          <span class="categories-controls">
-            <rdmp-categories-display [formGroup]="categoriesControl"></rdmp-categories-display>
-          </span>
-        </ng-container>
-      </ng-container>
-    </div>
-  </form>
+    <fa-icon [icon]="faPencil" (click)="flipEdit()"></fa-icon>
+  </div>
+  <div class="control">
+    <form [formGroup]="settingsForm">
+      <div formArrayName="categories">
+        <table>
+          <thead>
+            <tr>
+              <th>Icon</th>
+              <th>Category</th>
+              <th *ngIf="isEdit">Background</th>
+              <th *ngIf="isEdit">Font</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let categoriesControl of categories.controls; let i = index" [formGroupName]="i">
+              <td>
+                <span class="icon-picker-container">
+                  <div class="icon-hover-trigger" (click)="flipShowIcons(categoriesControl)">
+                    <div
+                      class="icon-container-default"
+                      [ngStyle]="{ 'background-color': getCategoryInformation(i).categoryBgColor }"
+                    >
+                      <fa-icon
+                        class="icon"
+                        [icon]="iconsMap[getCategoryInformation(i).categoryIcon]"
+                        [ngStyle]="{ color: getCategoryInformation(i).categoryIconColor }"
+                      ></fa-icon>
+                    </div>
+                  </div>
+                  <div
+                    class="icon-collection"
+                    *ngIf="(iconChoiceVisible$$.asObservable() | async) === i"
+                    [ngClass]="{ isHover: (iconChoiceVisible$$.asObservable() | async) === i }"
+                  >
+                    <div
+                      (click)="setIcon(id, i)"
+                      (click)="flipShowIcons(categoriesControl)"
+                      class="icon-container-default"
+                      *ngFor="let icon of icons; let id = index"
+                      [ngClass]="{ isHover: (iconChoiceVisible$$.asObservable() | async) === i }"
+                      [ngStyle]="{ 'background-color': bgColors[id] }"
+                    >
+                      <fa-icon class="icon" [icon]="iconsMap[icon]" [ngStyle]="{ color: iconColors[id] }"></fa-icon>
+                    </div>
+                  </div>
+                </span>
+              </td>
+              <td>
+                <input
+                  *ngIf="isEdit"
+                  [ngStyle]="{ opacity: (iconChoiceVisible$$.asObservable() | async) === i ? '0' : '1' }"
+                  class="input"
+                  formControlName="categoryName"
+                />
+                <p *ngIf="!isEdit" class="category-name-show">{{ getName(i) }}</p>
+              </td>
+              <td *ngIf="isEdit">
+                <input
+                  *ngIf="isEdit"
+                  [ngStyle]="{ opacity: (iconChoiceVisible$$.asObservable() | async) === i ? '0' : '1' }"
+                  class="color-picker"
+                  readonly
+                  (colorPickerChange)="setBackgroundColor($event, i)"
+                  (keydown)="preventInput($event)"
+                  [(colorPicker)]="showBgColors[i]"
+                  [style.background]="showBgColors[i]"
+                  formControlName="categoryBgColor"
+                />
+              </td>
+              <td *ngIf="isEdit">
+                <input
+                  *ngIf="isEdit"
+                  [ngStyle]="{ opacity: (iconChoiceVisible$$.asObservable() | async) === i ? '0' : '1' }"
+                  class="color-picker"
+                  readonly
+                  (colorPickerChange)="setIconColor($event, i)"
+                  (keydown)="preventInput($event)"
+                  [(colorPicker)]="showIconColors[i]"
+                  formControlName="categoryIconColor"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </form>
+  </div>
 </div>

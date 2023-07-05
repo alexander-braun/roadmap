@@ -98,16 +98,3 @@ export class CardComponent implements OnInit {
     this.resize();
   }
 }
-
-/* 
-Categories:
-  User should be able to add a category
-  User should be able to add a custom icon for category
-  User should be able to delete a category
-  User should be able to pick a background color for a category
-  User should be able to pick an icon color for a category
-  Categories should be shown on each card with correct colors etc.
-  Date, Comment, Status, Categories, Comments should be optional - can
-  be set on the card directly (settings button on bottom) 
-  or in a general settings menue
-*/
