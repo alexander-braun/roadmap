@@ -13,16 +13,23 @@
               <th>Category</th>
               <th *ngIf="isEdit">Background</th>
               <th *ngIf="isEdit">Font</th>
+              <th *ngIf="isEdit">Remove</th>
             </tr>
           </thead>
-          <tbody>
-            <tr *ngFor="let categoriesControl of categories.controls; let i = index" [formGroupName]="i">
+          <tbody *ngIf="{ value: iconToEditPick$$.asObservable() | async }; let choiceVisible">
+            <tr
+              *ngFor="let categoriesControl of categories.controls; let i = index; trackBy: track"
+              [formGroupName]="i"
+            >
               <td>
-                <span class="icon-picker-container">
-                  <div class="icon-hover-trigger" (click)="flipShowIcons(categoriesControl)">
+                <span class="icon-picker-container" clickOutside (clickOutside)="handleClickOutside(i)">
+                  <div (click)="flipShowIcons(i)">
                     <div
                       class="icon-container-default"
-                      [ngStyle]="{ 'background-color': getCategoryInformation(i).categoryBgColor }"
+                      [ngStyle]="{
+                        'background-color': getCategoryInformation(i).categoryBgColor,
+                        cursor: isEdit ? 'pointer' : 'default'
+                      }"
                     >
                       <fa-icon
                         class="icon"
@@ -33,55 +40,67 @@
                   </div>
                   <div
                     class="icon-collection"
-                    *ngIf="(iconChoiceVisible$$.asObservable() | async) === i"
-                    [ngClass]="{ isHover: (iconChoiceVisible$$.asObservable() | async) === i }"
+                    *ngIf="choiceVisible.value === i"
+                    [ngClass]="{ isHover: choiceVisible.value === i }"
                   >
-                    <div
-                      (click)="setIcon(id, i)"
-                      (click)="flipShowIcons(categoriesControl)"
-                      class="icon-container-default"
-                      *ngFor="let icon of icons; let id = index"
-                      [ngClass]="{ isHover: (iconChoiceVisible$$.asObservable() | async) === i }"
-                      [ngStyle]="{ 'background-color': bgColors[id] }"
-                    >
-                      <fa-icon class="icon" [icon]="iconsMap[icon]" [ngStyle]="{ color: iconColors[id] }"></fa-icon>
-                    </div>
+                    <ng-container *ngFor="let icon of icons; let id = index">
+                      <div
+                        *ngIf="icon !== getCategoryInformation(i).categoryIcon"
+                        class="icon-container-default"
+                        [ngClass]="{ isHover: choiceVisible.value === i }"
+                        [ngStyle]="{ 'background-color': getCategoryInformation(i).categoryBgColor }"
+                        (click)="setIcon(id, i)"
+                      >
+                        <fa-icon
+                          class="icon"
+                          [icon]="iconsMap[icon]"
+                          [ngStyle]="{ color: getCategoryInformation(i).categoryIconColor }"
+                        ></fa-icon></div
+                    ></ng-container>
                   </div>
                 </span>
               </td>
               <td>
                 <input
                   *ngIf="isEdit"
-                  [ngStyle]="{ opacity: (iconChoiceVisible$$.asObservable() | async) === i ? '0' : '1' }"
-                  class="input"
+                  class="input hide-animation"
                   formControlName="categoryName"
+                  [ngStyle]="{ opacity: choiceVisible.value === i ? '0' : '1' }"
                 />
                 <p *ngIf="!isEdit" class="category-name-show">{{ getName(i) }}</p>
               </td>
               <td *ngIf="isEdit">
                 <input
-                  *ngIf="isEdit"
-                  [ngStyle]="{ opacity: (iconChoiceVisible$$.asObservable() | async) === i ? '0' : '1' }"
-                  class="color-picker"
                   readonly
-                  (colorPickerChange)="setBackgroundColor($event, i)"
-                  (keydown)="preventInput($event)"
+                  class="color-picker hide-animation"
+                  formControlName="categoryBgColor"
+                  [ngStyle]="{ opacity: choiceVisible.value === i ? '0' : '1' }"
                   [(colorPicker)]="showBgColors[i]"
                   [style.background]="showBgColors[i]"
-                  formControlName="categoryBgColor"
+                  (colorPickerChange)="setBackgroundColor($event, i)"
+                  (keydown)="preventInput($event)"
                 />
               </td>
               <td *ngIf="isEdit">
                 <input
-                  *ngIf="isEdit"
-                  [ngStyle]="{ opacity: (iconChoiceVisible$$.asObservable() | async) === i ? '0' : '1' }"
-                  class="color-picker"
                   readonly
+                  class="color-picker hide-animation"
+                  formControlName="categoryIconColor"
+                  [ngStyle]="{ opacity: choiceVisible.value === i ? '0' : '1' }"
+                  [(colorPicker)]="showIconColors[i]"
+                  [style.background]="showIconColors[i]"
                   (colorPickerChange)="setIconColor($event, i)"
                   (keydown)="preventInput($event)"
-                  [(colorPicker)]="showIconColors[i]"
-                  formControlName="categoryIconColor"
                 />
+              </td>
+              <td *ngIf="isEdit">
+                <div
+                  (click)="delete(i)"
+                  class="icon-container-default hide-animation"
+                  [ngStyle]="{ opacity: choiceVisible.value === i ? '0' : '1' }"
+                >
+                  <fa-icon class="icon delete" [icon]="faTrash"></fa-icon>
+                </div>
               </td>
             </tr>
           </tbody>

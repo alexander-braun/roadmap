@@ -73,6 +73,8 @@ h3 {
 $icon-width: 1.5rem;
 $icon-height: 1.5rem;
 $icon-font-size: 2rem;
+$border-spacing-horizontal: 15px;
+$border-spacing-vertical: 10px;
 
 @mixin setFadeInDots {
   @for $i from 0 to 10 {
@@ -89,14 +91,15 @@ $icon-font-size: 2rem;
   display: flex;
   flex: 0 0 100%;
   z-index: 1000;
-
+  margin-left: calc($border-spacing-vertical + 36px);
   .icon-container-default {
     margin-right: 1rem;
   }
 }
 
-.icon-collection.isHover {
-  background-color: white;
+.hide-animation {
+  transition: opacity;
+  transition-duration: 500ms;
 }
 
 .isHover.icon-collection .icon-container-default {
@@ -149,6 +152,11 @@ $icon-font-size: 2rem;
   width: 32px;
   border: 2px solid rgba(128, 128, 128, 0.1);
   color: transparent;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 td:nth-child(2),
@@ -176,7 +184,7 @@ input {
 
 table {
   border-collapse: separate;
-  border-spacing: 10px 15px;
+  border-spacing: $border-spacing-vertical $border-spacing-horizontal;
 }
 
 .icon {
@@ -192,3 +200,17 @@ table {
 th {
   font-size: 1.5rem;
 }
+
+.delete {
+  color: #cf3a3a;
+  transition-duration: 150ms;
+
+  &:hover {
+    color: #eb3f3f;
+  }
+}
+
+// missing: cleanup first, then add + for new controls, add empty th with width
+// slowly blend out formitems on icon click not so fast, close icon picker when
+// clicked outside and always show current icon as first item in picker
+// make weird animation play backwards

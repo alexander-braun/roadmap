@@ -1,58 +1,28 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { SettingsService } from './settings.service';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject } from 'rxjs';
-import {
-  faStar,
-  faHeart,
-  faBell,
-  faCheck,
-  faExclamation,
-  faXmark,
-  faBolt,
-  faBook,
-  faQuestion,
-} from '@fortawesome/free-solid-svg-icons';
-import { IconChoice } from './settings.model';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Category } from './settings.model';
+import { icons, iconsMap } from './icons-preset.data';
 
 @Component({
   selector: 'rdmp-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsComponent implements OnInit {
-  faPencil = faPencil;
-  isEdit = false;
-  public icons: IconChoice[] = [
-    'faBell',
-    'faQuestion',
-    'faExclamation',
-    'faBolt',
-    'faBook',
-    'faCheck',
-    'faXmark',
-    'faHeart',
-    'faStar',
-  ];
-  public iconsMap = {
-    faBell,
-    faQuestion,
-    faExclamation,
-    faBolt,
-    faBook,
-    faCheck,
-    faXmark,
-    faHeart,
-    faStar,
-  };
+  public readonly faPencil = faPencil;
+  public readonly faTrash = faTrash;
+  public readonly icons = icons;
+  public readonly iconsMap = iconsMap;
+  public isEdit = false;
   public settingsForm = this.fb.group({
     categories: this.fb.array<FormGroup>([]),
   });
-  public iconChoiceVisible$$ = new BehaviorSubject(-1);
-  public bgColors = ['lightgrey', '#eded1c', '#ffc743', '#1fc2bb', '#4abe42', '#2b78e4', '#b614b6', 'red', 'grey'];
-  public iconColors = ['white', 'white', 'white', 'white', 'white', 'white', 'white', 'white', 'white'];
+  public iconToEditPick$$ = new BehaviorSubject(-1);
   public showBgColors: string[] = [];
   public showIconColors: string[] = [];
 
@@ -60,17 +30,11 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.patchCategories();
-    this.categories.valueChanges.subscribe(() => console.log(this.categories.value));
   }
 
-  public flipEdit() {
+  public flipEdit(): void {
     this.isEdit = !this.isEdit;
-  }
-
-  public setBackgroundColor(color: string, i: number): void {
-    this.categories.controls[i].patchValue({
-      categoryBgColor: color,
-    });
+    this.iconToEditPick$$.next(-1);
   }
 
   public preventInput(e: Event): void {
@@ -79,19 +43,26 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  getName(i: number) {
+  public getName(i: number): string {
     return this.categories.controls[i].get('categoryName')?.value;
   }
 
-  public flipShowIcons(categoriesControl: FormGroup): void {
+  public flipShowIcons(index: number): void {
+    if (!this.isEdit) {
+      return;
+    }
+
     this.categories.controls.forEach((control, i) => {
-      if (
-        control.get('categoryName')?.value ===
-        this.categories.controls[this.iconChoiceVisible$$.value]?.get('categoryName')?.value
-      ) {
-        this.iconChoiceVisible$$.next(-1);
-      } else if (control.get('categoryName')?.value === categoriesControl.get('categoryName')?.value) {
-        this.iconChoiceVisible$$.next(i);
+      // if the control was clicked, than
+      // the control is currently open and
+      // needs to be closed.
+      if (i === this.iconToEditPick$$.value) {
+        this.iconToEditPick$$.next(-1);
+        // otherwise if the control is the same
+        // as the newly clicked control it has
+        // to be set as the next pick
+      } else if (i === index) {
+        this.iconToEditPick$$.next(i);
       }
     });
   }
@@ -113,7 +84,7 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  track(index: number, item: any) {
+  public track(index: number, _: FormGroup): number {
     return index;
   }
 
@@ -131,18 +102,31 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  public setBackgroundColor(color: string, i: number): void {
+    this.categories.controls[i].patchValue({
+      categoryBgColor: color,
+    });
+  }
+
   public setIcon(iconNumber: number, i: number): void {
     this.categories.controls[i].patchValue({
       categoryIcon: this.icons[iconNumber],
-      categoryBgColor: this.bgColors[iconNumber],
-      categoryIconColor: this.iconColors[iconNumber],
     });
-    this.showIconColors[i] = this.iconColors[iconNumber];
-    this.showBgColors[i] = this.bgColors[iconNumber];
-    this.cdr.detectChanges();
+    this.iconToEditPick$$.next(-1);
   }
 
-  getBackgroundColor(i: number) {
-    return this.categories.controls[i].get('categoryBgColor')?.value;
+  public delete(i: number): void {
+    this.categories.controls.splice(i, 1);
+  }
+
+  public handleClickOutside(controlIndex: number): void {
+    // The control that doesn't fire the click outside is the one
+    // that is clicked - if the control itself is clicked it
+    // gets already closed by setIcon() or flipShowIcons()
+    if (controlIndex !== this.iconToEditPick$$.value) {
+      return;
+    }
+    // There really was a click outside
+    this.iconToEditPick$$.next(-1);
   }
 }
