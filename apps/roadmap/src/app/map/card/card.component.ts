@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { NodeId } from 'apps/roadmap/src/assets/data';
 import { CardData } from '../map.model';
 import { MapService } from '../map.service';
@@ -30,8 +30,7 @@ export class CardComponent implements OnInit {
   constructor(
     private mapService: MapService,
     private fb: FormBuilder,
-    private resizeObserverService: ResizeObserverService,
-    private cdr: ChangeDetectorRef
+    private resizeObserverService: ResizeObserverService
   ) {}
 
   ngOnInit(): void {
@@ -94,7 +93,6 @@ export class CardComponent implements OnInit {
 
   public removeNote(i: number): void {
     this.notes?.controls.splice(i, 1);
-    this.cdr.detectChanges();
     this.resize();
   }
 }

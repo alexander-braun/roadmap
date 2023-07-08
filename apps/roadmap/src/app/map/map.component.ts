@@ -1,7 +1,6 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   OnInit,
@@ -27,11 +26,7 @@ export class MapComponent implements AfterViewInit, OnInit {
   private htmlCardCollection$$ = new BehaviorSubject<HTMLCollection[]>([]);
   faPlus = faPlus;
 
-  constructor(
-    private mapService: MapService,
-    private resizeObserver: ResizeObserverService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor(private mapService: MapService, private resizeObserver: ResizeObserverService) {}
 
   ngOnInit(): void {
     this.appendEndingNode();
@@ -49,7 +44,6 @@ export class MapComponent implements AfterViewInit, OnInit {
   private getCards(): void {
     this.mapService.nodes$.subscribe(() => {
       this.centerNodes$$.next(this.generateCenterNodes());
-      this.cdr.detectChanges();
       this.htmlCardCollection$$.next(this.getAllCardElements());
     });
   }
