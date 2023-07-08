@@ -3,6 +3,8 @@ import { BehaviorSubject } from 'rxjs';
 import { CardData, CardDataTree, CardPropertyCollection } from './map.model';
 import { NodeId, Nodes, cardDataTree, nodes } from '../../assets/data';
 import { v4 as uuidv4 } from 'uuid';
+import { SettingsService } from './settings/settings.service';
+import { Categories } from './settings/settings.model';
 
 @Injectable({
   providedIn: 'root',
@@ -15,9 +17,26 @@ export class MapService {
   private cardDataTree$$ = new BehaviorSubject<CardDataTree>({});
   public cardDataTree$ = this.cardDataTree$$.asObservable();
 
-  constructor() {
+  constructor(private settingsService: SettingsService) {
     this.nodes$$.next(nodes);
     this.cardDataTree$$.next(cardDataTree);
+    this.handleCategoriesUpdates();
+  }
+
+  private handleCategoriesUpdates(): void {
+    this.settingsService.categories$.subscribe((categories) => {
+      this.patchCardDataOnCategoriesChange(categories);
+    });
+  }
+
+  private patchCardDataOnCategoriesChange(categories: Categories): void {
+    const tempTree = this.cardDataTree$$.value;
+    Object.keys(tempTree).forEach((key) => {
+      if (categories.findIndex((c) => c.categoryId === tempTree[key].categoryId) < 0) {
+        tempTree[key].categoryId = '';
+      }
+    });
+    this.cardDataTree$$.next(tempTree);
   }
 
   public setCardPropertyCollection(collection: CardPropertyCollection): void {

@@ -9,7 +9,7 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { NodeId } from '../../assets/data';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, delay, tap } from 'rxjs';
 import { MapService } from './map.service';
 import { CardPropertyCollection, Direction } from './map.model';
 import { ResizeObserverService } from '../../shared/services/resize-observer.service';
@@ -59,7 +59,6 @@ export class MapComponent implements AfterViewInit, OnInit {
       .pipe(
         tap(() => {
           this.centerNodes$$.next(this.generateCenterNodes());
-          this.setCardPropertyCollection();
           this.htmlCardCollection$$.next(this.getAllCardElements());
         })
       )

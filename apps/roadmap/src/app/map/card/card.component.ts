@@ -15,14 +15,14 @@ import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-o
 export class CardComponent implements OnInit {
   @Input() nodeId!: NodeId;
   @Input() position!: 'subchild-left' | 'left' | 'center' | 'right' | 'subchild-right';
-  faTrashAlt = faTrashAlt;
-  faPlus = faPlus;
+  public readonly faTrashAlt = faTrashAlt;
+  public readonly faPlus = faPlus;
   public cardForm = this.fb.group({
     title: this.fb.control<string>('Edit me!', Validators.required),
     ...(this.position !== 'center' && {
       date: this.fb.control<string | undefined>(undefined),
       notes: this.fb.array<FormControl<string>>([]),
-      category: this.fb.control<string | undefined>(undefined),
+      categoryId: this.fb.control<string | undefined>(undefined),
       status: this.fb.control<string | undefined>(undefined),
     }),
   });

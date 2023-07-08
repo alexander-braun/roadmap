@@ -23,7 +23,7 @@ export interface CardData {
   title: string;
   date?: string;
   notes?: string[];
-  category?: string;
+  categoryId?: string;
   status?: 'pending' | 'in-progress' | 'done' | 'ignore';
 }
 

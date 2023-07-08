@@ -88,16 +88,18 @@ export class SettingsComponent implements OnInit {
     this.showBgColors = [];
     this.showIconColors = [];
     categories.forEach((category, i) => {
+      const { categoryName, categoryIcon, categoryBgColor, categoryIconColor, categoryId } = category;
       this.categories.controls.push(
         this.fb.group({
-          categoryName: this.fb.nonNullable.control(category.categoryName),
-          categoryIcon: this.fb.nonNullable.control(category.categoryIcon),
-          categoryBgColor: this.fb.nonNullable.control(category.categoryBgColor),
-          categoryIconColor: this.fb.nonNullable.control(category.categoryIconColor),
+          categoryName: this.fb.nonNullable.control(categoryName),
+          categoryIcon: this.fb.nonNullable.control(categoryIcon),
+          categoryBgColor: this.fb.nonNullable.control(categoryBgColor),
+          categoryIconColor: this.fb.nonNullable.control(categoryIconColor),
+          categoryId: this.fb.nonNullable.control(categoryId),
         })
       );
-      this.showBgColors.push(category.categoryBgColor);
-      this.showIconColors.push(category.categoryIconColor);
+      this.showBgColors.push(categoryBgColor);
+      this.showIconColors.push(categoryIconColor);
     });
   }
 

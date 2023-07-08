@@ -19,12 +19,13 @@ export const cardDataTree: CardDataTree = {
   c1: {
     title: 'My Title',
     notes: ['note 1', 'note 2', 'note 3'],
+    categoryId: '1',
   },
   c5: {
     title: 'I am c5',
     notes: ['my c5 note', 'and another one'],
     status: 'in-progress',
-    category: 'MyCategory1',
+    categoryId: '4',
     date: '22.01.1988',
   },
 };
@@ -98,23 +99,27 @@ export const categories: Categories = [
     categoryName: 'Recommended Option',
     categoryBgColor: '#ffc743',
     categoryIconColor: 'white',
+    categoryId: '1',
   },
   {
     categoryIcon: 'faCheck',
     categoryName: 'Good Alternative',
     categoryBgColor: '#2b78e4',
     categoryIconColor: 'white',
+    categoryId: '2',
   },
   {
     categoryIcon: 'faXmark',
     categoryName: 'Not recommended',
     categoryBgColor: '#b614b6',
     categoryIconColor: 'white',
+    categoryId: '3',
   },
   {
     categoryIcon: 'faQuestion',
     categoryName: 'Optional',
     categoryBgColor: '#cecece',
     categoryIconColor: 'white',
+    categoryId: '4',
   },
 ];

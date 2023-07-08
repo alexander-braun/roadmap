@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { ChangeDetectorRef, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { CardProperty, CardPropertyCollection, PaathCoordinateCollection, PaathProperty } from '../map/map.model';
 import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
+import { MapService } from '../map/map.service';
 
 @Component({
   selector: '[rdmp-svg-path]',
@@ -9,22 +10,30 @@ import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-o
   styleUrls: ['./svg-path.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SvgPathComponent implements OnInit, OnChanges {
+export class SvgPathComponent implements OnInit {
   private readonly insetSvg = 25;
-  @Input() cardPropertyCollection: CardPropertyCollection = [];
+  private cardPropertyCollection: CardPropertyCollection = [];
   private pathCoords$$ = new BehaviorSubject<PaathCoordinateCollection>([]);
   public pathCoords$ = this.pathCoords$$.asObservable();
+  public cardPropertyCollection$: Observable<CardPropertyCollection> = this.mapService.cardPropertyCollection$;
 
-  constructor(private resizeObserver: ResizeObserverService) {}
+  constructor(
+    private resizeObserver: ResizeObserverService,
+    private mapService: MapService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.handleResize();
+    this.handleCardPropertyCollectionChanges();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['cardPropertyCollection']) {
+  private handleCardPropertyCollectionChanges(): void {
+    this.mapService.cardPropertyCollection$.subscribe((cardPropertyCollection) => {
+      this.cardPropertyCollection = cardPropertyCollection;
       this.calculateNewCoordinates();
-    }
+      this.cdr.detectChanges();
+    });
   }
 
   private handleResize(): void {

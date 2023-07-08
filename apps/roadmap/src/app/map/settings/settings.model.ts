@@ -3,6 +3,7 @@ export interface Category {
   categoryIcon: IconChoice;
   categoryBgColor: string;
   categoryIconColor: string;
+  categoryId: string;
 }
 
 export type Categories = Category[];
