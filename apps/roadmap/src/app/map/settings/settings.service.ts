@@ -13,4 +13,12 @@ export class SettingsService {
   constructor() {
     this.categories$$.next(categories);
   }
+
+  public cancelCategoriesForm(): void {
+    this.categories$$.next(this.categories$$.value);
+  }
+
+  public saveCategoriesForm(formValue: Categories): void {
+    this.categories$$.next(formValue);
+  }
 }

@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { SettingsService } from './settings.service';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { Category } from './settings.model';
+import { Categories, Category } from './settings.model';
 import { icons, iconsMap } from './icons-preset.data';
+import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
 
 @Component({
   selector: 'rdmp-settings',
@@ -23,13 +24,28 @@ export class SettingsComponent implements OnInit {
     categories: this.fb.array<FormGroup>([]),
   });
   public iconToEditPick$$ = new BehaviorSubject(-1);
+  public iconToEditPick$ = this.iconToEditPick$$.asObservable();
   public showBgColors: string[] = [];
   public showIconColors: string[] = [];
+  public innerWidth$: Observable<number>;
 
-  constructor(private fb: FormBuilder, private settingsService: SettingsService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private resizeService: ResizeObserverService,
+    private fb: FormBuilder,
+    private settingsService: SettingsService,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.innerWidth$ = this.resizeService.innerWidth$;
+  }
 
   ngOnInit(): void {
-    this.patchCategories();
+    this.handleCategoriesChanges();
+  }
+
+  private handleCategoriesChanges(): void {
+    this.settingsService.categories$.subscribe((categories) => {
+      this.patchCategories(categories);
+    });
   }
 
   public flipEdit(): void {
@@ -67,20 +83,21 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  private patchCategories(): void {
-    this.settingsService.categories$.subscribe((categories) => {
-      categories.forEach((category, i) => {
-        this.categories.controls.push(
-          this.fb.group({
-            categoryName: this.fb.nonNullable.control(category.categoryName),
-            categoryIcon: this.fb.nonNullable.control(category.categoryIcon),
-            categoryBgColor: this.fb.nonNullable.control(category.categoryBgColor),
-            categoryIconColor: this.fb.nonNullable.control(category.categoryIconColor),
-          })
-        );
-        this.showBgColors.push(category.categoryBgColor);
-        this.showIconColors.push(category.categoryIconColor);
-      });
+  private patchCategories(categories: Categories): void {
+    this.categories.controls = [];
+    this.showBgColors = [];
+    this.showIconColors = [];
+    categories.forEach((category, i) => {
+      this.categories.controls.push(
+        this.fb.group({
+          categoryName: this.fb.nonNullable.control(category.categoryName),
+          categoryIcon: this.fb.nonNullable.control(category.categoryIcon),
+          categoryBgColor: this.fb.nonNullable.control(category.categoryBgColor),
+          categoryIconColor: this.fb.nonNullable.control(category.categoryIconColor),
+        })
+      );
+      this.showBgColors.push(category.categoryBgColor);
+      this.showIconColors.push(category.categoryIconColor);
     });
   }
 
@@ -100,12 +117,14 @@ export class SettingsComponent implements OnInit {
     this.categories.controls[i].patchValue({
       categoryIconColor: color,
     });
+    this.updateForm();
   }
 
   public setBackgroundColor(color: string, i: number): void {
     this.categories.controls[i].patchValue({
       categoryBgColor: color,
     });
+    this.updateForm();
   }
 
   public setIcon(iconNumber: number, i: number): void {
@@ -113,10 +132,12 @@ export class SettingsComponent implements OnInit {
       categoryIcon: this.icons[iconNumber],
     });
     this.iconToEditPick$$.next(-1);
+    this.updateForm();
   }
 
   public delete(i: number): void {
     this.categories.controls.splice(i, 1);
+    this.updateForm();
   }
 
   public handleClickOutside(controlIndex: number): void {
@@ -128,5 +149,19 @@ export class SettingsComponent implements OnInit {
     }
     // There really was a click outside
     this.iconToEditPick$$.next(-1);
+  }
+
+  public cancelCategoriesForm(): void {
+    this.settingsService.cancelCategoriesForm();
+    this.flipEdit();
+  }
+
+  public saveCategories(): void {
+    this.settingsService.saveCategoriesForm(this.categories.value);
+    this.flipEdit();
+  }
+
+  public updateForm(): void {
+    this.categories.updateValueAndValidity();
   }
 }

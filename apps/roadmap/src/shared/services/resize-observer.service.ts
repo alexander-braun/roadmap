@@ -1,18 +1,28 @@
 import { Injectable } from '@angular/core';
-import { Subject, fromEvent } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ResizeObserverService {
-  public resize$$ = new Subject<void>();
+  private resize$$ = new Subject<void>();
   public resize$ = this.resize$$.asObservable();
+  private innerWidth$$ = new BehaviorSubject<number>(0);
+  public innerWidth$ = this.innerWidth$$.asObservable();
+
   constructor() {
-    fromEvent(window, 'resize').subscribe(() => {
-      this.resize$$.next();
+    this.innerWidth$$.next(window.innerWidth);
+
+    const observer = new ResizeObserver((entries) => {
+      for (const _ of entries) {
+        this.resize$$.next();
+        this.innerWidth$$.next(window.innerWidth);
+      }
     });
-    fromEvent(document.body, 'resize').subscribe(() => {
-      this.resize$$.next();
-    });
+    observer.observe(document.querySelector('body')!);
+  }
+
+  public setResizeNext(): void {
+    this.resize$$.next();
   }
 }

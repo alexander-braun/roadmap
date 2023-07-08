@@ -1,63 +1,43 @@
+@mixin setFadeInDots {
+  @for $i from 0 to 10 {
+    &:nth-child(#{$i}) {
+      @debug #{$i};
+      animation: FadeInDots 0.2s both #{'0.' + $i + 's'};
+      opacity: 1;
+    }
+  }
+}
+
+$icon-width: 1.5rem;
+$icon-height: 1.5rem;
+$icon-font-size: 2rem;
+$border-spacing-horizontal: 15px;
+$border-spacing-vertical: 10px;
+
 .settings-container {
   box-shadow: 0 5px 30px -15px #c9c9c9;
   display: flex;
   flex-direction: column;
   height: auto;
   margin: 0 auto;
-  padding: 5rem;
-  width: 80vw;
+  padding: 0.5rem;
   margin-top: 4rem;
   font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
   margin-bottom: 5rem;
-}
-
-.modal {
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.categories-form-modal {
-  background-color: white;
-}
-
-@media only screen and (min-width: 870px) {
-  #settings-container {
-    margin-top: 0;
-    min-width: 35vw;
-    width: fit-content;
-  }
-}
-
-h3 {
-  font-size: 2rem;
-  margin-bottom: 0;
-}
-
-.categories-controls {
-  margin-top: 1rem;
-  display: block;
-
-  &:first-child {
-    margin-top: 4rem;
-  }
+  width: 100%;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 4rem;
 
   fa-icon {
     font-size: 2.5rem;
     cursor: pointer;
     color: #2a445d;
-    padding: 1rem;
+    padding: 4rem;
     border-radius: 50%;
     width: 2.5rem;
     height: 2.5rem;
@@ -69,20 +49,34 @@ h3 {
   }
 }
 
-////////////////////
-$icon-width: 1.5rem;
-$icon-height: 1.5rem;
-$icon-font-size: 2rem;
-$border-spacing-horizontal: 15px;
-$border-spacing-vertical: 10px;
+h3 {
+  font-size: 2.5rem;
+  margin-bottom: 0;
+}
 
-@mixin setFadeInDots {
-  @for $i from 0 to 10 {
-    &:nth-child(#{$i}) {
-      @debug #{$i};
-      animation: FadeInDots 0.2s both #{'0.' + $i + 's'};
-      opacity: 1;
+td,
+th,
+h3 {
+  padding: 0 6px 0 6px;
+}
+
+@media only screen and (min-width: 750px) {
+  .settings-container {
+    padding: 3rem;
+    width: 60vw;
+  }
+
+  .header {
+    fa-icon {
+      padding: 1rem;
     }
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .settings-container {
+    width: 40vw;
+    padding: 5rem;
   }
 }
 
@@ -91,9 +85,19 @@ $border-spacing-vertical: 10px;
   display: flex;
   flex: 0 0 100%;
   z-index: 1000;
-  margin-left: calc($border-spacing-vertical + 36px);
+  margin-left: calc(36px + 0.5rem);
+  transition-duration: 200ms;
+  @media only screen and (min-width: 1200px) {
+    margin-left: calc(36px + 1rem);
+  }
+
   .icon-container-default {
-    margin-right: 1rem;
+    margin-right: 0.5rem;
+    transition-duration: 200ms;
+
+    @media only screen and (min-width: 1200px) {
+      margin-right: 1rem;
+    }
   }
 }
 
@@ -102,7 +106,7 @@ $border-spacing-vertical: 10px;
   transition-duration: 500ms;
 }
 
-.isHover.icon-collection .icon-container-default {
+.isHover .icon-container-default {
   @include setFadeInDots;
   opacity: 1;
 }
@@ -117,15 +121,13 @@ $border-spacing-vertical: 10px;
   cursor: pointer;
   width: 2rem;
   height: 2rem;
-}
-
-.isHover.icon-collection .icon-container-default {
-  @include setFadeInDots;
-  opacity: 1;
+  margin: 0 auto;
 }
 
 .icon-picker-container {
   display: flex;
+  width: fit-content;
+  margin: 0 auto;
 }
 
 .color-picker-container {
@@ -152,16 +154,9 @@ $border-spacing-vertical: 10px;
   width: 32px;
   border: 2px solid rgba(128, 128, 128, 0.1);
   color: transparent;
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
-td:nth-child(2),
-td:nth-child(3),
-td:nth-child(4) {
+td {
   text-align: center;
 }
 
@@ -171,13 +166,10 @@ input {
   border: 2px solid rgba(128, 128, 128, 0.1);
   box-shadow: inset 0px 0px 20px rgba(0, 0, 0, 0.02);
   font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
-  margin-right: 2rem;
-  margin-left: 2rem;
+  max-width: 20vw;
 }
 
 .category-name-show {
-  margin-right: 2rem;
-  margin-left: 2rem;
   font-size: 2rem;
   text-align: left;
 }
@@ -185,8 +177,29 @@ input {
 table {
   border-collapse: separate;
   border-spacing: $border-spacing-vertical $border-spacing-horizontal;
+  min-width: 100%;
+  border: 0;
+  white-space: nowrap;
+  border-spacing: 0;
+  table-layout: fixed;
 }
 
+/*
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.input {
+  max-width: 100%;
+}
+
+th,
+td {
+  border-width: 5px;
+  word-wrap: break-word;
+}
+*/
 .icon {
   font-size: $icon-font-size;
   color: white;
@@ -199,6 +212,7 @@ table {
 
 th {
   font-size: 1.5rem;
+  user-select: none;
 }
 
 .delete {
@@ -210,7 +224,44 @@ th {
   }
 }
 
+thead tr {
+  height: 50px;
+
+  &:first-child {
+    th:first-child {
+      width: 50px;
+    }
+  }
+}
+
+tbody tr {
+  height: 60px;
+}
+
+.cancel,
+.save {
+  background-color: transparent;
+  color: black;
+  border: none;
+  box-shadow: none;
+  font-size: 2rem;
+  font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
+  width: fit-content;
+  display: block;
+  padding: 2rem;
+  margin-top: 4rem;
+  cursor: pointer;
+}
+
+.save {
+  margin-right: 2rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: right;
+  align-items: flex-end;
+}
+
 // missing: cleanup first, then add + for new controls, add empty th with width
-// slowly blend out formitems on icon click not so fast, close icon picker when
-// clicked outside and always show current icon as first item in picker
 // make weird animation play backwards

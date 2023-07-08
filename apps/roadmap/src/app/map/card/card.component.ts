@@ -46,7 +46,7 @@ export class CardComponent implements OnInit {
   }
 
   private resize(): void {
-    this.resizeObserverService.resize$$.next();
+    this.resizeObserverService.setResizeNext();
   }
 
   private patchForm(): void {

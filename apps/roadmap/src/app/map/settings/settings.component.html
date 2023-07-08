@@ -1,4 +1,4 @@
-<div class="settings-container">
+<div class="settings-container" *ngIf="{ value: innerWidth$ | async }; let innerWidth">
   <div class="header">
     <h3>Card-Categories</h3>
     <fa-icon [icon]="faPencil" (click)="flipEdit()"></fa-icon>
@@ -10,17 +10,15 @@
           <thead>
             <tr>
               <th>Icon</th>
-              <th>Category</th>
-              <th *ngIf="isEdit">Background</th>
+              <th [ngStyle]="{ 'text-align': isEdit ? 'center' : 'left' }">Category</th>
+              <th *ngIf="(innerWidth.value || 0) >= 500 && isEdit">Background</th>
+              <th *ngIf="(innerWidth.value || 0) < 500 && isEdit">BG</th>
               <th *ngIf="isEdit">Font</th>
               <th *ngIf="isEdit">Remove</th>
             </tr>
           </thead>
-          <tbody *ngIf="{ value: iconToEditPick$$.asObservable() | async }; let choiceVisible">
-            <tr
-              *ngFor="let categoriesControl of categories.controls; let i = index; trackBy: track"
-              [formGroupName]="i"
-            >
+          <tbody *ngIf="{ value: iconToEditPick$ | async }; let choiceVisible">
+            <tr *ngFor="let categoriesControl of categories.controls; let i = index" [formGroupName]="i">
               <td>
                 <span class="icon-picker-container" clickOutside (clickOutside)="handleClickOutside(i)">
                   <div (click)="flipShowIcons(i)">
@@ -47,7 +45,6 @@
                       <div
                         *ngIf="icon !== getCategoryInformation(i).categoryIcon"
                         class="icon-container-default"
-                        [ngClass]="{ isHover: choiceVisible.value === i }"
                         [ngStyle]="{ 'background-color': getCategoryInformation(i).categoryBgColor }"
                         (click)="setIcon(id, i)"
                       >
@@ -66,6 +63,7 @@
                   class="input hide-animation"
                   formControlName="categoryName"
                   [ngStyle]="{ opacity: choiceVisible.value === i ? '0' : '1' }"
+                  (input)="updateForm()"
                 />
                 <p *ngIf="!isEdit" class="category-name-show">{{ getName(i) }}</p>
               </td>
@@ -105,6 +103,10 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      <div class="actions" *ngIf="isEdit">
+        <button class="save" (click)="saveCategories()">Save</button>
+        <button class="cancel" (click)="cancelCategoriesForm()">Cancel</button>
       </div>
     </form>
   </div>

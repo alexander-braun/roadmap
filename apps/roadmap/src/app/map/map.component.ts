@@ -58,6 +58,8 @@ export class MapComponent implements AfterViewInit, OnInit {
     this.resizeObserver.resize$
       .pipe(
         tap(() => {
+          this.centerNodes$$.next(this.generateCenterNodes());
+          this.setCardPropertyCollection();
           this.htmlCardCollection$$.next(this.getAllCardElements());
         })
       )
