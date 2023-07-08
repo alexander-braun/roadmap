@@ -114,3 +114,51 @@ input {
     color: $center-hover;
   }
 }
+
+.categories {
+  display: flex;
+  position: absolute;
+  top: -3rem;
+  padding-right: 20px;
+  right: calc(1.5rem - 20px);
+}
+
+.category-choice {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.8rem;
+  cursor: pointer;
+  background-color: #80808042;
+  margin-left: 0.5rem;
+  opacity: 0;
+  animation-fill-mode: forwards;
+
+  &.isHover {
+    animation: FadeInDots 0.2s forwards;
+  }
+}
+
+fa-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.picked-category {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  position: absolute;
+  top: -1.5rem;
+  right: -1.5rem;
+  cursor: pointer;
+  background-color: #80808042;
+}

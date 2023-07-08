@@ -5,6 +5,10 @@ import { MapService } from '../map.service';
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
+import { SettingsService } from '../settings/settings.service';
+import { BehaviorSubject } from 'rxjs';
+import { Categories, Category } from '../settings/settings.model';
+import { iconsMap } from '../settings/icons-preset.data';
 
 @Component({
   selector: 'rdmp-card',
@@ -15,27 +19,66 @@ import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-o
 export class CardComponent implements OnInit {
   @Input() nodeId!: NodeId;
   @Input() position!: 'subchild-left' | 'left' | 'center' | 'right' | 'subchild-right';
+  public readonly iconsMap = iconsMap;
   public readonly faTrashAlt = faTrashAlt;
   public readonly faPlus = faPlus;
+  public categoriesSettings$$ = new BehaviorSubject({} as Categories);
+  public currentCategory$$ = new BehaviorSubject({} as Category);
+  public isHover = false;
+  public hoverDelays: string[] = [];
+
   public cardForm = this.fb.group({
     title: this.fb.control<string>('Edit me!', Validators.required),
     ...(this.position !== 'center' && {
-      date: this.fb.control<string | undefined>(undefined),
-      notes: this.fb.array<FormControl<string>>([]),
-      categoryId: this.fb.control<string | undefined>(undefined),
-      status: this.fb.control<string | undefined>(undefined),
+      date: this.fb.nonNullable.control<string | undefined>(undefined),
+      notes: this.fb.nonNullable.array<FormControl<string>>([]),
+      categoryId: this.fb.nonNullable.control<string | undefined>(undefined),
+      status: this.fb.nonNullable.control<string | undefined>(undefined),
     }),
   });
 
   constructor(
     private mapService: MapService,
     private fb: FormBuilder,
-    private resizeObserverService: ResizeObserverService
+    private resizeObserverService: ResizeObserverService,
+    private settingsService: SettingsService
   ) {}
 
   ngOnInit(): void {
     this.patchForm();
     this.resizeFormOnValueChange();
+    this.settingsService.categories$.subscribe((categories) => {
+      this.categoriesSettings$$.next(categories);
+      this.currentCategory$$.next(this.findCurrentCategory() || ({} as Category));
+      this.setAnimationDelay(categories);
+    });
+  }
+
+  private setAnimationDelay(categories: Categories): void {
+    for (let i = categories.length; i >= 0; i--) {
+      this.hoverDelays.push(`0.${i}s`);
+    }
+  }
+
+  public handleMouseEnter(): void {
+    this.isHover = true;
+  }
+
+  public setCategory(i: number): void {
+    this.cardForm.patchValue({
+      categoryId: this.categoriesSettings$$.value[i].categoryId,
+    });
+    this.currentCategory$$.next(this.findCurrentCategory() || ({} as Category));
+  }
+
+  public handleMouseLeave(): void {
+    this.isHover = false;
+  }
+
+  private findCurrentCategory(): Category | undefined {
+    return this.categoriesSettings$$.value.find(
+      (category) => category.categoryId === this.cardForm.controls.categoryId?.value
+    );
   }
 
   private resizeFormOnValueChange(): void {

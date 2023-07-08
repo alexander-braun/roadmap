@@ -1,4 +1,36 @@
 <div [id]="nodeId">
+  <ng-container *ngIf="position !== 'center'">
+    <div class="categories" (mouseenter)="handleMouseEnter()" (mouseleave)="handleMouseLeave()">
+      <div
+        (click)="setCategory(i)"
+        [ngClass]="{ isHover: isHover }"
+        class="category-choice"
+        *ngFor="let category of categoriesSettings$$.asObservable() | async; let i = index"
+        [ngStyle]="{
+          'background-color': category.categoryBgColor,
+          'animation-delay': hoverDelays[i]
+        }"
+      >
+        <fa-icon
+          [icon]="iconsMap[category.categoryIcon] || iconsMap['faQuestion']"
+          [ngStyle]="{ color: category.categoryIconColor || 'white' }"
+        ></fa-icon>
+      </div>
+    </div>
+    <div
+      (mouseenter)="handleMouseEnter()"
+      (mouseleave)="handleMouseLeave()"
+      class="picked-category"
+      *ngIf="currentCategory$$.asObservable() | async; let currentCategory"
+      [ngStyle]="{ 'background-color': currentCategory.categoryBgColor }"
+    >
+      <fa-icon
+        class="icon"
+        [icon]="iconsMap[currentCategory.categoryIcon] || iconsMap['faQuestion']"
+        [ngStyle]="{ color: currentCategory.categoryIconColor || 'white' }"
+      ></fa-icon>
+    </div>
+  </ng-container>
   <form [formGroup]="cardForm">
     <div class="control">
       <div
