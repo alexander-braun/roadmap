@@ -48,13 +48,13 @@ export class SettingsComponent implements OnInit {
       this.fb.group({
         categoryName: this.fb.nonNullable.control('New'),
         categoryIcon: this.fb.nonNullable.control('faQuestion'),
-        categoryBgColor: this.fb.nonNullable.control('red'),
-        categoryIconColor: this.fb.nonNullable.control('white'),
+        categoryBgColor: this.fb.nonNullable.control('#ff0000'),
+        categoryIconColor: this.fb.nonNullable.control('#fff'),
         categoryId: this.fb.nonNullable.control(v4()),
       })
     );
-    this.showBgColors.push('red');
-    this.showIconColors.push('white');
+    this.showBgColors.push('#ff0000');
+    this.showIconColors.push('#fff');
     this.updateForm();
   }
 

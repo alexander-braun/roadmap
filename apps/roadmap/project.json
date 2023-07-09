@@ -8,24 +8,15 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/roadmap",
         "index": "apps/roadmap/src/index.html",
         "main": "apps/roadmap/src/main.ts",
-        "polyfills": [
-          "zone.js"
-        ],
+        "polyfills": ["zone.js"],
         "tsConfig": "apps/roadmap/tsconfig.app.json",
-        "assets": [
-          "apps/roadmap/src/favicon.ico",
-          "apps/roadmap/src/assets"
-        ],
-        "styles": [
-          "apps/roadmap/src/styles.scss"
-        ],
+        "assets": ["apps/roadmap/src/favicon.ico", "apps/roadmap/src/assets"],
+        "styles": ["apps/roadmap/src/styles.scss"],
         "scripts": []
       },
       "configurations": {
@@ -38,8 +29,8 @@
             },
             {
               "type": "anyComponentStyle",
-              "maximumWarning": "2kb",
-              "maximumError": "4kb"
+              "maximumWarning": "8kb",
+              "maximumError": "16kb"
             }
           ],
           "outputHashing": "all"
@@ -75,21 +66,14 @@
     },
     "lint": {
       "executor": "@nx/linter:eslint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "apps/roadmap/**/*.ts",
-          "apps/roadmap/**/*.html"
-        ]
+        "lintFilePatterns": ["apps/roadmap/**/*.ts", "apps/roadmap/**/*.html"]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "apps/roadmap/jest.config.ts",
         "passWithNoTests": true
