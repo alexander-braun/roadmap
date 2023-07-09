@@ -51,6 +51,7 @@ export class SettingsComponent implements OnInit {
   public flipEdit(): void {
     this.isEdit = !this.isEdit;
     this.iconToEditPick$$.next(-1);
+    this.resizeService.setResizeNext();
   }
 
   public preventInput(e: Event): void {

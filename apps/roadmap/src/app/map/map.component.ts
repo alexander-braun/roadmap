@@ -39,7 +39,6 @@ export class MapComponent implements AfterViewInit, OnInit {
     this.handleResize();
     this.htmlCardCollection$$.asObservable().subscribe(() => {
       this.setCardPropertyCollection();
-      this.cdr.detectChanges();
     });
   }
 
@@ -58,6 +57,7 @@ export class MapComponent implements AfterViewInit, OnInit {
     this.resizeObserver.resize$
       .pipe(
         tap(() => {
+          this.cdr.detectChanges();
           this.centerNodes$$.next(this.generateCenterNodes());
           this.htmlCardCollection$$.next(this.getAllCardElements());
         })

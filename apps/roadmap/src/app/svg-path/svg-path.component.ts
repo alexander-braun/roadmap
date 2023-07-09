@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { BehaviorSubject, Observable, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { CardProperty, CardPropertyCollection, PaathCoordinateCollection, PaathProperty } from '../map/map.model';
 import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
 import { MapService } from '../map/map.service';
@@ -27,13 +27,6 @@ export class SvgPathComponent implements OnInit {
   ngOnInit(): void {
     this.handleResize();
     this.handleCardPropertyCollectionChanges();
-    this.handleNodeChanges();
-  }
-
-  private handleNodeChanges(): void {
-    this.mapService.nodes$.subscribe(() => {
-      this.resizeObserver.setResizeNext();
-    });
   }
 
   private handleCardPropertyCollectionChanges(): void {
@@ -45,7 +38,9 @@ export class SvgPathComponent implements OnInit {
   }
 
   private handleResize(): void {
-    this.resizeObserver.resize$.subscribe(() => this.calculateNewCoordinates());
+    this.resizeObserver.resize$.subscribe(() => {
+      this.calculateNewCoordinates();
+    });
   }
 
   private calculateNewCoordinates(): void {

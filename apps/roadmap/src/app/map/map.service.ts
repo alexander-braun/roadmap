@@ -52,17 +52,18 @@ export class MapService {
   }
 
   public addNode(id: NodeId): void {
+    const tempNodeTree = { ...this.nodes$$.value };
+    const tempCardDataTree = { ...this.cardDataTree$$.value };
+
     const newNodeId = uuidv4();
-    const tempTree = { ...this.nodes$$.value };
-    tempTree[newNodeId] = {
+    tempNodeTree[newNodeId] = {
       children: [],
       mainKnot: false,
     };
-    tempTree[id].children.push(newNodeId);
-    this.nodes$$.next(tempTree);
-    const tempCardDataTree = { ...this.cardDataTree$$.value };
+    tempNodeTree[id].children.push(newNodeId);
+    this.nodes$$.next(tempNodeTree);
     tempCardDataTree[newNodeId] = {
-      title: 'Edit',
+      title: 'Edit Me!',
     };
     this.cardDataTree$$.next(tempCardDataTree);
   }
@@ -89,8 +90,8 @@ export class MapService {
       }
     }
 
-    this.nodes$$.next(tempNodesTree);
     this.cardDataTree$$.next(tempCardDataTree);
+    this.nodes$$.next(tempNodesTree);
   }
 
   public getCardDataForNode(node: NodeId): CardData {

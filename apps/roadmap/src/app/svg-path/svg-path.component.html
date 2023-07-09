@@ -1,10 +1,8 @@
-<ng-container *ngIf="pathCoords$ | async; let coords">
-  <ng-container *ngFor="let coord of coords">
-    <svg:path
-      [ngClass]="coord.center ? 'svg-center' : 'svg-dash'"
-      attr.d="M {{ coord.startPointX }} {{ coord.startPointY }} C {{ coord.curveX1 }} {{ coord.curveY1 }}, {{
-        coord.curveX2
-      }} {{ coord.curveY2 }}, {{ coord.endPointX }} {{ coord.endPointY }}"
-    />
-  </ng-container>
+<ng-container *ngFor="let coord of pathCoords$ | async">
+  <svg:path
+    [ngClass]="coord.center ? 'svg-center' : 'svg-dash'"
+    attr.d="M {{ coord.startPointX }} {{ coord.startPointY }} C {{ coord.curveX1 }} {{ coord.curveY1 }}, {{
+      coord.curveX2
+    }} {{ coord.curveY2 }}, {{ coord.endPointX }} {{ coord.endPointY }}"
+  />
 </ng-container>
