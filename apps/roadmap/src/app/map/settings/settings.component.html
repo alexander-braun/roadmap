@@ -101,8 +101,14 @@
                 </div>
               </td>
             </tr>
+            <tr *ngIf="isEdit" style="height: 20px"></tr>
           </tbody>
         </table>
+      </div>
+      <div *ngIf="isEdit" class="add-new-category-row" (click)="addCategory()">
+        <div class="icon-container-default add-category">
+          <fa-icon class="icon" [icon]="faPlus"></fa-icon>
+        </div>
       </div>
       <div class="actions" *ngIf="isEdit">
         <button class="save" (click)="saveCategories()">Save</button>

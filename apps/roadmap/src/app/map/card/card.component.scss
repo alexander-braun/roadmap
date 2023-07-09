@@ -66,6 +66,7 @@ input {
   font-family: $raleway;
   border: 1px dashed transparent;
   text-align: left;
+  flex-shrink: 0;
 
   &:hover {
     border: 1px dashed rgba(0, 0, 0, 0.35);
@@ -74,9 +75,10 @@ input {
 
 .note {
   display: flex;
-  justify-content: left;
+  justify-content: flex-start;
   align-items: center;
   flex-wrap: nowrap;
+  width: 100%;
 }
 
 .notes {
@@ -111,8 +113,8 @@ input {
 .faTrashAlt {
   cursor: pointer;
   font-size: 2rem;
-  margin-left: 1.5rem;
   color: $center;
+  margin-left: 0.5rem;
 
   &:hover {
     color: $center-hover;
@@ -120,8 +122,10 @@ input {
 }
 
 .categories {
-  display: flex;
+  display: inline-flex;
+  flex-wrap: wrap-reverse;
   position: absolute;
+  justify-content: end;
   top: -3rem;
   padding-right: 20px;
   right: calc(1.5rem - 20px);
@@ -137,10 +141,10 @@ input {
   padding: 0.8rem;
   cursor: pointer;
   background-color: #80808042;
-  margin-left: 0.5rem;
   opacity: 0;
   animation-fill-mode: forwards;
   font-size: 12px;
+  margin: 2px;
 
   &.isHover {
     animation: FadeInDots 0.2s forwards;

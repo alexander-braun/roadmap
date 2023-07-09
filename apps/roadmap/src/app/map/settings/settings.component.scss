@@ -14,24 +14,25 @@ $border-spacing-horizontal: 15px;
 $border-spacing-vertical: 10px;
 
 .settings-container {
-  box-shadow: 0 5px 30px -15px #c9c9c9;
   display: flex;
   flex-direction: column;
   height: auto;
   margin: 0 auto;
-  padding: 0.5rem;
+  padding: 3rem 0.5rem;
   margin-top: 4rem;
   font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
   margin-bottom: 5rem;
   width: 100%;
+  box-shadow: 0 5px 5px 0px #c9c9c923;
 
-  @media only screen and (min-width: 750px) {
+  @media only screen and (min-width: 960px) {
     padding: 3rem;
-    width: 60vw;
+    width: 50vw;
+    box-shadow: 0 5px 30px -15px #c9c9c9;
   }
 
-  @media only screen and (min-width: 1200px) {
-    width: 40vw;
+  @media only screen and (min-width: 1320px) {
+    width: 35vw;
     padding: 5rem;
   }
 }
@@ -110,6 +111,41 @@ $border-spacing-vertical: 10px;
   width: 2rem;
   height: 2rem;
   margin: 0 auto;
+}
+
+.add-new-category-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: fit-content;
+  cursor: pointer;
+  font-size: 2rem;
+  padding: 13px;
+
+  p {
+    text-align: left;
+  }
+
+  .add-category {
+    color: white;
+    background-color: transparent;
+    border: 2px solid rgba(128, 128, 128, 0.2);
+    transition-duration: 100ms;
+  }
+
+  .icon {
+    transition-duration: 100ms;
+    color: rgba(128, 128, 128, 0.4);
+  }
+
+  &:hover {
+    .add-category {
+      border: 2px solid rgba(128, 128, 128, 0.5);
+    }
+    .icon {
+      color: rgba(128, 128, 128, 0.75);
+    }
+  }
 }
 
 .icon-picker-container {
@@ -209,7 +245,6 @@ table {
   width: fit-content;
   display: block;
   padding: 2rem;
-  margin-top: 4rem;
   cursor: pointer;
 }
 

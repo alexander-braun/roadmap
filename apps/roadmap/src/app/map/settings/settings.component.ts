@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { SettingsService } from './settings.service';
-import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { faPencil, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Categories, Category } from './settings.model';
 import { icons, iconsMap } from './icons-preset.data';
 import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
+import { v4 } from 'uuid';
 
 @Component({
   selector: 'rdmp-settings',
@@ -19,6 +19,7 @@ export class SettingsComponent implements OnInit {
   public readonly faTrash = faTrash;
   public readonly icons = icons;
   public readonly iconsMap = iconsMap;
+  public readonly faPlus = faPlus;
   public isEdit = false;
   public settingsForm = this.fb.group({
     categories: this.fb.array<FormGroup>([]),
@@ -40,6 +41,21 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.handleCategoriesChanges();
+  }
+
+  public addCategory(): void {
+    this.categories.controls.push(
+      this.fb.group({
+        categoryName: this.fb.nonNullable.control('New'),
+        categoryIcon: this.fb.nonNullable.control('faQuestion'),
+        categoryBgColor: this.fb.nonNullable.control('red'),
+        categoryIconColor: this.fb.nonNullable.control('white'),
+        categoryId: this.fb.nonNullable.control(v4()),
+      })
+    );
+    this.showBgColors.push('red');
+    this.showIconColors.push('white');
+    this.updateForm();
   }
 
   private handleCategoriesChanges(): void {
@@ -140,6 +156,8 @@ export class SettingsComponent implements OnInit {
 
   public delete(i: number): void {
     this.categories.controls.splice(i, 1);
+    this.showBgColors.splice(i, 1);
+    this.showIconColors.splice(i, 1);
     this.updateForm();
   }
 
@@ -160,8 +178,24 @@ export class SettingsComponent implements OnInit {
   }
 
   public saveCategories(): void {
-    this.settingsService.saveCategoriesForm(this.categories.value);
-    this.flipEdit();
+    if (this.checkIfCategoriesAreValid()) {
+      this.settingsService.saveCategoriesForm(this.categories.value);
+      this.flipEdit();
+    }
+  }
+
+  private checkIfCategoriesAreValid(): boolean {
+    const names: string[] = [];
+    let isValid = true;
+    this.categories.controls.forEach((control) => {
+      const name = control.get('categoryName')?.value;
+      if (names.indexOf(name) >= 0) {
+        isValid = false;
+      } else {
+        names.push(control.get('categoryName')?.value);
+      }
+    });
+    return isValid;
   }
 
   public updateForm(): void {

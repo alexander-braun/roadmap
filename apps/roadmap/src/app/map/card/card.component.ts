@@ -67,8 +67,13 @@ export class CardComponent implements OnInit {
   }
 
   private setAnimationDelay(categories: Categories): void {
+    this.hoverDelays = [];
     for (let i = categories.length; i >= 0; i--) {
-      this.hoverDelays.push(`0.${i}s`);
+      if (i < 10) {
+        this.hoverDelays.push(`0.${i}s`);
+      } else {
+        this.hoverDelays.push(i.toString().split('').join('.') + 's');
+      }
     }
   }
 
