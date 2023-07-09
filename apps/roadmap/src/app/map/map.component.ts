@@ -6,9 +6,10 @@ import {
   OnInit,
   QueryList,
   ViewChildren,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { NodeId } from '../../assets/data';
-import { BehaviorSubject, delay, tap } from 'rxjs';
+import { BehaviorSubject, tap, merge } from 'rxjs';
 import { MapService } from './map.service';
 import { CardPropertyCollection, Direction } from './map.model';
 import { ResizeObserverService } from '../../shared/services/resize-observer.service';
@@ -24,9 +25,13 @@ export class MapComponent implements AfterViewInit, OnInit {
   @ViewChildren('cardContainer') cardContainer?: QueryList<ElementRef<HTMLDivElement>>;
   public centerNodes$$ = new BehaviorSubject<NodeId[]>(this.generateCenterNodes());
   private htmlCardCollection$$ = new BehaviorSubject<HTMLCollection[]>([]);
-  faPlus = faPlus;
+  public readonly faPlus = faPlus;
 
-  constructor(private mapService: MapService, private resizeObserver: ResizeObserverService) {}
+  constructor(
+    private mapService: MapService,
+    private resizeObserver: ResizeObserverService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.appendEndingNode();
@@ -34,6 +39,7 @@ export class MapComponent implements AfterViewInit, OnInit {
     this.handleResize();
     this.htmlCardCollection$$.asObservable().subscribe(() => {
       this.setCardPropertyCollection();
+      this.cdr.detectChanges();
     });
   }
 
@@ -42,7 +48,7 @@ export class MapComponent implements AfterViewInit, OnInit {
   }
 
   private getCards(): void {
-    this.mapService.nodes$.subscribe(() => {
+    merge(this.mapService.nodes$, this.mapService.cardDataTree$).subscribe(() => {
       this.centerNodes$$.next(this.generateCenterNodes());
       this.htmlCardCollection$$.next(this.getAllCardElements());
     });

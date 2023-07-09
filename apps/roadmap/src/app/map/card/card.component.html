@@ -1,4 +1,4 @@
-<div [id]="nodeId">
+<div [id]="nodeId" class="card-container" [ngClass]="{ center: position === 'center' }">
   <ng-container *ngIf="position !== 'center'">
     <div class="categories" (mouseenter)="handleMouseEnter()" (mouseleave)="handleMouseLeave()">
       <div
@@ -51,7 +51,7 @@
         <input value="Edit me!" class="date" type="text" formControlName="date" />
       </div>
     </div>
-    <div class="control" *ngIf="position !== 'center'" formArrayName="notes">
+    <div class="control notes" *ngIf="position !== 'center'" formArrayName="notes">
       <ng-container *ngIf="notes">
         <ng-container>
           <ng-container *ngFor="let noteControl of notes.controls; let i = index">
@@ -65,6 +65,18 @@
       <button class="add-note" (click)="addNote()">
         <fa-icon class="faPlus" [icon]="faPlus"></fa-icon> Add Comment
       </button>
+    </div>
+    <div class="add-delete-container">
+      <div
+        class="icon-container add"
+        (click)="addNode()"
+        *ngIf="position !== 'subchild-left' && position !== 'subchild-right'"
+      >
+        <fa-icon [icon]="faPlus"></fa-icon>
+      </div>
+      <div class="icon-container delete" (click)="deleteNode()">
+        <fa-icon [icon]="faTrash"></fa-icon>
+      </div>
     </div>
   </form>
 </div>

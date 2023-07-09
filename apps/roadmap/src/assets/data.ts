@@ -25,7 +25,7 @@ export const cardDataTree: CardDataTree = {
     title: 'I am c5',
     notes: ['my c5 note', 'and another one'],
     status: 'in-progress',
-    categoryId: '4',
+    categoryId: '3',
     date: '22.01.1988',
   },
 };

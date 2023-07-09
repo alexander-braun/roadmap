@@ -128,6 +128,7 @@
   justify-content: center;
   align-items: center;
   border: 4px solid #8bb8b5;
+  user-select: none;
 
   div {
     font-size: 3.5rem;
@@ -135,6 +136,7 @@
     font-family: Arial;
     margin-top: 0.35rem;
     color: #8bb8b5;
+    user-select: none;
   }
 }
 
@@ -148,7 +150,6 @@
 .card {
   font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
   border: 2px dashed transparent;
-  padding: 1.25rem 1.25rem;
   text-align: center;
   font-size: 1.5rem;
   position: relative;
@@ -210,7 +211,6 @@
     background-color: $center;
     font-weight: 600;
     font-size: 1.75rem;
-    padding: 0.75rem;
 
     &:hover {
       background-color: $center-hover;

@@ -79,6 +79,10 @@ input {
   flex-wrap: nowrap;
 }
 
+.notes {
+  margin-bottom: 2rem;
+}
+
 .add-note {
   border: none;
   text-align: left;
@@ -136,6 +140,7 @@ input {
   margin-left: 0.5rem;
   opacity: 0;
   animation-fill-mode: forwards;
+  font-size: 12px;
 
   &.isHover {
     animation: FadeInDots 0.2s forwards;
@@ -161,4 +166,59 @@ fa-icon {
   right: -1.5rem;
   cursor: pointer;
   background-color: #80808042;
+  font-size: 16px;
+}
+
+.add-delete-container {
+  height: 3rem;
+  position: absolute;
+  bottom: -1.5rem;
+  left: -12px;
+  color: black;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.icon-container {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  cursor: pointer;
+  font-size: 16px;
+  background-color: #437fb8;
+  color: white;
+  margin-right: 0.75rem;
+  opacity: 0;
+  font-size: 14px;
+  background-color: rgb(43, 120, 228);
+  color: white;
+
+  &.add {
+    background-color: rgb(38 183 224);
+  }
+
+  &.delete {
+    background-color: #cf3a3a;
+  }
+}
+
+.card-container {
+  padding: 1.25rem 1.25rem;
+
+  &:hover {
+    .icon-container {
+      animation: action-tada 0.2s;
+      opacity: 1;
+    }
+  }
+}
+
+.center .icon-container {
+  //background-color: #cf3a3a;
+  //color: white;
 }

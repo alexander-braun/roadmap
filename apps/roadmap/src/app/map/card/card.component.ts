@@ -3,7 +3,7 @@ import { NodeId } from 'apps/roadmap/src/assets/data';
 import { CardData } from '../map.model';
 import { MapService } from '../map.service';
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, faPlus, faDeleteLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
 import { SettingsService } from '../settings/settings.service';
 import { BehaviorSubject } from 'rxjs';
@@ -22,6 +22,7 @@ export class CardComponent implements OnInit {
   public readonly iconsMap = iconsMap;
   public readonly faTrashAlt = faTrashAlt;
   public readonly faPlus = faPlus;
+  public readonly faTrash = faTrash;
   public categoriesSettings$$ = new BehaviorSubject({} as Categories);
   public currentCategory$$ = new BehaviorSubject({} as Category);
   public isHover = false;
@@ -52,6 +53,17 @@ export class CardComponent implements OnInit {
       this.currentCategory$$.next(this.findCurrentCategory() || ({} as Category));
       this.setAnimationDelay(categories);
     });
+    this.mapService.cardDataTree$.subscribe(() => {
+      this.patchForm();
+    });
+  }
+
+  public addNode(): void {
+    this.mapService.addNode(this.nodeId);
+  }
+
+  public deleteNode(): void {
+    this.mapService.deleteNode(this.nodeId);
   }
 
   private setAnimationDelay(categories: Categories): void {
