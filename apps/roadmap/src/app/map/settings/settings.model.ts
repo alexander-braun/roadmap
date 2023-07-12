@@ -1,3 +1,5 @@
+import { Status } from '../map.model';
+
 export interface Category {
   categoryName: string;
   categoryIcon: IconChoice;
@@ -18,3 +20,10 @@ export type IconChoice =
   | 'faXmark'
   | 'faHeart'
   | 'faStar';
+
+export interface StatusChoice {
+  statusName: Status;
+  statusColor: string;
+}
+
+export type StatusChoices = StatusChoice[];

@@ -43,7 +43,9 @@
           <div>+</div>
         </div>
       </div>
-      <div *ngIf="centerNode === 'last-node'" [id]="centerNode" class="card card--center"></div>
+      <div *ngIf="centerNode === 'last-node'" class="card card--center" [id]="centerNode">
+        <div class="last-node-ball"></div>
+      </div>
     </div>
 
     <div #cardContainer class="section__side-elements section__side-elements--right">

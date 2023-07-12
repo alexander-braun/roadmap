@@ -5,7 +5,7 @@
         (click)="setCategory(i)"
         [ngClass]="{ isHover: isHover }"
         class="category-choice"
-        *ngFor="let category of categoriesSettings$$.asObservable() | async; let i = index"
+        *ngFor="let category of categories$ | async; let i = index"
         [ngStyle]="{
           'background-color': category.categoryBgColor,
           'animation-delay': hoverDelays[i]
@@ -66,6 +66,25 @@
         <fa-icon class="faPlus" [icon]="faPlus"></fa-icon> Add Comment
       </button>
     </div>
+    <ng-container *ngIf="position !== 'center'">
+      <div class="status" *ngIf="statusChoices$ | async; let statusChoices">
+        <div class="picker">
+          <div
+            (click)="pickStatus(statusChoice.statusName)"
+            class="picker-option display"
+            *ngFor="let statusChoice of statusChoices; let i = index"
+            title="{{ statusChoice.statusName }}"
+            [ngStyle]="{ background: statusChoice.statusColor, 'animation-delay': '0.' + i + 's' }"
+          ></div>
+        </div>
+        <div class="current-choice">
+          <div
+            class="display"
+            [ngStyle]="{ background: getStatusColor(cardForm.get('status')?.value) || '#f80502' }"
+          ></div>
+        </div>
+      </div>
+    </ng-container>
     <div class="add-delete-container">
       <div
         class="icon-container add"

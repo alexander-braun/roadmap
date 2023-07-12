@@ -19,12 +19,14 @@ export interface PaathProperty {
   center: boolean;
 }
 
+export type Status = 'pending' | 'in-progress' | 'done';
+
 export interface CardData {
   title: string;
   date?: string;
   notes?: string[];
   categoryId?: string;
-  status?: 'pending' | 'in-progress' | 'done' | 'ignore';
+  status?: Status;
 }
 
 export type PaathCoordinateCollection = PaathProperty[];

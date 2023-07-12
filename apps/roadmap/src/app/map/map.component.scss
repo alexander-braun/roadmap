@@ -15,7 +15,7 @@
     'right-side sub-right';
   grid-template-columns: 1fr 1fr;
 
-  grid-gap: 2.5rem;
+  grid-gap: 3.5rem;
   margin-left: 1vw;
   margin-right: 1vw;
 
@@ -99,27 +99,31 @@
 }
 
 .last-node .card {
-  width: 15px;
-  height: 15px;
-  border-radius: 100%;
-  background-color: #cf3a3a;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding: 0;
-  transform: rotate(180deg);
+  width: fit-content;
+  border: none;
+  animation: none;
+}
+
+.last-node-ball {
+  width: 60px;
+  height: 120px;
+  background-color: #6b9593;
+  position: absolute;
+  top: 0;
+  left: -30px;
+  background: linear-gradient(180deg, #8bb8b5, #00000000);
 }
 
 .add-center-node-container {
   width: 100%;
   height: auto;
-  margin-top: 0.5rem;
 }
 
 .add-center-circle {
   margin: 0 auto;
   border-radius: 50%;
-  width: 5rem;
-  height: 5rem;
+  width: 8rem;
+  height: 8rem;
   background-color: white;
   border-radius: 50%;
   transition-duration: 100ms;
@@ -127,11 +131,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 4px solid #8bb8b5;
+  border: 2px solid #8bb8b5;
   user-select: none;
+  //box-shadow: 3px 3px 1px rgba(0, 0, 0, 0.2);
 
   div {
-    font-size: 3.5rem;
+    font-size: 5.5rem;
     font-weight: 600;
     font-family: Arial;
     margin-top: 0.35rem;
@@ -149,19 +154,17 @@
 
 .card {
   font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
-  border: 2px dashed transparent;
+  border: 2px solid transparent;
   text-align: center;
   font-size: 1.5rem;
   position: relative;
   width: 35vw;
   will-change: background;
   transition: background 0.5s;
-  border-radius: $radius-standard;
-  box-shadow: #c9c9c9 0 5px 30px -15px;
-
-  &:hover {
-    animation: FadeInCardBorder 0.3s forwards;
-  }
+  //border-radius: $radius-standard;
+  //box-shadow: #c9c9c9 0 5px 30px -15px;
+  //box-shadow: 3px 3px 1px rgba(0, 0, 0, 0.2);
+  border-radius: 0.7rem;
 
   @media only screen and (min-width: 1100px) {
     width: 12vw;
@@ -173,13 +176,14 @@
 
     &:hover {
       background: $standard-hover;
+      animation: FadeInCardBorder 0.3s forwards;
     }
   }
 
   &--center {
     color: $color-center;
     z-index: 1;
-    margin-top: calc(48px + 0.5rem);
+    margin-top: calc(8rem + (2px * 2));
   }
 
   &--center &__inner-text {

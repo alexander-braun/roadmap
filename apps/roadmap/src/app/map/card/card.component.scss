@@ -31,7 +31,7 @@ input {
   cursor: pointer;
   border: 1px dashed transparent;
   font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   transition: border 0.2s, background 0.2s;
   width: fit-content;
   word-break: break-all;
@@ -203,7 +203,7 @@ fa-icon {
   color: white;
 
   &.add {
-    background-color: rgb(38 183 224);
+    background-color: rgb(89 192 185);
   }
 
   &.delete {
@@ -222,7 +222,68 @@ fa-icon {
   }
 }
 
-.center .icon-container {
-  //background-color: #cf3a3a;
-  //color: white;
+.status {
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 1rem 0 0 1rem;
+  position: relative;
+  width: fit-content;
+  margin-left: auto;
+
+  .display {
+    border-radius: 50%;
+    height: 12px;
+    width: 12px;
+    margin-left: auto;
+    box-shadow: inset 0px 0px 5px #00000030;
+
+    &:hover {
+      box-shadow: inset 0px 0px 5px #00000010;
+    }
+  }
+
+  &:hover {
+    .picker .display {
+      animation: FadeInDots 0.2s forwards;
+      opacity: 1;
+      cursor: pointer;
+    }
+  }
+
+  .picker {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 5px 0 5px 5px;
+    width: fit-content;
+    height: 12px;
+    margin-left: auto;
+
+    .display {
+      margin-left: 0.5rem;
+      transform: scale(0);
+    }
+  }
+
+  .current-choice {
+    align-items: center;
+    display: flex;
+    width: fit-content;
+    margin-left: auto;
+
+    .name {
+      cursor: pointer;
+      font-family: Inter, system, -apple-system, BlinkMacSystemFont, Roboto, Segoe UI, Arial, sans-serif;
+      font-size: 1.25rem;
+      margin-left: 1rem;
+      transition: font-weight 0.1s;
+      will-change: font-weight;
+    }
+
+    .display {
+      height: 16px;
+      width: 16px;
+    }
+  }
 }

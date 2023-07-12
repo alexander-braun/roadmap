@@ -23,10 +23,11 @@ export class CardComponent implements OnInit {
   public readonly faTrashAlt = faTrashAlt;
   public readonly faPlus = faPlus;
   public readonly faTrash = faTrash;
-  public categoriesSettings$$ = new BehaviorSubject({} as Categories);
+  public categories$ = this.settingsService.categories$;
   public currentCategory$$ = new BehaviorSubject({} as Category);
   public isHover = false;
   public hoverDelays: string[] = [];
+  public statusChoices$ = this.settingsService.statusChoices$;
 
   public cardForm = this.fb.group({
     title: this.fb.control<string>('Edit me!', Validators.required),
@@ -49,13 +50,22 @@ export class CardComponent implements OnInit {
     this.patchForm();
     this.resizeFormOnValueChange();
     this.settingsService.categories$.subscribe((categories) => {
-      this.categoriesSettings$$.next(categories);
       this.currentCategory$$.next(this.findCurrentCategory() || ({} as Category));
       this.setAnimationDelay(categories);
     });
     this.mapService.cardDataTree$.subscribe(() => {
       this.patchForm();
     });
+  }
+
+  public pickStatus(status: string): void {
+    this.cardForm.patchValue({
+      status,
+    });
+  }
+
+  public getStatusColor(statusName?: string): string {
+    return this.settingsService.statusChoices.find((choice) => choice.statusName === statusName)?.statusColor || '';
   }
 
   public addNode(): void {
@@ -83,7 +93,7 @@ export class CardComponent implements OnInit {
 
   public setCategory(i: number): void {
     this.cardForm.patchValue({
-      categoryId: this.categoriesSettings$$.value[i].categoryId,
+      categoryId: this.settingsService.categories[i].categoryId,
     });
     this.currentCategory$$.next(this.findCurrentCategory() || ({} as Category));
   }
@@ -93,7 +103,7 @@ export class CardComponent implements OnInit {
   }
 
   private findCurrentCategory(): Category | undefined {
-    return this.categoriesSettings$$.value.find(
+    return this.settingsService.categories.find(
       (category) => category.categoryId === this.cardForm.controls.categoryId?.value
     );
   }

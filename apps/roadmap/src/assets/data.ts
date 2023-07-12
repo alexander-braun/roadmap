@@ -1,5 +1,5 @@
 import { CardDataTree } from '../app/map/map.model';
-import { Categories } from '../app/map/settings/settings.model';
+import { Categories, StatusChoices } from '../app/map/settings/settings.model';
 
 export type Node = {
   children: string[];
@@ -15,11 +15,13 @@ export type NodeId = string;
 export const cardDataTree: CardDataTree = {
   p1: {
     title: 'First element',
+    status: 'pending',
   },
   c1: {
     title: 'My Title',
     notes: ['note 1', 'note 2', 'note 3'],
     categoryId: '1',
+    status: 'done',
   },
   c5: {
     title: 'I am c5',
@@ -92,6 +94,21 @@ export const nodes: Nodes = {
     children: [],
   },
 };
+
+export const statusChoices: StatusChoices = [
+  {
+    statusColor: '#f80502',
+    statusName: 'pending',
+  },
+  {
+    statusColor: '#fea503',
+    statusName: 'in-progress',
+  },
+  {
+    statusColor: '#0dee89',
+    statusName: 'done',
+  },
+];
 
 export const categories: Categories = [
   {
