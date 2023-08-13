@@ -22,7 +22,7 @@ export interface PaathProperty {
 export type Status = 'pending' | 'in-progress' | 'done';
 
 export interface CardData {
-  title: string;
+  title?: string;
   date?: string;
   notes?: string[];
   categoryId?: string;

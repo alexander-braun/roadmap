@@ -1,7 +1,7 @@
-import { Injectable, OnInit } from '@angular/core';
-import { BehaviorSubject, forkJoin, switchMap, take, tap } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, forkJoin } from 'rxjs';
 import { CardData, CardDataTree, CardPropertyCollection } from './map.model';
-import { NodeId, Nodes, cardDataTree, nodes } from '../../assets/data';
+import { NodeId, Nodes } from '../../assets/data';
 import { v4 as uuidv4 } from 'uuid';
 import { SettingsService } from './settings/settings.service';
 import { Categories } from './settings/settings.model';
@@ -22,7 +22,7 @@ export class MapService {
     this.handleCategoriesUpdates();
   }
 
-  public getData() {
+  public getData(): void {
     forkJoin([
       this.http.get<[{ nodes: Nodes }]>('/api/default-nodes'),
       this.http.get<[{ cards: CardDataTree }]>('/api/default-card-data'),
@@ -35,7 +35,6 @@ export class MapService {
 
   private appendEndingNode(nodes: Nodes): void {
     const newNodes = nodes;
-
     newNodes['last-node'] = {
       mainKnot: true,
       children: [],
@@ -57,6 +56,15 @@ export class MapService {
       }
     });
     this.cardDataTree$$.next(tempTree);
+  }
+
+  public setCardDataForId(id: NodeId, data: CardData): void {
+    const newTree = { ...this.cardDataTree$$.value };
+    newTree[id] = {
+      ...newTree[id],
+      ...data,
+    };
+    this.cardDataTree$$.next(newTree);
   }
 
   public setCardPropertyCollection(collection: CardPropertyCollection): void {
@@ -81,10 +89,10 @@ export class MapService {
       mainKnot: false,
     };
     tempNodeTree[id].children.push(newNodeId);
-    this.nodes$$.next(tempNodeTree);
     tempCardDataTree[newNodeId] = {
       title: 'Edit Me!',
     };
+    this.nodes$$.next(tempNodeTree);
     this.cardDataTree$$.next(tempCardDataTree);
   }
 
@@ -110,6 +118,7 @@ export class MapService {
       }
     }
 
+    // If last center node was deleted create fresh center node
     if (Object.keys(tempNodesTree).length === 1 && tempNodesTree['last-node'] !== undefined) {
       delete tempNodesTree['last-node'];
       (tempNodesTree[uuidv4()] = {
