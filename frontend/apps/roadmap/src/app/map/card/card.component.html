@@ -62,7 +62,7 @@
           </ng-container>
         </ng-container>
       </ng-container>
-      <button class="add-note" (click)="addNote()"><fa-icon class="faPlus" [icon]="faPlus"></fa-icon> Add Note</button>
+      <button class="add-note" (click)="addNote()">Add Note</button>
     </div>
     <ng-container *ngIf="position !== 'center'">
       <div class="status" *ngIf="statusChoices$ | async; let statusChoices">

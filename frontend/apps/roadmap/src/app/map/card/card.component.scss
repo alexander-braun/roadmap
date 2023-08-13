@@ -91,15 +91,22 @@ input {
   border: none;
   text-align: left;
   width: 100%;
-  background-color: transparent;
+  background-color: rgba(180, 180, 180, 0.5);
+  padding: 4px 10px;
+  font-weight: 500;
+  width: fit-content;
+  border-radius: 4px;
+  color: white;
   margin-top: 2rem;
   cursor: pointer;
   display: flex;
   justify-content: left;
   align-items: center;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
 
   &:hover {
+    transition-duration: 0.1s;
+    background-color: rgba(180, 180, 180, 0.7);
     fa-icon {
       color: #3b6e9e;
     }
@@ -217,6 +224,10 @@ fa-icon {
 .card-container {
   font-family: 'Raleway';
   padding: 2rem 2rem;
+
+  &.center {
+    padding: 1rem 1rem;
+  }
 
   &:hover {
     .icon-container {
