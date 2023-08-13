@@ -19,6 +19,7 @@ input {
   padding: 1rem 2rem;
   border: 1px dashed transparent;
   font-size: 2.25rem;
+  font-family: $raleway;
 
   &:hover {
     background: $center-hover;
@@ -31,7 +32,6 @@ input {
   color: #202020;
   cursor: pointer;
   border: 1px dashed transparent;
-  font-family: 'Raleway';
   transition: border 0.2s, background 0.2s;
   width: fit-content;
   word-break: break-all;
@@ -54,7 +54,7 @@ input {
   margin-bottom: 1rem;
   margin-top: 0.25rem;
   margin-left: auto;
-  font-family: 'Raleway';
+  font-family: $raleway;
 }
 
 .note-input {
@@ -87,13 +87,13 @@ input {
 }
 
 .add-note {
-  font-family: 'Raleway';
+  font-family: $raleway;
   border: none;
   text-align: left;
   width: 100%;
   background-color: rgba(180, 180, 180, 0.5);
   padding: 4px 10px;
-  font-weight: 500;
+  font-weight: 600;
   width: fit-content;
   border-radius: 4px;
   color: white;
@@ -222,7 +222,7 @@ fa-icon {
 }
 
 .card-container {
-  font-family: 'Raleway';
+  font-family: $raleway;
   padding: 2rem 2rem;
 
   &.center {
@@ -289,7 +289,7 @@ fa-icon {
 
     .name {
       cursor: pointer;
-      font-family: Inter, system, -apple-system, BlinkMacSystemFont, Roboto, Segoe UI, Arial, sans-serif;
+      font-family: $raleway;
       font-size: 1.25rem;
       margin-left: 1rem;
       transition: font-weight 0.1s;

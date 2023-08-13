@@ -1,3 +1,5 @@
+@import '../../assets/styles/variables';
+
 .menu-bar {
   align-items: center;
   background-color: #fff;
@@ -20,7 +22,7 @@
 button {
   border: none;
   background-color: white;
-  font-family: Arial;
+  font-family: $raleway;
   margin: 0 1rem;
   font-weight: 600;
   cursor: pointer;

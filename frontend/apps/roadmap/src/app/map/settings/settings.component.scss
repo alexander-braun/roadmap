@@ -1,3 +1,4 @@
+@import '../../../assets/styles/variables';
 @mixin setFadeInDots {
   @for $i from 0 to 10 {
     &:nth-child(#{$i}) {
@@ -21,7 +22,7 @@ $border-spacing-vertical: 10px;
   margin: 0 auto;
   padding: 3rem 0.5rem;
   margin-top: 4rem;
-  font-family: 'Raleway';
+  font-family: $raleway;
   margin-bottom: 5rem;
   width: 100%;
   box-shadow: 0 5px 5px 0px #c9c9c923;
@@ -173,7 +174,7 @@ $border-spacing-vertical: 10px;
   border-radius: 3rem;
   border: 2px solid rgba(128, 128, 128, 0.1);
   box-shadow: inset 0px 0px 20px rgba(0, 0, 0, 0.02);
-  font-family: 'Raleway';
+  font-family: $raleway;
   max-width: 20vw;
 }
 
@@ -243,7 +244,7 @@ table {
   border: none;
   box-shadow: none;
   font-size: 2rem;
-  font-family: 'Raleway';
+  font-family: $raleway;
   width: fit-content;
   display: block;
   padding: 2rem;

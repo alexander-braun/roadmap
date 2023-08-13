@@ -162,7 +162,7 @@
 }
 
 .card {
-  font-family: 'Raleway';
+  font-family: $raleway;
   border: 2px solid transparent;
   text-align: center;
   font-size: 1.5rem;
@@ -290,7 +290,7 @@
     cursor: pointer;
     width: fit-content;
     text-align: left;
-    font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Lucida Console', Monaco, monospace;
+    font-family: $raleway;
     font-weight: 700;
     letter-spacing: -0.1rem;
     color: $color-standard;
