@@ -95,9 +95,9 @@
 
 @keyframes FadeInCardBorder {
   0% {
-    border: 2px solid transparent;
+    border: 5px solid transparent;
   }
   100% {
-    border: 2px solid $stroke-card;
+    border: 5px solid $stroke-card;
   }
 }

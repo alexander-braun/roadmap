@@ -18,6 +18,7 @@ input {
   margin-right: auto;
   padding: 1rem 2rem;
   border: 1px dashed transparent;
+  font-size: 2.25rem;
 
   &:hover {
     background: $center-hover;
@@ -26,12 +27,11 @@ input {
 }
 
 .title:not(.center) {
-  padding: 5px 5px 5px 0px;
+  padding: 0px 5px 5px 0px;
   color: #202020;
   cursor: pointer;
   border: 1px dashed transparent;
   font-family: 'Raleway';
-  font-size: 1.75rem;
   transition: border 0.2s, background 0.2s;
   width: fit-content;
   word-break: break-all;
@@ -97,6 +97,7 @@ input {
   display: flex;
   justify-content: left;
   align-items: center;
+  font-size: 1.75rem;
 
   &:hover {
     fa-icon {
@@ -215,7 +216,7 @@ fa-icon {
 
 .card-container {
   font-family: 'Raleway';
-  padding: 1.5rem 1.5rem;
+  padding: 2rem 2rem;
 
   &:hover {
     .icon-container {
