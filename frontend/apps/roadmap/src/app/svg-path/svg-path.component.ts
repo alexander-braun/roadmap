@@ -95,7 +95,7 @@ export class SvgPathComponent implements OnInit {
     // If the child is on the right of the parent:
     // The ending x point is just the starting point of the child
     if (childIsRightOfParent && !center) {
-      return childRect.x;
+      return childRect.x + 1.5;
       // If the child is also a center element:
       // Just get the div starting point and cut it in half to get the x middle
     } else if (center) {
@@ -103,7 +103,7 @@ export class SvgPathComponent implements OnInit {
       // Else the div is on the left of the parent:
       // Just use the starting point of the div and add it's whole length to it
     } else {
-      return childRect.x + childRect.width;
+      return childRect.x + childRect.width - 1.5;
     }
   }
 
