@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ChangeDetectorRef, ApplicationRef } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
@@ -10,7 +10,7 @@ export class ResizeObserverService {
   private innerWidth$$ = new BehaviorSubject<number>(0);
   public innerWidth$ = this.innerWidth$$.asObservable();
 
-  constructor() {
+  constructor(private appRef: ApplicationRef) {
     this.innerWidth$$.next(window.innerWidth);
 
     const observer = new ResizeObserver((entries) => {
@@ -18,6 +18,7 @@ export class ResizeObserverService {
         this.resize$$.next();
         this.innerWidth$$.next(window.innerWidth);
       }
+      this.appRef.tick();
     });
     observer.observe(document.querySelector('body')!);
   }

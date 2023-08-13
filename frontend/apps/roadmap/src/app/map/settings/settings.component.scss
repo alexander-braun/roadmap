@@ -14,6 +14,7 @@ $border-spacing-horizontal: 15px;
 $border-spacing-vertical: 10px;
 
 .settings-container {
+  background-color: white;
   display: flex;
   flex-direction: column;
   height: auto;
@@ -211,7 +212,7 @@ table {
   }
 
   tbody tr {
-    height: 60px;
+    height: 50px;
   }
 }
 

@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { SettingsService } from './settings.service';
 import { faPencil, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Categories, Category } from './settings.model';
 import { icons, iconsMap } from './icons-preset.data';
 import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
 import { v4 } from 'uuid';
+import { ModalService } from 'apps/roadmap/src/shared/services/modal.service';
 
 @Component({
   selector: 'rdmp-settings',
@@ -21,22 +22,28 @@ export class SettingsComponent implements OnInit {
   public readonly iconsMap = iconsMap;
   public readonly faPlus = faPlus;
   public isEdit = false;
-  public settingsForm = this.fb.group({
-    categories: this.fb.array<FormGroup>([]),
-  });
   public iconToEditPick$$ = new BehaviorSubject(-1);
   public iconToEditPick$ = this.iconToEditPick$$.asObservable();
   public showBgColors: string[] = [];
   public showIconColors: string[] = [];
   public innerWidth$: Observable<number>;
+  public modal: ModalService | null = null;
+  public settingsForm = this.fb.group({
+    categories: this.fb.array<FormGroup>([]),
+  });
 
   constructor(
     private resizeService: ResizeObserverService,
     private fb: FormBuilder,
     private settingsService: SettingsService,
-    private cdr: ChangeDetectorRef
+    private modalService: ModalService
   ) {
     this.innerWidth$ = this.resizeService.innerWidth$;
+  }
+
+  public close() {
+    console.log('close');
+    this.modalService.close();
   }
 
   ngOnInit(): void {

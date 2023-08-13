@@ -1,9 +1,6 @@
 @import '../../assets/styles/variables';
 
 .section {
-  &:first-child {
-    margin-top: 0;
-  }
   position: relative;
   margin: 8vh auto;
   display: grid;
@@ -61,6 +58,19 @@
       grid-area: centered;
       height: auto;
       gap: 0;
+    }
+  }
+
+  @media only screen and (min-width: 1100px) {
+    &__side-elements {
+      margin: unset;
+      &--right {
+        align-items: flex-end;
+      }
+
+      &--center-section {
+        margin: 0 auto;
+      }
     }
   }
 }
@@ -167,8 +177,8 @@
   border-radius: 0.7rem;
 
   @media only screen and (min-width: 1100px) {
-    width: 12vw;
-    max-width: 12vw;
+    width: 13vw;
+    max-width: 13vw;
   }
 
   &--element {
