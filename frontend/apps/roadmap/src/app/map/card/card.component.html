@@ -1,4 +1,4 @@
-<div [id]="nodeId" class="card-container" [ngClass]="{ center: position === 'center' }">
+<div [id]="nodeId" class="card-container" [ngClass]="{ center: position === 'center' }" (blur)="save()">
   <ng-container *ngIf="position !== 'center'">
     <div class="categories" (mouseenter)="handleMouseEnter()" (mouseleave)="handleMouseLeave()">
       <div
@@ -62,9 +62,7 @@
           </ng-container>
         </ng-container>
       </ng-container>
-      <button class="add-note" (click)="addNote()">
-        <fa-icon class="faPlus" [icon]="faPlus"></fa-icon> Add Comment
-      </button>
+      <button class="add-note" (click)="addNote()"><fa-icon class="faPlus" [icon]="faPlus"></fa-icon> Add Note</button>
     </div>
     <ng-container *ngIf="position !== 'center'">
       <div class="status" *ngIf="statusChoices$ | async; let statusChoices">

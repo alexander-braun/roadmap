@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { NodeId } from 'apps/roadmap/src/assets/data';
-import { CardData } from '../map.model';
+import { CardData, Status } from '../map.model';
 import { MapService } from '../map.service';
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { faTrashAlt, faPlus, faDeleteLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
 import { SettingsService } from '../settings/settings.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, take } from 'rxjs';
 import { Categories, Category } from '../settings/settings.model';
 import { iconsMap } from '../settings/icons-preset.data';
 
@@ -30,12 +30,12 @@ export class CardComponent implements OnInit {
   public statusChoices$ = this.settingsService.statusChoices$;
 
   public cardForm = this.fb.group({
-    title: this.fb.control<string>('Edit me!', Validators.required),
+    title: this.fb.nonNullable.control<string>('Edit me!', Validators.required),
     ...(this.position !== 'center' && {
-      date: this.fb.nonNullable.control<string | undefined>(undefined),
+      date: this.fb.nonNullable.control<string>(''),
       notes: this.fb.nonNullable.array<FormControl<string>>([]),
-      categoryId: this.fb.nonNullable.control<string | undefined>(undefined),
-      status: this.fb.nonNullable.control<string | undefined>(undefined),
+      categoryId: this.fb.nonNullable.control<string>(''),
+      status: this.fb.nonNullable.control<Status>('pending'),
     }),
   });
 
@@ -53,12 +53,20 @@ export class CardComponent implements OnInit {
       this.currentCategory$$.next(this.findCurrentCategory() || ({} as Category));
       this.setAnimationDelay(categories);
     });
-    this.mapService.cardDataTree$.subscribe(() => {
+    this.mapService.cardDataTree$.pipe(take(1)).subscribe(() => {
       this.patchForm();
+    });
+
+    this.cardForm.valueChanges.subscribe(() => {
+      this.save();
     });
   }
 
-  public pickStatus(status: string): void {
+  save() {
+    this.mapService.setCardDataForId(this.nodeId, this.cardForm.value);
+  }
+
+  public pickStatus(status: Status): void {
     this.cardForm.patchValue({
       status,
     });
@@ -74,6 +82,7 @@ export class CardComponent implements OnInit {
 
   public deleteNode(): void {
     this.mapService.deleteNode(this.nodeId);
+    this.resize();
   }
 
   private setAnimationDelay(categories: Categories): void {
@@ -158,11 +167,9 @@ export class CardComponent implements OnInit {
 
   public addNote(): void {
     this.notes?.push(this.fb.nonNullable.control<string>(''));
-    this.resize();
   }
 
   public removeNote(i: number): void {
-    this.notes?.controls.splice(i, 1);
-    this.resize();
+    this.notes?.removeAt(i);
   }
 }

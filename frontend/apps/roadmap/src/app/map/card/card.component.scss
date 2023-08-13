@@ -30,7 +30,7 @@ input {
   color: #202020;
   cursor: pointer;
   border: 1px dashed transparent;
-  font-family: SF Mono, Fira Code, Fira Mono, Roboto Mono, Lucida Console, Monaco, monospace;
+  font-family: 'Raleway';
   font-size: 1.75rem;
   transition: border 0.2s, background 0.2s;
   width: fit-content;
@@ -54,6 +54,7 @@ input {
   margin-bottom: 1rem;
   margin-top: 0.25rem;
   margin-left: auto;
+  font-family: 'Raleway';
 }
 
 .note-input {
@@ -86,6 +87,7 @@ input {
 }
 
 .add-note {
+  font-family: 'Raleway';
   border: none;
   text-align: left;
   width: 100%;
@@ -212,7 +214,8 @@ fa-icon {
 }
 
 .card-container {
-  padding: 1.25rem 1.25rem;
+  font-family: 'Raleway';
+  padding: 1.5rem 1.5rem;
 
   &:hover {
     .icon-container {
