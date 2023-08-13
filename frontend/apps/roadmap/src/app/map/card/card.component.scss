@@ -76,7 +76,7 @@ input {
 
 .note {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-evenly;
   align-items: center;
   flex-wrap: nowrap;
   width: 100%;
@@ -124,7 +124,6 @@ input {
   cursor: pointer;
   font-size: 2rem;
   color: $center;
-  margin-left: 0.5rem;
 
   &:hover {
     color: $center-hover;
@@ -136,7 +135,8 @@ input {
   flex-wrap: wrap-reverse;
   position: absolute;
   justify-content: flex-end;
-  top: -3rem;
+  top: calc(-3rem - 8px);
+  padding: 4px;
   padding-right: 20px;
   right: calc(1.5rem - 20px);
 }

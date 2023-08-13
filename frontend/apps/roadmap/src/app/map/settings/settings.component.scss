@@ -20,23 +20,32 @@ $border-spacing-vertical: 10px;
   flex-direction: column;
   height: auto;
   margin: 0 auto;
-  padding: 3rem 0.5rem;
+  padding: 3rem;
+  padding-top: 1.5rem;
   margin-top: 4rem;
   font-family: $raleway;
   margin-bottom: 5rem;
-  width: 100%;
   box-shadow: 0 5px 5px 0px #c9c9c923;
   border-radius: 0.7rem;
+  width: 80vw;
+  min-width: 410px;
+
+  @media only screen and (min-width: 560px) {
+    width: 70vw;
+    padding: 5rem;
+    padding-top: 3.5rem;
+    box-shadow: 0 5px 30px -15px #c9c9c9;
+  }
 
   @media only screen and (min-width: 960px) {
-    padding: 3rem;
+    padding: 5rem;
+    padding-top: 3.5rem;
     width: 50vw;
     box-shadow: 0 5px 30px -15px #c9c9c9;
   }
 
   @media only screen and (min-width: 1320px) {
     width: 35vw;
-    padding: 5rem;
   }
 }
 
@@ -248,6 +257,7 @@ table {
   width: fit-content;
   display: block;
   padding: 2rem;
+  padding-bottom: 0;
   cursor: pointer;
 }
 
