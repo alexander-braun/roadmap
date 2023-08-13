@@ -11,10 +11,16 @@ import { ModalDirective } from '../shared/directives/modal.directive';
 import { NavigationComponent } from './navigation/navigation.component';
 import { ViewContainerRef } from '@angular/core';
 import { OverlayComponent } from './overlay.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [SvgPathComponent, AppComponent, ModalDirective, NavigationComponent, OverlayComponent],
-  imports: [BrowserModule, MapModule, RouterModule.forRoot(appRoutes, { initialNavigation: 'enabledBlocking' })],
+  imports: [
+    BrowserModule,
+    MapModule,
+    RouterModule.forRoot(appRoutes, { initialNavigation: 'enabledBlocking' }),
+    HttpClientModule,
+  ],
   providers: [MapService, ResizeObserverService],
   bootstrap: [AppComponent],
   exports: [ModalDirective],

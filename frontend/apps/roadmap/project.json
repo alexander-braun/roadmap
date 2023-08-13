@@ -53,7 +53,8 @@
           "browserTarget": "roadmap:build:production"
         },
         "development": {
-          "browserTarget": "roadmap:build:development"
+          "browserTarget": "roadmap:build:development",
+          "proxyConfig": "apps/roadmap/src/proxy.conf.json"
         }
       },
       "defaultConfiguration": "development"

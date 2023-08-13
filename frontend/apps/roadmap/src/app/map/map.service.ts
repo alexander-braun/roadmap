@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, OnInit } from '@angular/core';
+import { BehaviorSubject, forkJoin, switchMap, take, tap } from 'rxjs';
 import { CardData, CardDataTree, CardPropertyCollection } from './map.model';
 import { NodeId, Nodes, cardDataTree, nodes } from '../../assets/data';
 import { v4 as uuidv4 } from 'uuid';
 import { SettingsService } from './settings/settings.service';
 import { Categories } from './settings/settings.model';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -17,10 +18,29 @@ export class MapService {
   private cardDataTree$$ = new BehaviorSubject<Readonly<CardDataTree>>({});
   public cardDataTree$ = this.cardDataTree$$.asObservable();
 
-  constructor(private settingsService: SettingsService) {
-    this.nodes$$.next(nodes);
-    this.cardDataTree$$.next(cardDataTree);
+  constructor(private settingsService: SettingsService, private http: HttpClient) {
     this.handleCategoriesUpdates();
+  }
+
+  public getData() {
+    forkJoin([
+      this.http.get<[{ nodes: Nodes }]>('/api/default-nodes'),
+      this.http.get<[{ cards: CardDataTree }]>('/api/default-card-data'),
+    ]).subscribe(([nodesData, cardData]) => {
+      const nodes = nodesData[0].nodes;
+      this.appendEndingNode(nodes);
+      this.cardDataTree$$.next(cardData[0].cards);
+    });
+  }
+
+  private appendEndingNode(nodes: Nodes): void {
+    const newNodes = nodes;
+
+    newNodes['last-node'] = {
+      mainKnot: true,
+      children: [],
+    };
+    this.setNodes(newNodes);
   }
 
   private handleCategoriesUpdates(): void {
@@ -90,8 +110,18 @@ export class MapService {
       }
     }
 
-    this.cardDataTree$$.next(tempCardDataTree);
-    this.nodes$$.next(tempNodesTree);
+    if (Object.keys(tempNodesTree).length === 1 && tempNodesTree['last-node'] !== undefined) {
+      delete tempNodesTree['last-node'];
+      (tempNodesTree[uuidv4()] = {
+        mainKnot: true,
+        children: [],
+      }),
+        this.appendEndingNode(tempNodesTree);
+      this.cardDataTree$$.next({});
+    } else {
+      this.cardDataTree$$.next(tempCardDataTree);
+      this.nodes$$.next(tempNodesTree);
+    }
   }
 
   public getCardDataForNode(node: NodeId): CardData {

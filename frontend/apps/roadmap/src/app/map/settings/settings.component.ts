@@ -42,7 +42,6 @@ export class SettingsComponent implements OnInit {
   }
 
   public close() {
-    console.log('close');
     this.modalService.close();
   }
 

@@ -34,8 +34,7 @@ export class MapComponent implements AfterViewInit, OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.appendEndingNode();
-    this.centerNodes$$.next(this.generateCenterNodes());
+    this.mapService.getData();
     this.handleResize();
     this.htmlCardCollection$$.asObservable().subscribe(() => {
       this.setCardPropertyCollection();
@@ -63,16 +62,6 @@ export class MapComponent implements AfterViewInit, OnInit {
         })
       )
       .subscribe();
-  }
-
-  private appendEndingNode(): void {
-    const newNodes = this.mapService.getNodes();
-
-    newNodes['last-node'] = {
-      mainKnot: true,
-      children: [],
-    };
-    this.mapService.setNodes(newNodes);
   }
 
   appendCenterNode(section: any) {
