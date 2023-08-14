@@ -28,7 +28,8 @@ input {
 }
 
 .title:not(.center) {
-  padding: 0px 5px 5px 0px;
+  padding: 3px;
+  padding-left: 0;
   color: #202020;
   cursor: pointer;
   border: 1px dashed transparent;
@@ -36,6 +37,7 @@ input {
   width: fit-content;
   word-break: break-all;
   margin-left: 0;
+  margin-bottom: 0.5rem;
 
   &:hover {
     background: #f8f8f8;
@@ -76,14 +78,14 @@ input {
 
 .note {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: flex-start;
   align-items: center;
   flex-wrap: nowrap;
   width: 100%;
 }
 
 .notes {
-  margin-bottom: 2rem;
+  margin-bottom: 0;
 }
 
 .add-note {
@@ -97,7 +99,7 @@ input {
   width: fit-content;
   border-radius: 4px;
   color: white;
-  margin-top: 2rem;
+  margin-top: 1rem;
   cursor: pointer;
   display: flex;
   justify-content: left;
@@ -124,6 +126,7 @@ input {
   cursor: pointer;
   font-size: 2rem;
   color: $center;
+  margin-left: 1.5rem;
 
   &:hover {
     color: $center-hover;
@@ -240,7 +243,7 @@ fa-icon {
 .status {
   flex-direction: column;
   justify-content: space-between;
-  margin: 1rem 0 0 1rem;
+  margin: 0 0 0 1rem;
   position: relative;
   width: fit-content;
   margin-left: auto;

@@ -1,0 +1,13 @@
+.svg-right {
+  bottom: 0;
+  display: none;
+  position: absolute;
+  right: 0;
+  width: 20vw;
+}
+
+@media only screen and (min-width: 1280px) {
+  .svg-right {
+    display: block;
+  }
+}

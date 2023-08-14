@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin } from 'rxjs';
+import { BehaviorSubject, forkJoin, Subject } from 'rxjs';
 import { CardData, CardDataTree, CardPropertyCollection } from './map.model';
 import { NodeId, Nodes } from '../../assets/data';
 import { v4 as uuidv4 } from 'uuid';
@@ -17,6 +17,8 @@ export class MapService {
   public nodes$ = this.nodes$$.asObservable();
   private cardDataTree$$ = new BehaviorSubject<Readonly<CardDataTree>>({});
   public cardDataTree$ = this.cardDataTree$$.asObservable();
+  public presetName$ = new Subject<string>();
+  public presetSubline$ = new Subject<string>();
 
   constructor(private settingsService: SettingsService, private http: HttpClient) {
     this.handleCategoriesUpdates();
@@ -24,9 +26,14 @@ export class MapService {
 
   public getData(): void {
     forkJoin([
-      this.http.get<[{ nodes: Nodes }]>('/api/default-nodes'),
-      this.http.get<[{ cards: CardDataTree }]>('/api/default-card-data'),
+      this.http.get<[{ nodes: Nodes; defaultMap: boolean }]>('/api/default-nodes'),
+      this.http.get<[{ cards: CardDataTree; defaultMap: boolean }]>('/api/default-card-data'),
     ]).subscribe(([nodesData, cardData]) => {
+      // TODO: UNDO HARDCODED
+      if (nodesData[0].defaultMap) {
+        this.presetName$.next('Frontend Developer');
+        this.presetSubline$.next('Default Frontend Roadmap');
+      }
       const nodes = nodesData[0].nodes;
       this.appendEndingNode(nodes);
       this.cardDataTree$$.next(cardData[0].cards);
@@ -121,11 +128,11 @@ export class MapService {
     // If last center node was deleted create fresh center node
     if (Object.keys(tempNodesTree).length === 1 && tempNodesTree['last-node'] !== undefined) {
       delete tempNodesTree['last-node'];
-      (tempNodesTree[uuidv4()] = {
+      tempNodesTree[uuidv4()] = {
         mainKnot: true,
         children: [],
-      }),
-        this.appendEndingNode(tempNodesTree);
+      };
+      this.appendEndingNode(tempNodesTree);
       this.cardDataTree$$.next({});
     } else {
       this.cardDataTree$$.next(tempCardDataTree);

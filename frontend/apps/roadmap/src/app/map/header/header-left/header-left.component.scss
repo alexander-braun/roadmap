@@ -1,0 +1,21 @@
+.svg-left {
+  align-self: flex-start;
+  width: 80vw;
+}
+
+@media only screen and (min-width: 800px) {
+  .svg-left {
+    align-self: flex-end;
+    width: 50vw;
+  }
+}
+
+@media only screen and (min-width: 1280px) {
+  .svg-left {
+    bottom: 0;
+    height: auto;
+    left: 0;
+    position: absolute;
+    width: 25vw;
+  }
+}

@@ -9,7 +9,6 @@ import { ResizeObserverService } from '../shared/services/resize-observer.servic
 import { SvgPathComponent } from './svg-path/svg-path.component';
 import { ModalDirective } from '../shared/directives/modal.directive';
 import { NavigationComponent } from './navigation/navigation.component';
-import { ViewContainerRef } from '@angular/core';
 import { OverlayComponent } from './overlay.component';
 import { HttpClientModule } from '@angular/common/http';
 

@@ -34,12 +34,11 @@ $border-spacing-vertical: 10px;
     width: 70vw;
     padding: 5rem;
     padding-top: 3.5rem;
+    padding-bottom: 7rem;
     box-shadow: 0 5px 30px -15px #c9c9c9;
   }
 
   @media only screen and (min-width: 960px) {
-    padding: 5rem;
-    padding-top: 3.5rem;
     width: 50vw;
     box-shadow: 0 5px 30px -15px #c9c9c9;
   }

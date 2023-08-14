@@ -127,7 +127,7 @@ export class SvgPathComponent implements OnInit {
     // Else the child is not center:
     // so the y needs to be in the middle so child height is cut in half and added
     const addedHeight = center ? scrollHeight : childRect.height / 2 + scrollHeight;
-    return childRect.y + addedHeight;
+    return childRect.y + addedHeight + (center ? 1 : 0);
   }
 
   // Sets the x point of the curvature
