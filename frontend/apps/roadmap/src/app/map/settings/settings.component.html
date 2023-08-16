@@ -1,4 +1,4 @@
-<div class="settings-container" *ngIf="{ value: innerWidth$ | async }; let innerWidth">
+<div class="modal-container" *ngIf="{ value: innerWidth$ | async }; let innerWidth">
   <div class="header">
     <h3 class="header-title">Card Options</h3>
     <fa-icon class="edit-icon" [icon]="faPencil" (click)="flipEdit()"></fa-icon>
@@ -20,7 +20,7 @@
           <tbody *ngIf="{ value: iconToEditPick$ | async }; let choiceVisible">
             <tr *ngFor="let categoriesControl of categories.controls; let i = index" [formGroupName]="i">
               <td>
-                <span class="icon-picker-container" clickOutside (clickOutside)="handleClickOutside(i)">
+                <span class="icon-picker-container" rdmpClickOutside (clickOutside)="handleClickOutside(i)">
                   <div (click)="flipShowIcons(i)">
                     <div
                       class="icon-container-default"

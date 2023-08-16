@@ -107,8 +107,8 @@ export class MapService {
     const tempNodesTree = { ...this.nodes$$.value };
     const tempCardDataTree = { ...this.cardDataTree$$.value };
 
-    for (const child of tempNodesTree[id]?.children) {
-      for (const subChild of tempNodesTree[child]?.children) {
+    for (const child of tempNodesTree[id]?.children || []) {
+      for (const subChild of tempNodesTree[child]?.children || []) {
         delete tempNodesTree[subChild];
         delete tempCardDataTree[subChild];
       }

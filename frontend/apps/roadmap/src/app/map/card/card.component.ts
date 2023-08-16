@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { NodeId } from 'apps/roadmap/src/assets/data';
+import { NodeId } from '../../../assets/data';
 import { CardData, Status } from '../map.model';
 import { MapService } from '../map.service';
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { faTrashAlt, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
+import { ResizeObserverService } from '../../../shared/services/resize-observer.service';
 import { SettingsService } from '../settings/settings.service';
 import { BehaviorSubject, take } from 'rxjs';
 import { Categories, Category } from '../settings/settings.model';

@@ -14,69 +14,22 @@ $icon-font-size: 2rem;
 $border-spacing-horizontal: 15px;
 $border-spacing-vertical: 10px;
 
-.settings-container {
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  height: auto;
-  margin: 0 auto;
-  padding: 3rem;
-  padding-top: 1.5rem;
-  margin-top: 4rem;
-  font-family: $raleway;
-  margin-bottom: 5rem;
-  box-shadow: 0 5px 5px 0px #c9c9c923;
-  border-radius: 0.7rem;
-  width: 80vw;
-  min-width: 410px;
+.edit-icon {
+  font-size: 2.5rem;
+  cursor: pointer;
+  color: #2a445d;
+  padding: 4rem;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  transition-duration: 0.1s;
 
-  @media only screen and (min-width: 560px) {
-    width: 70vw;
-    padding: 5rem;
-    padding-top: 3.5rem;
-    padding-bottom: 7rem;
-    box-shadow: 0 5px 30px -15px #c9c9c9;
+  @media only screen and (min-width: 750px) {
+    padding: 1rem;
   }
 
-  @media only screen and (min-width: 960px) {
-    width: 50vw;
-    box-shadow: 0 5px 30px -15px #c9c9c9;
-  }
-
-  @media only screen and (min-width: 1320px) {
-    width: 35vw;
-  }
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4rem;
-
-  .header-title {
-    font-size: 2.5rem;
-    margin-bottom: 0;
-    padding: 0 6px 0 6px;
-  }
-
-  .edit-icon {
-    font-size: 2.5rem;
-    cursor: pointer;
-    color: #2a445d;
-    padding: 4rem;
-    border-radius: 50%;
-    width: 2.5rem;
-    height: 2.5rem;
-    transition-duration: 0.1s;
-
-    @media only screen and (min-width: 750px) {
-      padding: 1rem;
-    }
-
-    &:hover {
-      color: #4887c2;
-    }
+  &:hover {
+    color: #4887c2;
   }
 }
 
@@ -272,3 +225,6 @@ table {
 
 // missing: cleanup first, then add + for new controls, add empty th with width
 // make weird animation play backwards
+.header-title {
+  padding-left: 6px;
+}

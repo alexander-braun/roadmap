@@ -13,7 +13,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { DOCUMENT } from '@angular/common';
 
 @Directive({
-  selector: '[editable][formControlName],[editable][formControl],[editable][ngModel]',
+  selector: '[rdmp-editable][formControlName],[rdmp-editable][formControl],[rdmp-editable][ngModel]',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -58,7 +58,7 @@ export class EditableDirective implements ControlValueAccessor {
    *
    * See: [ControlValueAccessor](https://angular.io/api/forms/ControlValueAccessor#members)
    */
-  writeValue(value: any): void {
+  writeValue(value: unknown): void {
     const normalizedValue = value == null ? '' : value;
     this.renderer.setProperty(this.elementRef.nativeElement, this.propValueAccessor, normalizedValue);
   }

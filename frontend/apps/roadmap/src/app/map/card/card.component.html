@@ -42,7 +42,7 @@
         formControlName="title"
         value="Edit me!"
         class="title card__inner-text"
-        editable="true"
+        rdmp-editable="true"
         unformattedPaste
       ></div>
     </div>
@@ -56,7 +56,13 @@
         <ng-container>
           <ng-container *ngFor="let noteControl of notesArray.controls; let i = index">
             <span class="note">
-              <div editable="true" unformattedPaste class="note-input" type="text" [formControl]="noteControl"></div>
+              <div
+                rdmp-editable="true"
+                unformattedPaste
+                class="note-input"
+                type="text"
+                [formControl]="noteControl"
+              ></div>
               <fa-icon class="faTrashAlt" [icon]="faTrashAlt" (click)="removeNote(i)"></fa-icon>
             </span>
           </ng-container>

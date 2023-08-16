@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CardProperty, CardPropertyCollection, PaathCoordinateCollection, PaathProperty } from '../map/map.model';
-import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
 import { MapService } from '../map/map.service';
+import { ResizeObserverService } from '../../shared/services/resize-observer.service';
 
+/* eslint-disable @angular-eslint/component-selector */
 @Component({
-  selector: '[rdmp-svg-path]',
+  selector: '[rdmpSvgPath]',
   templateUrl: './svg-path.component.html',
   styleUrls: ['./svg-path.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
