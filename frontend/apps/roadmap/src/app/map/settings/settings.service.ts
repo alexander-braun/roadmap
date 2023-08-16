@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Categories, StatusChoice, StatusChoices } from './settings.model';
-import { categories, statusChoices } from 'apps/roadmap/src/assets/data';
+import { Categories, StatusChoices } from './settings.model';
+import { categories, statusChoices } from '../../../assets/data';
 
 @Injectable({
   providedIn: 'root',

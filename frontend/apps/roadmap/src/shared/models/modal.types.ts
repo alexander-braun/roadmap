@@ -1,7 +1,11 @@
-import { MapComponent } from '../../app/map/map.component';
+import { LoginComponent } from '../../app/login/login.component';
 import { SettingsComponent } from '../../app/map/settings/settings.component';
-import { identifierToComponentMap } from '../services/modal.service';
+import { SignupComponent } from '../../app/signup/signup.component';
 
-export type ModalTypes = keyof typeof identifierToComponentMap;
+export interface ModalTypes {
+  settingsComponent: typeof SettingsComponent;
+  loginComponent: typeof LoginComponent;
+  signupComponent: typeof SignupComponent;
+}
 
-export type ModalComponents = SettingsComponent;
+export type ModalComponents = SettingsComponent | LoginComponent | SignupComponent;

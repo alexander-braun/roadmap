@@ -2,7 +2,7 @@ import { Directive, OnInit, OnDestroy, EventEmitter, Output, ElementRef } from '
 import { Subject, fromEvent, takeUntil } from 'rxjs';
 
 @Directive({
-  selector: '[clickOutside]',
+  selector: '[rdmpClickOutside]',
 })
 export class ClickOutsideDirective implements OnInit, OnDestroy {
   @Output() clickOutside = new EventEmitter<void>();

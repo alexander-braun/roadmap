@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { SettingsService } from './settings.service';
 import { faPencil, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Categories, Category } from './settings.model';
 import { icons, iconsMap } from './icons-preset.data';
-import { ResizeObserverService } from 'apps/roadmap/src/shared/services/resize-observer.service';
+import { ResizeObserverService } from '../../../shared/services/resize-observer.service';
 import { v4 } from 'uuid';
-import { ModalService } from 'apps/roadmap/src/shared/services/modal.service';
+import { ModalService } from '../../../shared/services/modal.service';
 
 @Component({
   selector: 'rdmp-settings',
@@ -110,7 +110,7 @@ export class SettingsComponent implements OnInit {
     this.categories.controls = [];
     this.showBgColors = [];
     this.showIconColors = [];
-    categories.forEach((category, i) => {
+    categories.forEach((category) => {
       const { categoryName, categoryIcon, categoryBgColor, categoryIconColor, categoryId } = category;
       this.categories.controls.push(
         this.fb.group({

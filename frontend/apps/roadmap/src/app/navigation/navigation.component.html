@@ -7,6 +7,10 @@
     <button>Download (JSON)</button>
     <button (click)="openSettings()">Settings</button>
     <button>Profile</button>
-    <button>Login</button>
+    <ng-container *ngIf="{ isAuthorized: isAuthorized$ | async } as auth">
+      <button (click)="singup()" *ngIf="!auth.isAuthorized">Signup</button>
+      <button (click)="openLogin()" *ngIf="!auth.isAuthorized">Login</button>
+      <button (click)="logout()" *ngIf="auth.isAuthorized">Logout</button>
+    </ng-container>
   </div>
 </div>

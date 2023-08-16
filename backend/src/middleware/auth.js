@@ -4,7 +4,6 @@ const { switchMap, catchError, EMPTY, tap, of, from } = require("rxjs");
 
 const auth = async (req, res, next) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
-
   try {
     of(jwt.verify(token, process.env.JWT_SECRET))
       .pipe(
@@ -19,8 +18,12 @@ const auth = async (req, res, next) => {
           if (!user) {
             res.status(401).send("Please authenticate");
           } else {
+            const tokenVals = JSON.parse(
+              Buffer.from(token.split(".")[1], "base64").toString()
+            );
             req.token = token;
             req.user = user;
+            req.expiresAt = tokenVals;
             next();
           }
         })

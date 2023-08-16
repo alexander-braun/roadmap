@@ -19,3 +19,7 @@
     width: 25vw;
   }
 }
+
+:host {
+  display: contents;
+}

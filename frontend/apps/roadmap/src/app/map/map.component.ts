@@ -13,7 +13,7 @@ import { BehaviorSubject, tap, merge } from 'rxjs';
 import { MapService } from './map.service';
 import { CardPropertyCollection, Direction } from './map.model';
 import { ResizeObserverService } from '../../shared/services/resize-observer.service';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faWrench } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'rdmp-map',
@@ -26,6 +26,7 @@ export class MapComponent implements AfterViewInit, OnInit {
   public centerNodes$$ = new BehaviorSubject<NodeId[]>(this.generateCenterNodes());
   private htmlCardCollection$$ = new BehaviorSubject<HTMLCollection[]>([]);
   public readonly faPlus = faPlus;
+  public readonly faGear = faWrench;
 
   constructor(
     private mapService: MapService,
@@ -64,7 +65,7 @@ export class MapComponent implements AfterViewInit, OnInit {
       .subscribe();
   }
 
-  appendCenterNode(section: any) {
+  appendCenterNode(section: NodeId) {
     this.mapService.addCenterNodeAfterNodeId(section);
   }
 

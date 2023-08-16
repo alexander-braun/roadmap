@@ -22,6 +22,10 @@ router.post("/users", (req, res) => {
       }),
       tap(([user, token]) => {
         res.status(201).send({ user, token });
+        /*
+            res.cookie('name', 'geeksforgeeks');
+            res.send("Cookie Set");
+        */
         sendMail(
           user.email,
           "Thanks for signing up!",
@@ -44,7 +48,10 @@ router.post("/users/login", (req, res) => {
         return EMPTY;
       }),
       tap(([user, token]) => {
-        res.status(200).send({ user, token });
+        const tokenVals = JSON.parse(
+          Buffer.from(token.split(".")[1], "base64").toString()
+        );
+        res.status(200).send({ user, token, expiresAt: tokenVals.exp });
       })
     )
     .subscribe();

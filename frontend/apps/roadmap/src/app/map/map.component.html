@@ -1,4 +1,12 @@
 <rdmp-header></rdmp-header>
+
+<!--
+<div class="settings-tab">
+  <div class="settings-container">
+    <fa-icon class="settings" [icon]="faGear"></fa-icon>
+  </div>
+</div>
+-->
 <div class="map">
   <div *ngFor="let centerNode of centerNodes$$.asObservable() | async" class="section">
     <div #cardContainer class="section__side-elements section__side-elements--left section__side-elements--subchild">

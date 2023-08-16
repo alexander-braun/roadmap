@@ -1,0 +1,15 @@
+<div class="modal-container">
+  <fa-icon class="close fa-w-11" [icon]="faTimes" (click)="close()"></fa-icon>
+  <rdmp-login-icon></rdmp-login-icon>
+  <h3 class="header-title">Login</h3>
+  <form [formGroup]="loginForm">
+    <label for="email">Email</label>
+    <input id="email" type="text" formControlName="email" />
+    <label for="password">Password</label>
+    <input id="password" type="password" formControlName="password" />
+    <div class="buttongroup">
+      <button (click)="login()" class="login">Login</button>
+      <button (click)="goToSignUp()" class="signup">Signup</button>
+    </div>
+  </form>
+</div>
