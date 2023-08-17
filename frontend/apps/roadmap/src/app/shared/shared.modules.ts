@@ -5,11 +5,19 @@ import { EditableDirective } from './directives/editable.directive';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
 import { ReactiveFormsModule } from '@angular/forms';
+import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 
 @NgModule({
-  declarations: [EditableDirective, ClickOutsideDirective],
-  imports: [FontAwesomeModule, ColorPickerModule, ReactiveFormsModule, CommonModule],
-  exports: [FontAwesomeModule, ColorPickerModule, EditableDirective, ReactiveFormsModule, CommonModule],
+  declarations: [EditableDirective, ClickOutsideDirective, LoadingSpinnerComponent],
+  imports: [CommonModule],
+  exports: [
+    FontAwesomeModule,
+    ColorPickerModule,
+    EditableDirective,
+    ReactiveFormsModule,
+    CommonModule,
+    LoadingSpinnerComponent,
+  ],
   providers: [],
 })
 export class SharedModule {}
