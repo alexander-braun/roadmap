@@ -17,7 +17,8 @@
         "tsConfig": "apps/roadmap/tsconfig.app.json",
         "assets": ["apps/roadmap/src/favicon.ico", "apps/roadmap/src/assets"],
         "styles": ["apps/roadmap/src/styles.scss"],
-        "scripts": []
+        "scripts": [],
+        "webWorkerTsConfig": "apps/roadmap/tsconfig.worker.json"
       },
       "configurations": {
         "production": {
@@ -77,7 +78,8 @@
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "apps/roadmap/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "webWorkerTsConfig": "apps/roadmap/tsconfig.worker.json"
       },
       "configurations": {
         "ci": {

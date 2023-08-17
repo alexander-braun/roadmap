@@ -1,0 +1,611 @@
+@import '../../../assets/styles/variables';
+
+.map {
+  margin-top: 8vh;
+}
+
+.section {
+  position: relative;
+  margin: 8vh auto;
+  display: grid;
+  //height: 200vh;
+  grid-template-rows: 1fr;
+  grid-template-areas:
+    'centered sub'
+    'left-side sub-left'
+    'right-side sub-right';
+  grid-template-columns: 1fr 1fr;
+
+  grid-gap: 6rem;
+  margin-left: 3vw;
+  margin-right: 3vw;
+
+  @media only screen and (min-width: 1100px) {
+    grid-template-columns: 4fr 4fr 3fr 4fr 4fr;
+    grid-gap: 6rem;
+    grid-template-areas: 'sub-left left-side centered right-side sub-right';
+    margin-left: 4vw;
+    margin-right: 4vw;
+  }
+
+  @media only screen and (min-width: 1350px) {
+    margin-left: 6vw;
+    margin-right: 6vw;
+  }
+
+  &:first-child {
+    margin-bottom: 5vh;
+    margin-top: 0;
+  }
+
+  &__side-elements {
+    gap: 5rem;
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    &--left {
+      grid-area: left-side;
+    }
+
+    &--right {
+      grid-area: right-side;
+    }
+
+    &--right.section__side-elements--subchild {
+      grid-area: sub-right;
+    }
+
+    &--left.section__side-elements--subchild {
+      grid-area: sub-left;
+    }
+
+    &--center-section {
+      grid-area: centered;
+      height: auto;
+      gap: 0;
+    }
+  }
+}
+
+.bubble {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  transform-origin: center;
+  transition: background 0.5s;
+  cursor: pointer;
+  border: 4px solid var($add-node-color);
+
+  &::before {
+    content: '+';
+    width: 100%;
+    height: 100%;
+    font-size: 25px;
+    font-weight: 800;
+    font-family: Arial, Helvetica, sans-serif;
+    position: absolute;
+    text-align: center;
+    line-height: 1.37;
+    color: $add-node-color;
+  }
+
+  &:hover {
+    animation: action-tada 0.3s ease-in;
+
+    &::before {
+      animation: action-tada 0.3s ease-in;
+    }
+  }
+}
+
+.last-node .card {
+  border: none;
+  animation: none;
+}
+
+.last-node {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card.card--center#last-node {
+  width: 60px;
+}
+
+.last-node-ball {
+  width: 100%;
+  height: 120px;
+  background-color: #8bb8b5;
+  background: linear-gradient(180deg, #8bb8b5, rgba(255, 255, 255, 1));
+}
+
+.add-center-node-container {
+  width: 100%;
+  height: auto;
+}
+
+.add-center-circle {
+  margin: 0 auto;
+  border-radius: 50%;
+  width: 8rem;
+  height: 8rem;
+  background-color: white;
+  border-radius: 50%;
+  transition-duration: 100ms;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #8bb8b5;
+  user-select: none;
+  //box-shadow: 3px 3px 1px rgba(0, 0, 0, 0.2);
+
+  div {
+    font-size: 5.5rem;
+    font-weight: 600;
+    font-family: Arial;
+    margin-top: 0.35rem;
+    color: #8bb8b5;
+    user-select: none;
+  }
+}
+
+.card--center:hover + .add-center-node-container .add-center-circle,
+.add-center-circle:hover,
+.add-center-node-container:hover .add-center-circle {
+  transform: translateY(1rem);
+  opacity: 1;
+}
+
+.card {
+  font-family: $raleway;
+  border: 2px solid transparent;
+  text-align: center;
+  font-size: 1.5rem;
+  position: relative;
+  will-change: background;
+  transition: background 0.5s;
+  //border-radius: $radius-standard;
+  //box-shadow: #c9c9c9 0 5px 30px -15px;
+  //box-shadow: 3px 3px 1px rgba(0, 0, 0, 0.2);
+  border-radius: 0.7rem;
+
+  &--element {
+    background: $standard;
+
+    &:hover {
+      background: $standard-hover;
+      animation: FadeInCardBorder 0.3s forwards;
+    }
+  }
+
+  &--center {
+    color: $color-center;
+    z-index: 1;
+    margin-top: calc(8rem + (2px * 2));
+  }
+
+  &--center &__inner-text {
+    text-align: center;
+    font-size: 1.75rem;
+    margin-left: auto;
+    color: $color-center;
+    padding: 1rem 2rem;
+
+    @media only screen and (min-width: 800px) {
+      font-size: 1.8rem;
+    }
+
+    @media only screen and (min-width: 1400px) {
+      font-size: 2.25rem;
+      padding-left: 5px;
+    }
+  }
+
+  &--not-recommended {
+    background-color: $card-not-recommended;
+
+    &:hover {
+      background-color: $card-not-recommended-hover;
+    }
+  }
+
+  &--center {
+    background-color: $center;
+    font-weight: 600;
+    font-size: 1.75rem;
+
+    &:hover {
+      background-color: $center-hover;
+    }
+  }
+
+  &--option &__indication-circle {
+    background-color: $option;
+  }
+
+  &--recommended &__indication-circle {
+    background-color: $recommendation;
+  }
+
+  &--not-recommended &__indication-circle {
+    background-color: $not-recommended;
+  }
+
+  &__button-container {
+    position: absolute;
+    bottom: -10px;
+    left: -11px;
+    width: 53px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__font-awesome-exclamation {
+    color: white !important;
+    line-height: 1;
+    font-size: 1.5rem;
+    font-family: Arial, Helvetica, sans-serif;
+
+    &--main {
+      font-size: 2rem;
+    }
+  }
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-self: center;
+    justify-content: center;
+  }
+
+  &__inner-text {
+    margin-right: auto;
+    resize: none;
+    padding: 5px;
+    border: 1px dashed transparent;
+    cursor: pointer;
+    width: fit-content;
+    text-align: left;
+    font-family: $raleway;
+    font-weight: 700;
+    letter-spacing: -0.1rem;
+    color: $color-standard;
+    transition: border 0.2s, background 0.2s;
+    word-break: break-all;
+    hyphens: auto;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    padding-left: 0;
+    font-size: 1.5rem;
+    min-width: 2rem;
+
+    @media only screen and (min-width: 800px) {
+      font-size: 1.7rem;
+    }
+
+    @media only screen and (min-width: 1400px) {
+      font-size: 2rem;
+    }
+
+    &:hover {
+      background: $textbox-standard-hover;
+      border: 1px dashed rgba(0, 0, 0, 0.514);
+    }
+  }
+
+  &--center &__inner-text {
+    &:hover {
+      background: $textbox-center-hover;
+      border: 1px dashed rgba(255, 255, 255, 0.514);
+    }
+  }
+
+  &__recommend-choice {
+    position: absolute;
+    top: -25px;
+    right: 0;
+    width: fit-content;
+    height: 20px;
+    display: flex;
+    flex-direction: row;
+  }
+
+  &__recommend-choice &__indication-circle {
+    margin: 0 2px;
+    position: relative;
+    width: 12px;
+    height: 12px;
+    transform: scale(0);
+    line-height: 0.8;
+    opacity: 0;
+    padding: 3px;
+    top: 0;
+    left: -10px;
+    transition-duration: 0.2s;
+    border: 1px solid transparent;
+
+    &--recommended {
+      background-color: $recommendation;
+    }
+
+    &--option {
+      background-color: $option;
+    }
+
+    &--not-recommended {
+      background-color: $not-recommended;
+    }
+  }
+
+  &__indication-circle:hover + &__recommend-choice &__indication-circle,
+  &__recommend-choice:hover &__indication-circle {
+    animation: FadeInDots 0.2s forwards 0s;
+
+    &--recommended {
+      animation-delay: 0.3s;
+
+      &:hover {
+        background-color: #ffdb85;
+      }
+    }
+
+    &--option {
+      animation-delay: 0.2s;
+
+      &:hover {
+        background-color: #4995ff;
+      }
+    }
+
+    &--not-recommended {
+      animation-delay: 0.1s;
+
+      &:hover {
+        background-color: #cc18cc;
+      }
+    }
+
+    opacity: 1;
+  }
+
+  &__due-date {
+    margin-right: auto;
+    font-weight: 400;
+    font-family: Inter, system, -apple-system, BlinkMacSystemFont, Roboto, 'Segoe UI', Arial, sans-serif;
+    cursor: pointer;
+    width: fit-content;
+    align-self: center;
+    justify-self: center;
+    font-size: 1rem;
+    letter-spacing: 0.05rem;
+    font-style: italic;
+
+    @media only screen and (min-width: 800px) {
+      font-size: 1rem;
+    }
+
+    @media only screen and (min-width: 1400px) {
+      font-size: 1.15rem;
+    }
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__status-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  &__status {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 95px;
+    margin: 1rem 0;
+
+    &--status-text {
+      margin-left: 1rem;
+      cursor: pointer;
+      transition: font-weight 0.1s;
+      will-change: font-weight;
+      font-family: Inter, system, -apple-system, BlinkMacSystemFont, Roboto, 'Segoe UI', Arial, sans-serif;
+      font-size: 1.25rem;
+
+      @media only screen and (min-width: 1400px) {
+        font-size: 1.5rem;
+      }
+    }
+
+    &--done-dot {
+      background-color: $done;
+    }
+
+    &--in-progress-dot {
+      background-color: $in-progress;
+    }
+
+    &--pending-dot {
+      background-color: $pending;
+    }
+
+    &--pending-dot,
+    &--in-progress-dot,
+    &--done-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-left: auto;
+
+      @media only screen and (min-width: 1400px) {
+        width: 13px;
+        height: 13px;
+      }
+    }
+  }
+
+  &__bottom-row {
+    margin-left: auto;
+    padding-top: 1rem;
+    margin-bottom: 0.5rem;
+    line-height: 1;
+    width: 100%;
+
+    @media only screen and (min-width: 1100px) {
+      padding-top: 2rem;
+    }
+  }
+
+  &__status-choice {
+    display: flex;
+    width: fit-content;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    will-change: border, transform;
+    position: absolute;
+    top: -25px;
+    right: 0;
+    padding: 5px;
+    padding-right: 0;
+  }
+
+  &__status-dot {
+    &--in-progress-dot,
+    &--done-dot,
+    &--pending-dot {
+      opacity: 0;
+      margin: 0 2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    &--done-dot {
+      background-color: $done;
+      animation-delay: 0s;
+    }
+
+    &--in-progress-dot {
+      background-color: $in-progress;
+      animation-delay: 0.2s;
+    }
+
+    &--pending-dot {
+      background-color: $pending;
+      animation-delay: 0.4s;
+    }
+  }
+
+  &__status:hover &__status-dot--done-dot {
+    animation: FadeInDots 0.2s both 0s;
+    opacity: 1;
+  }
+
+  &__status:hover &__status-dot--in-progress-dot {
+    animation: FadeInDots 0.2s both 0.1s;
+    opacity: 1;
+  }
+
+  &__status:hover &__status-dot--pending-dot {
+    animation: FadeInDots 0.2s both 0.2s;
+    opacity: 1;
+  }
+
+  &__add-circle,
+  &__delete-circle {
+    position: relative;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 3.25rem;
+    will-change: transform, opacity;
+    transition-duration: 0.2s;
+    cursor: pointer;
+    background-color: #fff;
+  }
+
+  &__font-awesome-add-delete {
+    color: #2a445d;
+    font-size: 3rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition-duration: 0.2s;
+    transform: scale(0);
+    background: white;
+  }
+
+  &:hover &__font-awesome-add-delete {
+    opacity: 1;
+    animation: action-tada 0.3s ease-out;
+    transform: scale(1);
+  }
+
+  &--center &__font-awesome-add-delete {
+    color: #436e96;
+    background: white;
+  }
+
+  &--option &__font-awesome-exclamation,
+  &--not-recommended &__font-awesome-exclamation {
+    color: rgb(233, 233, 233);
+    font-size: 1.5rem;
+  }
+
+  &__indication-circle {
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: -12.5px;
+    right: -12.5px;
+    border-radius: 50%;
+    font-weight: 600;
+    padding: 5px;
+    line-height: 1.4;
+    cursor: pointer;
+  }
+}
+
+.settings-tab {
+  width: 100%;
+}
+
+.settings-container {
+  display: block;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin-left: 0;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 1rem;
+  background: #ec4c4c;
+  margin-right: auto;
+  cursor: pointer;
+  position: fixed;
+}
+
+.settings {
+  font-size: 3.5rem;
+  display: block;
+  width: -moz-fit-content;
+  width: fit-content;
+  color: white;
+}

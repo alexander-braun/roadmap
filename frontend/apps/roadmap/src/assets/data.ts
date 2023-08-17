@@ -1,5 +1,5 @@
-import { CardDataTree } from '../app/map/map.model';
-import { Categories, StatusChoices } from '../app/map/settings/settings.model';
+import { CardDataTree } from '../app/features/map/map.model';
+import { Categories, StatusChoices } from '../app/features/map/settings/settings.model';
 
 export type Node = {
   children: string[];
