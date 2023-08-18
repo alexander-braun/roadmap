@@ -74,6 +74,7 @@ export class MapService {
     this.cardDataTree$$.next(newTree);
   }
 
+  // Communicates to svg-path component to draw new svg
   public setCardPropertyCollection(collection: CardPropertyCollection): void {
     this.cardPropertyCollection$$.next(collection);
   }

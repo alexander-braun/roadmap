@@ -1,17 +1,10 @@
 <rdmp-header></rdmp-header>
 
-<!--
-<div class="settings-tab">
-  <div class="settings-container">
-    <fa-icon class="settings" [icon]="faGear"></fa-icon>
-  </div>
-</div>
--->
 <div class="map">
-  <div *ngFor="let centerNode of centerNodes$$.asObservable() | async" class="section">
+  <div *ngFor="let centerNode of centerNodes$$.asObservable() | async; let i = index" class="section">
     <div #cardContainer class="section__side-elements section__side-elements--left section__side-elements--subchild">
-      <ng-container *ngFor="let child of generateChildrenOfNode(centerNode, 'left')">
-        <ng-container *ngFor="let subChild of generateChildrenOfNode(child, 'left', true)">
+      <ng-container *ngFor="let child of childrenLeft[i]">
+        <ng-container *ngFor="let subChild of subChildrenMapLeft[child]">
           <rdmp-card
             [id]="subChild"
             class="card card--element card--subchild card--left"
@@ -23,7 +16,7 @@
     </div>
 
     <div #cardContainer class="section__side-elements section__side-elements--left">
-      <ng-container *ngFor="let child of generateChildrenOfNode(centerNode, 'left')">
+      <ng-container *ngFor="let child of childrenLeft[i]">
         <rdmp-card
           [id]="child"
           class="card card--element card--recommended card--left"
@@ -56,7 +49,7 @@
     </div>
 
     <div #cardContainer class="section__side-elements section__side-elements--right">
-      <ng-container *ngFor="let child of generateChildrenOfNode(centerNode, 'right')">
+      <ng-container *ngFor="let child of childrenRight[i]">
         <rdmp-card
           [id]="child"
           class="card card--element card--recommended card--right"
@@ -67,8 +60,8 @@
     </div>
 
     <div #cardContainer class="section__side-elements section__side-elements--right section__side-elements--subchild">
-      <ng-container *ngFor="let child of generateChildrenOfNode(centerNode, 'right')">
-        <ng-container *ngFor="let subChild of generateChildrenOfNode(child, 'right', true)">
+      <ng-container *ngFor="let child of childrenRight[i]">
+        <ng-container *ngFor="let subChild of subChildrenMapRight[child]">
           <rdmp-card
             [id]="subChild"
             class="card card--element card--subchild card--right"
