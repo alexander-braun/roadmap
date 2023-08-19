@@ -1,10 +1,7 @@
 <div class="menu-bar">
   <div class="title">Interactive Roadmap</div>
   <div class="links">
-    <button>Save</button>
-    <button>Load</button>
-    <button>Upload (JSON)</button>
-    <button>Download (JSON)</button>
+    <button>Load Preset</button>
     <button (click)="openSettings()">Settings</button>
     <button>Profile</button>
     <ng-container *ngIf="{ isAuthorized: isAuthorized$ | async } as auth">

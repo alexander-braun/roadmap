@@ -6,6 +6,8 @@ import { SettingsService } from './settings/settings.service';
 import { Categories } from './settings/settings.model';
 import { HttpClient } from '@angular/common/http';
 import { NodeId, Nodes } from 'apps/roadmap/src/assets/data';
+import { AuthService } from '../../shared/services/auth.service';
+import { Roadmap } from './map.model';
 
 @Injectable({
   providedIn: 'root',
@@ -17,27 +19,27 @@ export class MapService {
   public nodes$ = this.nodes$$.asObservable();
   private cardDataTree$$ = new BehaviorSubject<Readonly<CardDataTree>>({});
   public cardDataTree$ = this.cardDataTree$$.asObservable();
-  public presetName$ = new Subject<string>();
-  public presetSubline$ = new Subject<string>();
+  public presetName$ = new BehaviorSubject<string>('');
+  public presetSubline$ = new BehaviorSubject<string>('');
 
-  constructor(private settingsService: SettingsService, private http: HttpClient) {
+  constructor(private settingsService: SettingsService, private http: HttpClient, private authService: AuthService) {
     this.handleCategoriesUpdates();
   }
 
   public getData(): void {
-    forkJoin([
-      this.http.get<[{ nodes: Nodes; defaultMap: boolean }]>('/api/default-nodes'),
-      this.http.get<[{ cards: CardDataTree; defaultMap: boolean }]>('/api/default-card-data'),
-    ]).subscribe(([nodesData, cardData]) => {
-      // TODO: UNDO HARDCODED
-      if (nodesData[0].defaultMap) {
+    if (!this.authService.isUserAuthorized()) {
+      forkJoin([
+        this.http.get<[{ nodes: Nodes; defaultMap: boolean }]>('/api/default-nodes'),
+        this.http.get<[{ cards: CardDataTree; defaultMap: boolean }]>('/api/default-card-data'),
+      ]).subscribe(([nodesData, cardData]) => {
         this.presetName$.next('Frontend Developer');
         this.presetSubline$.next('Default Frontend Roadmap');
-      }
-      const nodes = nodesData[0].nodes;
-      this.appendEndingNode(nodes);
-      this.cardDataTree$$.next(cardData[0].cards);
-    });
+
+        const nodes = nodesData[0].nodes;
+        this.appendEndingNode(nodes);
+        this.cardDataTree$$.next(cardData[0].cards);
+      });
+    }
   }
 
   private appendEndingNode(nodes: Nodes): void {
@@ -72,6 +74,7 @@ export class MapService {
       ...data,
     };
     this.cardDataTree$$.next(newTree);
+    // Save here (check for changes before)
   }
 
   // Communicates to svg-path component to draw new svg

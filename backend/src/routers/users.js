@@ -3,8 +3,6 @@ require("../db/mongoose");
 const User = require("../models/user");
 const { catchError, EMPTY, tap, from, switchMap, of } = require("rxjs");
 const auth = require("../middleware/auth");
-const multer = require("multer");
-const sharp = require("sharp");
 const sendMail = require("../emails/account");
 
 const router = express.Router();
@@ -21,16 +19,21 @@ router.post("/users", (req, res) => {
         return EMPTY;
       }),
       tap(([user, token]) => {
-        res.status(201).send({ user, token });
+        const tokenVals = JSON.parse(
+          Buffer.from(token.split(".")[1], "base64").toString()
+        );
+        res.status(201).send({ user, token, expiresAt: tokenVals.exp });
         /*
             res.cookie('name', 'geeksforgeeks');
             res.send("Cookie Set");
         */
+        /*
         sendMail(
           user.email,
           "Thanks for signing up!",
-          `Welcome to roadmap ${user.name}. I hope you enjoy!`
+          `Welcome to roadmap ${user.email}. I hope you enjoy!`
         );
+        */
       })
     )
     .subscribe();
@@ -96,7 +99,7 @@ router.get("/users/me", auth, (req, res) => {
 
 router.patch("/users/me", auth, (req, res) => {
   const changedFields = Object.keys(req.body);
-  const allowedOperations = ["name", "email", "password", "age"];
+  const allowedOperations = ["email", "password"];
   const isValidOperation = changedFields.every((field) =>
     allowedOperations.includes(field)
   );
@@ -139,81 +142,14 @@ router.delete("/users/me", auth, (req, res) => {
           res.status(500).send();
         } else {
           res.status(200).send(user);
+          /*
           sendMail(
             user.email,
             "Your account has been removed.",
-            `Good Bye ${user.name} and thank you for using roadmap!`
+            `Good Bye ${user.email} and thank you for using roadmap!`
           );
+          */
         }
-      })
-    )
-    .subscribe();
-});
-
-const upload = multer({
-  limits: {
-    fileSize: 1000000,
-  },
-  fileFilter(req, file, callback) {
-    if (file.originalname.match(/\.(jpg|png|jpeg)$/)) {
-      callback(undefined, true);
-    } else {
-      callback(new Error("Filetype not jpg."));
-    }
-  },
-});
-
-router.post(
-  "/users/me/avatar",
-  auth,
-  upload.single("avatar"),
-  (req, res) => {
-    from(sharp(req.file.buffer).png().resize({ width: 250 }).toBuffer())
-      .pipe(
-        switchMap((buffer) => {
-          req.user.avatar = buffer;
-          return of(req.user.save());
-        }),
-        tap(() => {
-          res.status(200).send({ file: req.file.originalname });
-        }),
-        catchError((e) => {
-          res.status(500).send(e.message);
-        })
-      )
-      .subscribe();
-  },
-  (error, req, res, next) => {
-    res.status(400).send({ error: error.message });
-  }
-);
-
-router.delete("/users/me/avatar", auth, (req, res) => {
-  req.user.avatar = undefined;
-  from(req.user.save())
-    .pipe(
-      tap(() => {
-        res.status(200).send();
-      }),
-      catchError((e) => {
-        res.status(500).send({ error: e.message });
-      })
-    )
-    .subscribe();
-});
-
-router.get("/users/:id/avatar", (req, res) => {
-  from(User.findById(req.params.id))
-    .pipe(
-      tap((user) => {
-        if (user?.avatar) {
-          res.set("Content-Type", "image/png").status(200).send(user.avatar);
-        } else {
-          res.status(400).send({ error: "Not found" });
-        }
-      }),
-      catchError((e) => {
-        res.status(500).send({ error: e.message });
       })
     )
     .subscribe();

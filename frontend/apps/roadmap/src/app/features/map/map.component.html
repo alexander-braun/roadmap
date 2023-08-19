@@ -1,6 +1,5 @@
 <rdmp-header></rdmp-header>
-
-<div class="map">
+<div class="map" *ngIf="(centerNodes$$.asObservable() | async)?.length">
   <div *ngFor="let centerNode of centerNodes$$.asObservable() | async; let i = index" class="section">
     <div #cardContainer class="section__side-elements section__side-elements--left section__side-elements--subchild">
       <ng-container *ngFor="let child of childrenLeft[i]">

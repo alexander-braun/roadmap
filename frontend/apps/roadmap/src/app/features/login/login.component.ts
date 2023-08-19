@@ -39,7 +39,7 @@ export class LoginComponent implements OnDestroy {
 
     this.loading$.next(true);
     this.authService
-      .login(this.loginForm.controls.email.value, this.loginForm.controls.password.value, this.destroy$)
+      .login(this.loginForm.controls.email.value, this.loginForm.controls.password.value)
       .pipe(
         takeUntil(this.destroy$),
         catchError((e) => {

@@ -3,15 +3,10 @@ const { from, switchMap, throwError, of, tap } = require("rxjs");
 const validator = require("validator");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const Task = require("./task");
+const Roadmap = require("./roadmap");
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
     email: {
       unique: true,
       type: String,
@@ -35,12 +30,6 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
-    age: {
-      type: Number,
-    },
-    avatar: {
-      type: Buffer,
-    },
     tokens: {
       type: [
         {
@@ -57,13 +46,13 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// relationship between user and task
-// links _id from user to owner field in tasks
-userSchema.virtual("tasks", {
-  ref: "Task",
-  // where local data is stored - _id on task associated with _id on user
+// relationship between user and roadmap
+// links _id from user to owner field in roadmap
+userSchema.virtual("roadmaps", {
+  ref: "Roadmap",
+  // where local data is stored - _id on roadmap associated with _id on user
   localField: "_id",
-  // name of the field on the task to create relationship
+  // name of the field on the roadmap to create relationship
   foreignField: "owner",
 });
 
@@ -78,9 +67,9 @@ userSchema.pre("save", { document: true }, function (next) {
   }
 });
 
-// Delte all related tasks before removing user
+// Delte all related roadmaps and nodes
 userSchema.pre("deleteOne", { document: true }, function (next) {
-  from(Task.deleteMany({ owner: this._id })).subscribe(() => next());
+  from(Roadmap.deleteMany({ owner: this._id })).subscribe(() => next());
 });
 
 // Static methods are accessible on the model of User
@@ -107,7 +96,7 @@ userSchema.statics.findByCredentials = (email, password) => {
 // Methods methods are accessible on the instance of User
 userSchema.methods.generateAuthToken = function () {
   const token = jwt.sign({ _id: this._id.toString() }, process.env.JWT_SECRET, {
-    expiresIn: "1min",
+    expiresIn: "1week",
   });
   this.tokens = this.tokens.concat({ token });
   return from(this.save()).pipe(switchMap(() => of(token)));
@@ -117,8 +106,6 @@ userSchema.methods.toJSON = function () {
   const user = this.toObject();
   delete user.password;
   delete user.tokens;
-  // has extra request and is big
-  delete user.avatar;
   return user;
 };
 

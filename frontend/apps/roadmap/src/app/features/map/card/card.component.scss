@@ -9,6 +9,7 @@ input {
 }
 
 .title {
+  word-break: break-word;
   min-width: 2rem;
   font-weight: 700;
   hyphens: auto;
@@ -28,6 +29,7 @@ input {
 }
 
 .title:not(.center) {
+  word-break: break-word;
   padding: 3px;
   padding-left: 0;
   color: #202020;
@@ -35,7 +37,6 @@ input {
   border: 1px dashed transparent;
   transition: border 0.2s, background 0.2s;
   width: fit-content;
-  word-break: break-all;
   margin-left: 0;
   margin-bottom: 0.5rem;
 
@@ -60,6 +61,7 @@ input {
 }
 
 .note-input {
+  word-break: break-word;
   background-color: #f9f9f9;
   margin-top: 2px;
   line-height: 15px;

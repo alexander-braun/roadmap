@@ -35,3 +35,18 @@ export type Direction = 'left' | 'right';
 export interface CardDataTree {
   [key: NodeId]: CardData;
 }
+
+export interface Roadmap {
+  title: string;
+  subtitle: string;
+  owner: string;
+  map: {
+    mainKnot: boolean;
+    children: string[];
+    id: string;
+    title: string;
+    notes: string[];
+    categoryId: string;
+    status: string;
+  }[];
+}

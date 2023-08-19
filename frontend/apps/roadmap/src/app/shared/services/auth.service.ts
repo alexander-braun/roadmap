@@ -13,8 +13,6 @@ export class AuthService {
   private expiresAt: ExpiresAt | undefined;
   private isAuthorized$$ = new BehaviorSubject(false);
   public isAuthorized$ = this.isAuthorized$$.asObservable();
-  private logout$ = new Subject<void>();
-  private login$ = new Subject<void>();
 
   constructor(private http: HttpClient, private cookieService: CookieService, private workerService: WorkerService) {
     this.token = this.cookieService.get('token');
@@ -25,33 +23,45 @@ export class AuthService {
     }
   }
 
-  public login(
-    email: string | null,
-    password: string | null,
-    componentDestroy$: Subject<void>
-  ): Observable<LoginResponse> {
-    this.login$.next();
-    return this.http
-      .post<LoginResponse>('/api/users/login', { email, password })
-      .pipe(takeUntil(componentDestroy$))
-      .pipe(
-        tap((response) => {
-          this.token = response.token;
-          this.expiresAt = response.expiresAt;
-          this.cookieService.set('token', response.token);
-          this.cookieService.set('expiresAt', response.expiresAt.toString());
+  public login(email: string | null, password: string | null): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>('/api/users/login', { email, password }).pipe(
+      tap((response) => {
+        this.token = response.token;
+        this.expiresAt = response.expiresAt;
+        this.cookieService.set('token', response.token);
+        this.cookieService.set('expiresAt', response.expiresAt.toString());
 
-          if (this.token) {
-            this.isAuthorized$$.next(true);
-            this.startAuthWorker();
-          }
-        })
-      );
+        if (this.token) {
+          this.isAuthorized$$.next(true);
+          this.startAuthWorker();
+        }
+      })
+    );
+  }
+
+  public signup(email: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>('/api/users', { email, password }).pipe(
+      tap((response) => {
+        this.token = response.token;
+        this.expiresAt = response.expiresAt;
+        this.cookieService.set('token', response.token);
+        this.cookieService.set('expiresAt', response.expiresAt.toString());
+
+        if (this.token) {
+          this.isAuthorized$$.next(true);
+          this.startAuthWorker();
+        }
+      })
+    );
+  }
+
+  public isUserAuthorized(): boolean {
+    return this.isAuthorized$$.value;
   }
 
   private startAuthWorker(): void {
     this.workerService
-      .createWorker('auth-timer', merge(this.login$.asObservable(), this.logout$.asObservable()), this.getExpiration())
+      .createWorker<string>('auth-timer', this.getExpiration())
       .pipe(take(1))
       .subscribe({
         complete: () => {
@@ -66,7 +76,7 @@ export class AuthService {
       .pipe(
         tap(() => {
           this.removeToken();
-          this.logout$.next();
+          this.workerService.removeWorker('auth-timer');
         })
       );
   }

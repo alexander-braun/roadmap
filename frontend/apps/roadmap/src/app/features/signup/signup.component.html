@@ -1,1 +1,32 @@
-<div class="modal-container"></div>
+<div class="modal-container">
+  <fa-icon class="close fa-w-11" [icon]="faTimes" (click)="close()"></fa-icon>
+  <rdmp-loading-spinner [height]="120" *ngIf="loading$ | async"></rdmp-loading-spinner>
+  <rdmp-signup-icon *ngIf="!(loading$ | async)"></rdmp-signup-icon>
+  <h3 class="header-title">Signup</h3>
+  <form [formGroup]="signupForm">
+    <div class="form-control">
+      <label for="email">Email</label>
+      <input id="email" type="text" formControlName="email" />
+      <ng-container *ngIf="signupForm.controls.email.touched">
+        <div class="form-error" *ngIf="signupForm.controls.email.errors?.['required']">Email is required.</div>
+        <div class="form-error" *ngIf="signupForm.controls.email.errors?.['email']">Email not valid.</div>
+      </ng-container>
+    </div>
+
+    <div class="form-control">
+      <label for="password">Password</label>
+      <input id="password" type="password" formControlName="password" />
+      <ng-container *ngIf="signupForm.controls.password.touched">
+        <div class="form-error" *ngIf="signupForm.controls.password.errors?.['required']">Password is required.</div>
+        <div class="form-error" *ngIf="signupForm.controls.password.errors?.['minlength']">
+          Password must have at least 7 characters.
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="buttongroup">
+      <button class="signup" (click)="signup()">Signup</button>
+      <button class="login" (click)="goToLogin()">Login</button>
+    </div>
+  </form>
+</div>

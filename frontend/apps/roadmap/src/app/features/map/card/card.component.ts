@@ -56,7 +56,6 @@ export class CardComponent implements OnInit {
     this.mapService.cardDataTree$.pipe(take(1)).subscribe(() => {
       this.patchForm();
     });
-
     this.cardForm.valueChanges.subscribe(() => {
       this.save();
     });
