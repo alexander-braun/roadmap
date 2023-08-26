@@ -21,12 +21,18 @@ export class MapService {
   public cardDataTree$ = this.cardDataTree$$.asObservable();
   public presetName$ = new BehaviorSubject<string>('');
   public presetSubline$ = new BehaviorSubject<string>('');
+  public loading$ = new Subject<boolean>();
 
   constructor(private settingsService: SettingsService, private http: HttpClient, private authService: AuthService) {
     this.handleCategoriesUpdates();
+    this.authService.isAuthorized$.subscribe(() => {
+      this.getData();
+    });
   }
 
   public getData(): void {
+    this.loading$.next(true);
+    this.removeCurrentRoadmap();
     if (!this.authService.isUserAuthorized()) {
       forkJoin([
         this.http.get<[{ nodes: Nodes; defaultMap: boolean }]>('/api/default-nodes'),
@@ -34,11 +40,44 @@ export class MapService {
       ]).subscribe(([nodesData, cardData]) => {
         this.presetName$.next('Frontend Developer');
         this.presetSubline$.next('Default Frontend Roadmap');
-
-        const nodes = nodesData[0].nodes;
-        this.appendEndingNode(nodes);
-        this.cardDataTree$$.next(cardData[0].cards);
+        const nodes = nodesData?.[0]?.nodes;
+        this.appendEndingNode(nodes || {});
+        this.cardDataTree$$.next(cardData?.[0]?.cards);
+        this.loading$.next(false);
       });
+    } else if (localStorage.getItem('lastVisitedMapId') !== null) {
+      this.http.get<Roadmap>(`/api/roadmaps/${localStorage.getItem('lastVisitedMapId')}`).subscribe((roadmap) => {
+        this.handleMapResponse(roadmap);
+        this.loading$.next(false);
+      });
+    } else {
+      this.http.get<Roadmap[]>('/api/roadmaps').subscribe((roadmaps) => {
+        this.handleMapResponse(roadmaps[0]);
+        this.loading$.next(false);
+      });
+    }
+  }
+
+  private removeCurrentRoadmap() {
+    this.handleMapResponse({} as Roadmap);
+  }
+
+  private handleMapResponse(roadmap: Roadmap) {
+    const cardDataTree: CardDataTree = {};
+    const nodes: Nodes = {};
+    roadmap?.map?.forEach((node) => {
+      const { title, date, notes, categoryId, status } = node;
+      const { mainKnot, children } = node;
+      cardDataTree[node.id] = { title, date, notes, categoryId, status };
+      nodes[node.id] = { mainKnot, children };
+    });
+    this.presetName$.next(roadmap?.title);
+    this.presetSubline$.next(roadmap?.subtitle);
+    this.cardDataTree$$.next(cardDataTree);
+    if (Object.keys(nodes).length > 0) {
+      this.appendEndingNode(nodes);
+    } else {
+      this.setNodes({});
     }
   }
 

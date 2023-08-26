@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap, BehaviorSubject, Observable, Subject, switchMap, catchError, EMPTY, take, merge, takeUntil } from 'rxjs';
+import { tap, BehaviorSubject, Observable, take, catchError, EMPTY } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
 import { ExpiresAt, LoginResponse, Token, User } from './auth.model';
 import { WorkerService } from './worker.service';
@@ -55,6 +55,21 @@ export class AuthService {
     );
   }
 
+  public logout(): Observable<User> {
+    return this.http
+      .post<{ _id: string; name: string; email: string; createdAt: string; updatedAt: string }>('api/users/logout', {})
+      .pipe(
+        catchError((e) => {
+          this.removeToken();
+          return EMPTY;
+        }),
+        tap(() => {
+          this.removeToken();
+          this.workerService.removeWorker('auth-timer');
+        })
+      );
+  }
+
   public isUserAuthorized(): boolean {
     return this.isAuthorized$$.value;
   }
@@ -68,17 +83,6 @@ export class AuthService {
           this.removeToken();
         },
       });
-  }
-
-  public logout(): Observable<User> {
-    return this.http
-      .post<{ _id: string; name: string; email: string; createdAt: string; updatedAt: string }>('api/users/logout', {})
-      .pipe(
-        tap(() => {
-          this.removeToken();
-          this.workerService.removeWorker('auth-timer');
-        })
-      );
   }
 
   private removeToken(): void {

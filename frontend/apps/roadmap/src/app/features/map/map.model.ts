@@ -47,6 +47,7 @@ export interface Roadmap {
     title: string;
     notes: string[];
     categoryId: string;
-    status: string;
+    status: Status;
+    date: string;
   }[];
 }

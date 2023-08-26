@@ -66,7 +66,10 @@ router.post("/users/logout", auth, (req, res) => {
   );
   from(req.user.save())
     .pipe(
-      catchError((e) => res.status(500).send(e.message)),
+      catchError((e) => {
+        res.status(500).send(e.message);
+        return EMPTY;
+      }),
       tap((user) => {
         if (!user) {
           res.status(400).send();

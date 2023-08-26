@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const roadmapSchema = new mongoose.Schema(
   {
     title: {
-      unique: true,
       type: String,
       trim: true,
       required: true,
@@ -16,6 +15,10 @@ const roadmapSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
+    },
+    date: {
+      type: Date,
+      default: new Date(Date.now()),
     },
     map: [
       {

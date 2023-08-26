@@ -1,9 +1,18 @@
 const mongoose = require("mongoose");
-const { from, switchMap, throwError, of, tap } = require("rxjs");
+const {
+  from,
+  switchMap,
+  throwError,
+  of,
+  tap,
+  catchError,
+  EMPTY,
+} = require("rxjs");
 const validator = require("validator");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Roadmap = require("./roadmap");
+const { v4: uuid } = require("uuid");
 
 const userSchema = new mongoose.Schema(
   {
@@ -65,6 +74,49 @@ userSchema.pre("save", { document: true }, function (next) {
   } else {
     next();
   }
+});
+
+userSchema.pre("save", { document: true }, function (next) {
+  const id = this._id;
+  from(Roadmap.find({ owner: id }))
+    .pipe(
+      switchMap((roadmaps) => {
+        if (roadmaps.length === 0) {
+          const center = uuid();
+          const child = uuid();
+          const roadmap = new Roadmap({
+            owner: id,
+            title: "Default Roadmap Preset",
+            subtitle: "edit me!",
+            map: [
+              {
+                mainKnot: true,
+                children: [child],
+                id: center,
+                title: "Edit me!",
+                categoryId: "1",
+              },
+              {
+                children: [],
+                id: child,
+                title: "Edit me!",
+                notes: ["My first note..."],
+              },
+            ],
+          });
+          return from(roadmap.save()).pipe(
+            catchError(() => {
+              return EMPTY;
+            })
+          );
+        } else {
+          return EMPTY;
+        }
+      })
+    )
+    .subscribe({
+      complete: () => next(),
+    });
 });
 
 // Delte all related roadmaps and nodes

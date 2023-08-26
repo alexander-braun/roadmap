@@ -1,10 +1,13 @@
 <div class="header">
   <rdmp-header-right></rdmp-header-right>
   <rdmp-header-left></rdmp-header-left>
-  <div class="wrapper" *ngIf="presetName?.length; else noPreset">
-    <h1 class="heading">{{ presetName }}</h1>
-    <h4 class="subheading">{{ presetSubline }}</h4>
-  </div>
+  <ng-container *ngIf="(loading$ | async) === false">
+    <div class="wrapper" *ngIf="presetName?.length; else noPreset">
+      <h1 class="heading">{{ presetName }}</h1>
+      <h4 class="subheading">{{ presetSubline }}</h4>
+    </div>
+  </ng-container>
+  <rdmp-loading-spinner [height]="120" *ngIf="(loading$ | async) === true"></rdmp-loading-spinner>
 </div>
 
 <ng-template #noPreset>
