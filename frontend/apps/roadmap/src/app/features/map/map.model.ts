@@ -37,6 +37,10 @@ export interface CardDataTree {
 }
 
 export interface Roadmap {
+  _id: string;
+  date: string;
+  updatedAt: string;
+  createdAt: string;
   title: string;
   subtitle: string;
   owner: string;
@@ -51,3 +55,14 @@ export interface Roadmap {
     date: string;
   }[];
 }
+
+export interface PresetInfo {
+  title: string;
+  subtitle: string;
+  updatedAt: string;
+  date: string;
+  id: string;
+  createdAt: string;
+}
+
+export type RoadmapPatchResponse = Omit<PresetInfo & { __v: number; map: Node[]; _id: string }, 'id'>;

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin, Subject } from 'rxjs';
-import { CardData, CardDataTree, CardPropertyCollection } from './map.model';
+import { BehaviorSubject, catchError, EMPTY, forkJoin, of, Subject, take } from 'rxjs';
+import { CardData, CardDataTree, CardPropertyCollection, PresetInfo, RoadmapPatchResponse } from './map.model';
 import { v4 as uuidv4 } from 'uuid';
 import { SettingsService } from './settings/settings.service';
 import { Categories } from './settings/settings.model';
@@ -19,8 +19,7 @@ export class MapService {
   public nodes$ = this.nodes$$.asObservable();
   private cardDataTree$$ = new BehaviorSubject<Readonly<CardDataTree>>({});
   public cardDataTree$ = this.cardDataTree$$.asObservable();
-  public presetName$ = new BehaviorSubject<string>('');
-  public presetSubline$ = new BehaviorSubject<string>('');
+  public presetInfo$$ = new BehaviorSubject<PresetInfo>({} as PresetInfo);
   public loading$ = new Subject<boolean>();
 
   constructor(private settingsService: SettingsService, private http: HttpClient, private authService: AuthService) {
@@ -38,8 +37,11 @@ export class MapService {
         this.http.get<[{ nodes: Nodes; defaultMap: boolean }]>('/api/default-nodes'),
         this.http.get<[{ cards: CardDataTree; defaultMap: boolean }]>('/api/default-card-data'),
       ]).subscribe(([nodesData, cardData]) => {
-        this.presetName$.next('Frontend Developer');
-        this.presetSubline$.next('Default Frontend Roadmap');
+        this.presetInfo$$.next({
+          ...this.presetInfo$$.value,
+          title: 'Frontend Developer',
+          subtitle: 'Default Frontend Roadmap',
+        });
         const nodes = nodesData?.[0]?.nodes;
         this.appendEndingNode(nodes || {});
         this.cardDataTree$$.next(cardData?.[0]?.cards);
@@ -58,11 +60,43 @@ export class MapService {
     }
   }
 
+  public setPresetInformation(title: string, subtitle: string): void {
+    const roadmapId = this.presetInfo$$.value.id;
+    if (
+      (this.presetInfo$$.value.title !== title || this.presetInfo$$.value.subtitle !== subtitle) &&
+      this.authService.isUserAuthorized() &&
+      roadmapId
+    ) {
+      this.http
+        .patch<RoadmapPatchResponse>('/api/roadmaps/' + roadmapId, {
+          title,
+          subtitle,
+        })
+        .pipe(
+          take(1),
+          catchError(() => EMPTY)
+        )
+        .subscribe({
+          next: (response) => {
+            this.presetInfo$$.next({
+              title: response.title,
+              subtitle: response.subtitle,
+              id: response._id,
+              updatedAt: response.updatedAt,
+              createdAt: response.createdAt,
+              date: response.date,
+            });
+          },
+        });
+    }
+  }
+
   private removeCurrentRoadmap() {
     this.handleMapResponse({} as Roadmap);
   }
 
   private handleMapResponse(roadmap: Roadmap) {
+    // Extract cardData and nodesdata and put them in appropriate structure
     const cardDataTree: CardDataTree = {};
     const nodes: Nodes = {};
     roadmap?.map?.forEach((node) => {
@@ -70,9 +104,20 @@ export class MapService {
       cardDataTree[node.id] = { title, date, notes, categoryId, status };
       nodes[node.id] = { mainKnot, children };
     });
-    this.presetName$.next(roadmap?.title);
-    this.presetSubline$.next(roadmap?.subtitle);
     this.cardDataTree$$.next(cardDataTree);
+
+    // Extract preset data (title, subtitle important for header)
+    const { title, subtitle, _id, createdAt, date, updatedAt } = roadmap;
+    this.presetInfo$$.next({
+      title,
+      subtitle,
+      id: _id,
+      createdAt,
+      date,
+      updatedAt,
+    });
+
+    // If the map is not empty an ending-node is added and if not just show empty (something went wrong / no map)
     if (Object.keys(nodes).length > 0) {
       this.appendEndingNode(nodes);
     } else {

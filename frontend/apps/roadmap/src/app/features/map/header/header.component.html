@@ -2,9 +2,15 @@
   <rdmp-header-right></rdmp-header-right>
   <rdmp-header-left></rdmp-header-left>
   <ng-container *ngIf="(loading$ | async) === false">
-    <div class="wrapper" *ngIf="presetName?.length; else noPreset">
-      <h1 class="heading">{{ presetName }}</h1>
-      <h4 class="subheading">{{ presetSubline }}</h4>
+    <div class="wrapper" *ngIf="form.controls.title.value?.length; else noPreset" [formGroup]="form">
+      <div class="heading" rdmp-editable="true" unformattedPaste formControlName="title" (blur)="updateRoadmap()"></div>
+      <div
+        class="subheading"
+        rdmp-editable="true"
+        unformattedPaste
+        formControlName="subtitle"
+        (blur)="updateRoadmap()"
+      ></div>
     </div>
   </ng-container>
   <rdmp-loading-spinner [height]="120" *ngIf="(loading$ | async) === true"></rdmp-loading-spinner>
