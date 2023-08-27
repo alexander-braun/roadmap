@@ -27,12 +27,3 @@ const sendMail = (to: string, subject: string, text: string) => {
 };
 
 module.exports = sendMail;
-
-/*
-app.brevo.com
-name: my-mailer
-api-key: xsmtpsib-ac80d0cc2597e983b275736e7109e4a2f3435dddb9c8cfc3e50493f68ad94ac2-I8bBSynpQRPXAfLY
-smpt-server: smtp-relay.brevo.com
-port: 587
-login: roadmap.rdmp@gmail.com
-*/
