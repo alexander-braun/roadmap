@@ -1,13 +1,13 @@
-const express = require("express");
+import express from "express";
 require("../db/mongoose");
-const { catchError, EMPTY, tap, from, switchMap, throwError } = require("rxjs");
-const auth = require("../middleware/auth");
-const Roadmap = require("../models/roadmap");
+import { catchError, EMPTY, tap, from, switchMap, throwError } from "rxjs";
+import { auth } from "../middleware/auth";
+import { RoadmapModel, IRoadmap } from "../models/roadmap";
 
 const router = express.Router();
 
 router.post("/roadmaps", auth, (req, res) => {
-  const roadmap = new Roadmap({
+  const roadmap = new RoadmapModel({
     ...req.body,
     owner: req.user._id,
   });
@@ -26,7 +26,7 @@ router.post("/roadmaps", auth, (req, res) => {
 });
 
 router.get("/roadmaps", auth, (req, res) => {
-  from(Roadmap.find({ owner: req.user._id }))
+  from(RoadmapModel.find({ owner: req.user._id }))
     .pipe(
       catchError((e) => {
         res.status(500).send(e.message);
@@ -43,7 +43,7 @@ router.get("/roadmaps", auth, (req, res) => {
 });
 
 router.get("/roadmaps/:id", auth, (req, res) => {
-  from(Roadmap.findOne({ _id: req.params.id, owner: req.user._id }))
+  from(RoadmapModel.findOne({ _id: req.params.id, owner: req.user._id }))
     .pipe(
       catchError((e) => {
         res.status(500).send(e.message);
@@ -61,13 +61,13 @@ router.get("/roadmaps/:id", auth, (req, res) => {
 });
 
 router.patch("/roadmaps/:id", auth, (req, res) => {
-  from(Roadmap.findOne({ _id: req.params.id, owner: req.user._id }))
+  from(RoadmapModel.findOne({ _id: req.params.id, owner: req.user._id }))
     .pipe(
       switchMap((roadmap) => {
         if (roadmap) {
-          Object.keys(req.body).forEach(
-            (key) => (roadmap[key] = req.body[key])
-          );
+          (Object.keys(req.body) as Array<keyof IRoadmap>).forEach((key) => {
+            roadmap[key] = req.body[key];
+          });
           return from(roadmap.save());
         } else {
           return throwError(() => new Error("Roadmap not found"));
@@ -90,7 +90,7 @@ router.patch("/roadmaps/:id", auth, (req, res) => {
 
 router.patch("/roadmaps/node/:id", auth, (req, res) => {
   from(
-    Roadmap.findOneAndUpdate(
+    RoadmapModel.findOneAndUpdate(
       { _id: req.params.id, "map.id": req.body.id },
       { $set: { "map.$": req.body } },
       { new: true }
@@ -115,17 +115,31 @@ router.patch("/roadmaps/node/:id", auth, (req, res) => {
 });
 
 router.delete("/roadmaps/node/:id", auth, (req, res) => {
-  from(Roadmap.findOne({ _id: req.params.id }))
+  from(RoadmapModel.findOne({ _id: req.params.id }))
     .pipe(
       switchMap((roadmap) => {
-        const node = roadmap.map.find((node) => node.id === req.body.id);
-        const subChildren = node.children.map(
-          (child) => roadmap.map.find((node) => node.id === child).children
-        );
-        const children = [...node.children, ...subChildren.flat(), req.body.id];
+        const node = roadmap?.map.find((node) => node.id === req.body.id);
+        const subChildren = node?.children
+          .map(
+            (child) => roadmap?.map.find((node) => node.id === child)?.children
+          )
+          .filter((el) => el !== undefined)
+          .flat();
+
+        let children: (string | undefined)[] = [];
+
+        if (node?.children) {
+          children = [...children, ...node.children];
+        }
+
+        if (subChildren) {
+          children = [...children, ...subChildren];
+        }
+
+        children = [...children, req.body.id];
 
         return from(
-          Roadmap.findByIdAndUpdate(
+          RoadmapModel.findByIdAndUpdate(
             { _id: req.params.id },
             { $pull: { map: { id: children } } },
             { new: true, useFindAndModify: false }
@@ -149,7 +163,7 @@ router.delete("/roadmaps/node/:id", auth, (req, res) => {
 
 router.post("/roadmaps/node/:id", auth, (req, res) => {
   from(
-    Roadmap.findOneAndUpdate(
+    RoadmapModel.findOneAndUpdate(
       { _id: req.params.id, "map.id": { $ne: req.body.id } },
       {
         $push: {
@@ -176,7 +190,7 @@ router.post("/roadmaps/node/:id", auth, (req, res) => {
 });
 
 router.delete("/roadmaps/:id", auth, (req, res) => {
-  from(Roadmap.findOneAndDelete({ _id: req.params.id }))
+  from(RoadmapModel.findOneAndDelete({ _id: req.params.id }))
     .pipe(
       catchError((e) => {
         res.status(500).send(e.message);
@@ -193,4 +207,4 @@ router.delete("/roadmaps/:id", auth, (req, res) => {
     .subscribe();
 });
 
-module.exports = router;
+export default router;

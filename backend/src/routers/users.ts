@@ -1,18 +1,20 @@
-const express = require("express");
+import express, { Express, Request, Response } from "express";
 require("../db/mongoose");
-const User = require("../models/user");
-const { catchError, EMPTY, tap, from, switchMap, of } = require("rxjs");
-const auth = require("../middleware/auth");
+import { UserModel, UserType } from "../models/user";
+import { catchError, EMPTY, tap, from, switchMap, of } from "rxjs";
+import { auth } from "../middleware/auth";
 const sendMail = require("../emails/account");
 
 const router = express.Router();
 
 router.post("/users", (req, res) => {
-  const user = new User(req.body);
+  const user = new UserModel(req.body);
   from(user.save())
     .pipe(
       switchMap((user) =>
-        user.generateAuthToken().pipe(switchMap((token) => of([user, token])))
+        user
+          .generateAuthToken()
+          .pipe(switchMap((token) => of<[UserType, string]>([user, token])))
       ),
       catchError((e) => {
         res.status(400).send(e.message);
@@ -40,10 +42,12 @@ router.post("/users", (req, res) => {
 });
 
 router.post("/users/login", (req, res) => {
-  User.findByCredentials(req.body.email, req.body.password)
+  UserModel.findByCredentials(req.body.email, req.body.password)
     .pipe(
       switchMap((user) =>
-        user.generateAuthToken().pipe(switchMap((token) => of([user, token])))
+        user
+          .generateAuthToken()
+          .pipe(switchMap((token) => of<[UserType, string]>([user, token])))
       ),
       catchError((e) => {
         res.status(400).send(e.message);
@@ -61,7 +65,7 @@ router.post("/users/login", (req, res) => {
 });
 
 router.post("/users/logout", auth, (req, res) => {
-  req.user.tokens = req.user.tokens.filter(
+  req.user.tokens = (req.user as UserType).tokens.filter(
     (tokenObj) => tokenObj.token !== req.token
   );
   from(req.user.save())
@@ -84,7 +88,10 @@ router.post("/users/logoutAll", auth, (req, res) => {
   req.user.tokens = [];
   from(req.user.save())
     .pipe(
-      catchError((e) => res.status(500).send(e.message)),
+      catchError((e) => {
+        res.status(500).send(e.message);
+        return EMPTY;
+      }),
       tap((user) => {
         if (!user) {
           res.status(500).send();
@@ -115,7 +122,6 @@ router.patch("/users/me", auth, (req, res) => {
   changedFields.forEach((field) => {
     req.user[field] = req.body[field];
   });
-
   from(req.user.save())
     .pipe(
       catchError((e) => {
@@ -158,4 +164,4 @@ router.delete("/users/me", auth, (req, res) => {
     .subscribe();
 });
 
-module.exports = router;
+export default router;

@@ -1,74 +1,76 @@
 <rdmp-header></rdmp-header>
-<div class="map" *ngIf="(centerNodes$$.asObservable() | async)?.length">
-  <div *ngFor="let centerNode of centerNodes$$.asObservable() | async; let i = index" class="section">
-    <div #cardContainer class="section__side-elements section__side-elements--left section__side-elements--subchild">
-      <ng-container *ngFor="let child of childrenLeft[i]">
-        <ng-container *ngFor="let subChild of subChildrenMapLeft[child]">
+<ng-container *ngIf="{ centerNodes: centerNodes$$.asObservable() | async } as center">
+  <div class="map" *ngIf="center.centerNodes?.length">
+    <div *ngFor="let centerNode of center.centerNodes; let i = index; trackBy: identify" class="section">
+      <div #cardContainer class="section__side-elements section__side-elements--left section__side-elements--subchild">
+        <ng-container *ngFor="let child of childrenLeft[i]">
+          <ng-container *ngFor="let subChild of subChildrenMapLeft[child]">
+            <rdmp-card
+              [id]="subChild"
+              class="card card--element card--subchild card--left"
+              [nodeId]="subChild"
+              position="subchild-left"
+            ></rdmp-card>
+          </ng-container>
+        </ng-container>
+      </div>
+
+      <div #cardContainer class="section__side-elements section__side-elements--left">
+        <ng-container *ngFor="let child of childrenLeft[i]">
           <rdmp-card
-            [id]="subChild"
-            class="card card--element card--subchild card--left"
-            [nodeId]="subChild"
-            position="subchild-left"
+            [id]="child"
+            class="card card--element card--recommended card--left"
+            [nodeId]="child"
+            position="left"
           ></rdmp-card>
         </ng-container>
-      </ng-container>
-    </div>
+      </div>
 
-    <div #cardContainer class="section__side-elements section__side-elements--left">
-      <ng-container *ngFor="let child of childrenLeft[i]">
+      <div
+        #cardContainer
+        class="section__side-elements section__side-elements--center-section"
+        [ngClass]="centerNode === 'last-node' ? 'last-node' : ''"
+      >
         <rdmp-card
-          [id]="child"
-          class="card card--element card--recommended card--left"
-          [nodeId]="child"
-          position="left"
+          [id]="centerNode"
+          *ngIf="centerNode !== 'last-node'"
+          class="card card--center"
+          [nodeId]="centerNode"
+          position="center"
         ></rdmp-card>
-      </ng-container>
-    </div>
-
-    <div
-      #cardContainer
-      class="section__side-elements section__side-elements--center-section"
-      [ngClass]="centerNode === 'last-node' ? 'last-node' : ''"
-    >
-      <rdmp-card
-        [id]="centerNode"
-        *ngIf="centerNode !== 'last-node'"
-        class="card card--center"
-        [nodeId]="centerNode"
-        position="center"
-      ></rdmp-card>
-      <div class="add-center-node-container">
-        <div *ngIf="centerNode !== 'last-node'" class="add-center-circle" (click)="appendCenterNode(centerNode)">
-          <div>+</div>
+        <div class="add-center-node-container">
+          <div *ngIf="centerNode !== 'last-node'" class="add-center-circle" (click)="appendCenterNode(centerNode)">
+            <div>+</div>
+          </div>
+        </div>
+        <div *ngIf="centerNode === 'last-node'" class="card card--center" [id]="centerNode">
+          <div class="last-node-ball"></div>
         </div>
       </div>
-      <div *ngIf="centerNode === 'last-node'" class="card card--center" [id]="centerNode">
-        <div class="last-node-ball"></div>
-      </div>
-    </div>
 
-    <div #cardContainer class="section__side-elements section__side-elements--right">
-      <ng-container *ngFor="let child of childrenRight[i]">
-        <rdmp-card
-          [id]="child"
-          class="card card--element card--recommended card--right"
-          [nodeId]="child"
-          position="right"
-        ></rdmp-card>
-      </ng-container>
-    </div>
-
-    <div #cardContainer class="section__side-elements section__side-elements--right section__side-elements--subchild">
-      <ng-container *ngFor="let child of childrenRight[i]">
-        <ng-container *ngFor="let subChild of subChildrenMapRight[child]">
+      <div #cardContainer class="section__side-elements section__side-elements--right">
+        <ng-container *ngFor="let child of childrenRight[i]">
           <rdmp-card
-            [id]="subChild"
-            class="card card--element card--subchild card--right"
-            [nodeId]="subChild"
-            position="subchild-right"
+            [id]="child"
+            class="card card--element card--recommended card--right"
+            [nodeId]="child"
+            position="right"
           ></rdmp-card>
         </ng-container>
-      </ng-container>
+      </div>
+
+      <div #cardContainer class="section__side-elements section__side-elements--right section__side-elements--subchild">
+        <ng-container *ngFor="let child of childrenRight[i]">
+          <ng-container *ngFor="let subChild of subChildrenMapRight[child]">
+            <rdmp-card
+              [id]="subChild"
+              class="card card--element card--subchild card--right"
+              [nodeId]="subChild"
+              position="subchild-right"
+            ></rdmp-card>
+          </ng-container>
+        </ng-container>
+      </div>
     </div>
   </div>
-</div>
+</ng-container>

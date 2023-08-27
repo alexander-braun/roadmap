@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user";
+import { UserModel } from "../models/user";
 import { switchMap, catchError, EMPTY, tap, of, from } from "rxjs";
 import express, { Express, NextFunction, Request, Response } from "express";
-import IUser from "../models/user.model";
-
+import { generateDefaultRoadmapForUser } from "../models/user";
 export interface JwtPayload {
   _id: string;
 }
@@ -14,7 +13,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     of(jwt.verify(token || "", process.env.JWT_SECRET || "") as JwtPayload)
       .pipe(
         switchMap((decoded) =>
-          User.findOne({ _id: decoded._id, "tokens.token": token })
+          UserModel.findOne({ _id: decoded._id, "tokens.token": token })
         ),
         catchError((e) => {
           res.status(401).send(e.message);
