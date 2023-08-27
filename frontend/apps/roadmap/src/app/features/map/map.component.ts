@@ -66,6 +66,9 @@ export class MapComponent implements AfterViewInit, OnInit {
       next: () => this.updateNodes(),
     });
   }
+  public identify = (index: number, item: string): number => {
+    return index;
+  };
 
   private createChildNodeMaps(): void {
     this.childrenLeft = [];

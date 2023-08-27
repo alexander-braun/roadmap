@@ -1,7 +1,7 @@
-const express = require("express");
+import express from "express";
 require("../db/mongoose");
-const CardDataDefault = require("../models/card-data-default");
-const { catchError, EMPTY, tap, from, switchMap, of } = require("rxjs");
+import CardDataDefault from "../models/card-data-default";
+import { catchError, EMPTY, tap, from, switchMap, of } from "rxjs";
 
 const router = express.Router();
 
@@ -28,8 +28,11 @@ router.patch("/default-card-data", (req, res) => {
   from(CardDataDefault.findOne({ defaultMap: true }))
     .pipe(
       switchMap((card) => {
-        card.cards = req.body.cards;
-        return from(card.save());
+        if (card) {
+          card.cards = req.body.cards;
+          return from(card.save());
+        }
+        return EMPTY;
       }),
       catchError((e) => {
         res.status(400).send(e.message);
@@ -59,4 +62,4 @@ router.get("/default-card-data", (req, res) => {
     .subscribe();
 });
 
-module.exports = router;
+export default router;

@@ -1,2 +1,5 @@
-/config
-/node_modules
+*.js
+node_modules
+dist
+config
+api-key.txt

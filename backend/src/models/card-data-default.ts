@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const CardDataDefault = mongoose.model(
   "CardDataDefault",
@@ -14,4 +14,4 @@ const CardDataDefault = mongoose.model(
   })
 );
 
-module.exports = CardDataDefault;
+export default CardDataDefault;

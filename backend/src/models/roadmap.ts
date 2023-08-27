@@ -1,6 +1,22 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const roadmapSchema = new mongoose.Schema(
+export interface IRoadmap {
+  title: string;
+  subtitle: string;
+  owner: typeof mongoose.Schema.Types.ObjectId;
+  date: Date;
+  map: {
+    mainKnot: boolean;
+    children: string[];
+    id: string;
+    title: string;
+    notes: string[];
+    categoryId: string;
+    status: string;
+  }[];
+}
+
+const roadmapSchema = new mongoose.Schema<IRoadmap>(
   {
     title: {
       type: String,
@@ -52,5 +68,4 @@ const roadmapSchema = new mongoose.Schema(
   }
 );
 
-const Roadmap = mongoose.model("Roadmap", roadmapSchema);
-module.exports = Roadmap;
+export const RoadmapModel = mongoose.model("Roadmap", roadmapSchema);

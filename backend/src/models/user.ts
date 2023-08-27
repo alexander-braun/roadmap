@@ -1,25 +1,47 @@
-const mongoose = require("mongoose");
-const {
+import mongoose, {
+  CallbackWithoutResultAndOptionalError,
+  HydratedDocument,
+  InferSchemaType,
+} from "mongoose";
+import {
+  Observable,
   from,
   switchMap,
   throwError,
   of,
-  tap,
   catchError,
   EMPTY,
-} = require("rxjs");
-const validator = require("validator");
-const bcryptjs = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const Roadmap = require("./roadmap");
-const { v4: uuid } = require("uuid");
+} from "rxjs";
+import validator from "validator";
+import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { RoadmapModel } from "./roadmap";
+import { v4 as uuid } from "uuid";
+import { Model } from "mongoose";
 
-const userSchema = new mongoose.Schema(
+export interface IUser {
+  email: string;
+  password: string;
+  tokens: { token: string }[];
+}
+
+interface IUserMethods {
+  generateAuthToken: () => Observable<string>;
+}
+
+interface IUserModel extends Model<IUser, {}, IUserMethods> {
+  findByCredentials: (
+    email: string,
+    password: string
+  ) => Observable<HydratedDocument<IUser, IUserMethods>>;
+}
+
+const userSchema = new mongoose.Schema<IUser, IUserModel, IUserMethods>(
   {
     email: {
       unique: true,
       type: String,
-      validate(value) {
+      validate(value: string) {
         if (!validator.isEmail(value)) {
           throw new Error("Not a valid email");
         }
@@ -33,7 +55,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 7,
       trim: true,
-      validate(value) {
+      validate(value: string) {
         if (value.toLowerCase() === "password") {
           throw new Error("Not a valid password");
         }
@@ -76,15 +98,26 @@ userSchema.pre("save", { document: true }, function (next) {
   }
 });
 
-userSchema.pre("save", { document: true }, function (next) {
-  const id = this._id;
-  from(Roadmap.find({ owner: id }))
+userSchema.pre(
+  "save",
+  { document: true },
+  function (next: CallbackWithoutResultAndOptionalError) {
+    const id = this._id;
+    generateDefaultRoadmapForUser(id, next);
+  }
+);
+
+export const generateDefaultRoadmapForUser = (
+  id: mongoose.Types.ObjectId,
+  next: CallbackWithoutResultAndOptionalError
+) => {
+  from(RoadmapModel.find({ owner: id }))
     .pipe(
       switchMap((roadmaps) => {
-        if (roadmaps.length === 0) {
+        if (Array.isArray(roadmaps) && roadmaps.length === 0) {
           const center = uuid();
           const child = uuid();
-          const roadmap = new Roadmap({
+          const roadmap = new RoadmapModel({
             owner: id,
             title: "Default Roadmap Preset",
             subtitle: "edit me!",
@@ -117,39 +150,49 @@ userSchema.pre("save", { document: true }, function (next) {
     .subscribe({
       complete: () => next(),
     });
-});
+};
 
 // Delte all related roadmaps and nodes
 userSchema.pre("deleteOne", { document: true }, function (next) {
-  from(Roadmap.deleteMany({ owner: this._id })).subscribe(() => next());
+  from(RoadmapModel.deleteMany({ owner: this._id })).subscribe(() => next());
 });
 
 // Static methods are accessible on the model of User
-userSchema.statics.findByCredentials = (email, password) => {
-  return from(User.findOne({ email })).pipe(
-    switchMap((user) => {
-      if (!user) {
-        return throwError(() => new Error("Email not found"));
-      } else {
-        return from(bcryptjs.compare(password, user.password)).pipe(
-          switchMap((match) => {
-            if (!match) {
-              return throwError(() => new Error("Wrong password"));
-            } else {
-              return of(user);
-            }
-          })
-        );
-      }
-    })
-  );
-};
+userSchema.static(
+  "findByCredentials",
+  function findByCredentials(
+    email: string,
+    password: string
+  ): Observable<IUser> {
+    return from(UserModel.findOne({ email })).pipe(
+      switchMap((user) => {
+        if (!user) {
+          return throwError(() => new Error("Email not found"));
+        } else {
+          return from(bcryptjs.compare(password, user.password)).pipe(
+            switchMap((match) => {
+              if (!match) {
+                return throwError(() => new Error("Wrong password"));
+              } else {
+                return of(user);
+              }
+            })
+          );
+        }
+      })
+    );
+  }
+);
 
 // Methods methods are accessible on the instance of User
 userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id.toString() }, process.env.JWT_SECRET, {
-    expiresIn: "1week",
-  });
+  const token = jwt.sign(
+    { _id: this._id.toString() },
+    process.env.JWT_SECRET || "",
+    {
+      expiresIn: "1week",
+    }
+  );
   this.tokens = this.tokens.concat({ token });
   return from(this.save()).pipe(switchMap(() => of(token)));
 };
@@ -161,6 +204,5 @@ userSchema.methods.toJSON = function () {
   return user;
 };
 
-const User = mongoose.model("User", userSchema);
-
-module.exports = User;
+export type UserType = InferSchemaType<typeof userSchema>;
+export const UserModel = mongoose.model<IUser, IUserModel>("User", userSchema);

@@ -66,8 +66,7 @@ export class MapService {
     const cardDataTree: CardDataTree = {};
     const nodes: Nodes = {};
     roadmap?.map?.forEach((node) => {
-      const { title, date, notes, categoryId, status } = node;
-      const { mainKnot, children } = node;
+      const { title, date, notes, categoryId, status, mainKnot, children } = node;
       cardDataTree[node.id] = { title, date, notes, categoryId, status };
       nodes[node.id] = { mainKnot, children };
     });

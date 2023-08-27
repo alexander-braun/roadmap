@@ -1,8 +1,7 @@
-const express = require("express");
 require("../db/mongoose");
-const NodesDefault = require("../models/nodes-default");
-const { catchError, EMPTY, tap, from, switchMap, of } = require("rxjs");
-
+import NodesDefault from "../models/nodes-default";
+import { catchError, EMPTY, tap, from, switchMap, of } from "rxjs";
+import express, { Express, Request, Response } from "express";
 const router = express.Router();
 
 // No auth so every user/non-user can fetch the default data
@@ -28,8 +27,11 @@ router.patch("/default-nodes", (req, res) => {
   from(NodesDefault.findOne({ defaultMap: true }))
     .pipe(
       switchMap((node) => {
-        node.nodes = req.body.nodes;
-        return from(node.save());
+        if (node) {
+          node.nodes = req.body.nodes;
+          return from(node.save());
+        }
+        return EMPTY;
       }),
       catchError((e) => {
         res.status(400).send(e.message);
@@ -59,4 +61,4 @@ router.get("/default-nodes", (req, res) => {
     .subscribe();
 });
 
-module.exports = router;
+export default router;

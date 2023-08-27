@@ -1,5 +1,5 @@
-const app = require("./app");
-
+import { Express, Request, Response } from "express";
+import app from "./app";
 const port = process.env.PORT;
 
 app.use(function (req, res, next) {

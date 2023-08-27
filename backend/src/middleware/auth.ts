@@ -1,14 +1,19 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/user");
-const { switchMap, catchError, EMPTY, tap, of, from } = require("rxjs");
+import jwt from "jsonwebtoken";
+import { UserModel } from "../models/user";
+import { switchMap, catchError, EMPTY, tap, of, from } from "rxjs";
+import express, { Express, NextFunction, Request, Response } from "express";
+import { generateDefaultRoadmapForUser } from "../models/user";
+export interface JwtPayload {
+  _id: string;
+}
 
-const auth = async (req, res, next) => {
+export const auth = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
   try {
-    of(jwt.verify(token, process.env.JWT_SECRET))
+    of(jwt.verify(token || "", process.env.JWT_SECRET || "") as JwtPayload)
       .pipe(
         switchMap((decoded) =>
-          User.findOne({ _id: decoded._id, "tokens.token": token })
+          UserModel.findOne({ _id: decoded._id, "tokens.token": token })
         ),
         catchError((e) => {
           res.status(401).send(e.message);
@@ -19,7 +24,7 @@ const auth = async (req, res, next) => {
             res.status(401).send("Please authenticate");
           } else {
             const tokenVals = JSON.parse(
-              Buffer.from(token.split(".")[1], "base64").toString()
+              Buffer.from(token?.split(".")?.[1] || "", "base64").toString()
             );
             req.token = token;
             req.user = user;
@@ -33,5 +38,3 @@ const auth = async (req, res, next) => {
     return res.status(401).send();
   }
 };
-
-module.exports = auth;
