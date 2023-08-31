@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { BehaviorSubject, tap, merge, switchMap } from 'rxjs';
 import { MapService } from './map.service';
-import { CardPropertyCollection, Direction } from './map.model';
+import { CardCoordinateCollection, Direction } from './map.model';
 import { faPlus, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { NodeId } from 'apps/roadmap/src/assets/data';
 import { ResizeObserverService } from '../../shared/services/resize-observer.service';
@@ -58,7 +58,7 @@ export class MapComponent implements AfterViewInit, OnInit {
     this.centerNodes$$.next(this.generateCenterNodes());
     this.htmlCardCollection$$.next(this.getAllCardElements());
     this.createChildNodeMaps();
-    this.mapService.setCardPropertyCollection(this.generateCardPropertyCollection());
+    this.mapService.setCardCoordinateCollection(this.generateCardCoordinateCollection());
   }
 
   private handleResize(): void {
@@ -105,12 +105,12 @@ export class MapComponent implements AfterViewInit, OnInit {
     return children.slice(start, end);
   }
 
-  private generateCardPropertyCollection(): CardPropertyCollection {
+  private generateCardCoordinateCollection(): CardCoordinateCollection {
     const pairs = this.getConnectedCardPairs() as NodeId[][];
     const htmlCollection = this.htmlCardCollection$$.value;
     const scrollHeight = window.scrollY;
     const width = window.innerWidth;
-    const cardPropertyCollection: CardPropertyCollection = [];
+    const cardCoordinateCollection: CardCoordinateCollection = [];
 
     for (let i = 0; i < pairs.length; i++) {
       const pair = pairs[i];
@@ -129,14 +129,14 @@ export class MapComponent implements AfterViewInit, OnInit {
       const childRect = child.getBoundingClientRect();
       const center = parent.classList.contains('card--center') && child.classList.contains('card--center');
 
-      cardPropertyCollection.push({
+      cardCoordinateCollection.push({
         parentRect,
         childRect,
         center,
         scrollHeight,
       });
     }
-    return cardPropertyCollection;
+    return cardCoordinateCollection;
   }
 
   private getConnectedCardPairs(): NodeId[][] {

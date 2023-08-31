@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CardProperty, CardPropertyCollection, PaathCoordinateCollection, PaathProperty } from '../map/map.model';
+import { CardCoordinates, CardCoordinateCollection, PaathCoordinateCollection, PaathProperty } from '../map/map.model';
 import { MapService } from '../map/map.service';
 import { ResizeObserverService } from '../../shared/services/resize-observer.service';
 
@@ -13,11 +13,11 @@ import { ResizeObserverService } from '../../shared/services/resize-observer.ser
 })
 export class SvgPathComponent implements OnInit {
   private readonly insetSvg = 25;
-  private cardPropertyCollection: Readonly<CardPropertyCollection> = [];
+  private cardCoordinateCollection: Readonly<CardCoordinateCollection> = [];
   private pathCoords$$ = new BehaviorSubject<PaathCoordinateCollection>([]);
   public pathCoords$ = this.pathCoords$$.asObservable();
-  public cardPropertyCollection$: Observable<Readonly<CardPropertyCollection>> =
-    this.mapService.cardPropertyCollection$;
+  public cardCoordinateCollection$: Observable<Readonly<CardCoordinateCollection>> =
+    this.mapService.cardCoordinateCollection$;
 
   constructor(
     private resizeObserver: ResizeObserverService,
@@ -27,12 +27,12 @@ export class SvgPathComponent implements OnInit {
 
   ngOnInit(): void {
     this.handleResize();
-    this.handleCardPropertyCollectionChanges();
+    this.handleCardCoordinateCollectionChanges();
   }
 
-  private handleCardPropertyCollectionChanges(): void {
-    this.mapService.cardPropertyCollection$.subscribe((cardPropertyCollection) => {
-      this.cardPropertyCollection = cardPropertyCollection;
+  private handleCardCoordinateCollectionChanges(): void {
+    this.mapService.cardCoordinateCollection$.subscribe((cardCoordinateCollection) => {
+      this.cardCoordinateCollection = cardCoordinateCollection;
       this.calculateNewCoordinates();
       this.cdr.detectChanges();
     });
@@ -45,11 +45,11 @@ export class SvgPathComponent implements OnInit {
   }
 
   private calculateNewCoordinates(): void {
-    const newPathCoordinates = this.cardPropertyCollection.map((pair) => this.calculatePaathCoordinate(pair));
+    const newPathCoordinates = this.cardCoordinateCollection.map((pair) => this.calculatePaathCoordinate(pair));
     this.pathCoords$$.next(newPathCoordinates);
   }
 
-  private calculatePaathCoordinate({ parentRect, childRect, center, scrollHeight }: CardProperty): PaathProperty {
+  private calculatePaathCoordinate({ parentRect, childRect, center, scrollHeight }: CardCoordinates): PaathProperty {
     const childIsRightOfParent = childRect.x > parentRect.x;
     const startPointX = this.calculateMoveToX(parentRect, center, childIsRightOfParent);
     const startPointY = this.calculateMoveToY(scrollHeight, parentRect, center);

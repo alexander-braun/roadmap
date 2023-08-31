@@ -1,6 +1,6 @@
 import { NodeId } from 'apps/roadmap/src/assets/data';
 
-export interface CardProperty {
+export interface CardCoordinates {
   parentRect: DOMRect;
   childRect: DOMRect;
   center: boolean;
@@ -30,7 +30,7 @@ export interface CardData {
 }
 
 export type PaathCoordinateCollection = PaathProperty[];
-export type CardPropertyCollection = CardProperty[];
+export type CardCoordinateCollection = CardCoordinates[];
 export type Direction = 'left' | 'right';
 export interface CardDataTree {
   [key: NodeId]: CardData;

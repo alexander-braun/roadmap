@@ -30,4 +30,8 @@ export class NavigationComponent {
   public singup(): void {
     this.modalService.open('signupComponent');
   }
+
+  public openPresets(): void {
+    this.modalService.open('presetsComponent');
+  }
 }
