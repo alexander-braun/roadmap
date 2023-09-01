@@ -1,0 +1,61 @@
+<div class="modal-container">
+  <fa-icon class="close fa-w-11" [icon]="faTimes" (click)="close()"></fa-icon>
+  <rdmp-loading-spinner [height]="120" *ngIf="loading$ | async"></rdmp-loading-spinner>
+  <rdmp-presets-icon *ngIf="!(loading$.asObservable() | async)"></rdmp-presets-icon>
+  <h3 class="header-title">Load Preset</h3>
+  <table *ngIf="availableRoadmaps$ | async; let roadmaps">
+    <tbody>
+      <tr *ngFor="let roadmap of roadmaps; let i = index">
+        <td>
+          <div class="roadmap-title">{{ roadmap.title }}</div>
+        </td>
+        <td class="align-center"><button class="load">Load</button></td>
+        <td class="align-center"><button class="delete">Delete</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 class="header-title">Create new Preset</h3>
+  <form [formGroup]="newTemplateForm">
+    <div class="form-control">
+      <label for="presetTitle">Title</label>
+      <input id="presetTitle" type="text" formControlName="presetTitle" />
+      <ng-container *ngIf="newTemplateForm.controls.presetTitle.touched">
+        <div class="form-error" *ngIf="newTemplateForm.controls.presetTitle.errors?.['required']">
+          Title is required.
+        </div>
+      </ng-container>
+    </div>
+    <div class="form-control">
+      <label for="presetSubtitle">Subtitle</label>
+      <input id="presetSubtitle" type="text" formControlName="presetSubtitle" />
+    </div>
+    <button class="create-new">Create</button>
+  </form>
+  <!--
+    <form [formGroup]="loginForm">
+      <div class="form-control">
+        <label for="email">Email</label>
+        <input id="email" type="text" formControlName="email" />
+        <ng-container *ngIf="loginForm.controls.email.touched">
+          <div class="form-error" *ngIf="loginForm.controls.email.errors?.['required']">Name is required.</div>
+          <div class="form-error" *ngIf="loginForm.controls.email.errors?.['email']">Email not found or incorrect.</div>
+        </ng-container>
+      </div>
+  
+      <div class="form-control">
+        <label for="password">Password</label>
+        <input id="password" type="password" formControlName="password" />
+        <ng-container *ngIf="loginForm.controls.password.touched">
+          <div class="form-error" *ngIf="loginForm.controls.password.errors?.['required']">Password is required.</div>
+          <div class="form-error" *ngIf="loginForm.controls.password.errors?.['password']">Wrong password.</div>
+        </ng-container>
+      </div>
+  
+      <div class="forgot-password" (click)="handleForgotPassword()">Forgot your password?</div>
+      <div class="buttongroup">
+        <button (click)="login()" class="login">Login</button>
+        <button (click)="goToSignUp()" class="signup">Signup</button>
+      </div>
+    </form>
+    -->
+</div>

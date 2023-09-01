@@ -1,6 +1,6 @@
 import { NodeId } from 'apps/roadmap/src/assets/data';
 
-export interface CardProperty {
+export interface CardCoordinates {
   parentRect: DOMRect;
   childRect: DOMRect;
   center: boolean;
@@ -30,13 +30,17 @@ export interface CardData {
 }
 
 export type PaathCoordinateCollection = PaathProperty[];
-export type CardPropertyCollection = CardProperty[];
+export type CardCoordinateCollection = CardCoordinates[];
 export type Direction = 'left' | 'right';
 export interface CardDataTree {
   [key: NodeId]: CardData;
 }
 
 export interface Roadmap {
+  _id: string;
+  date: string;
+  updatedAt: string;
+  createdAt: string;
   title: string;
   subtitle: string;
   owner: string;
@@ -51,3 +55,14 @@ export interface Roadmap {
     date: string;
   }[];
 }
+
+export interface PresetInfo {
+  title: string;
+  subtitle: string;
+  updatedAt: string;
+  date: string;
+  id: string;
+  createdAt: string;
+}
+
+export type RoadmapPatchResponse = Omit<PresetInfo & { __v: number; map: Node[]; _id: string }, 'id'>;

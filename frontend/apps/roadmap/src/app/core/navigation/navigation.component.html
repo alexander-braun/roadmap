@@ -1,7 +1,7 @@
 <div class="menu-bar" *ngIf="{ isAuthorized: isAuthorized$ | async } as auth">
   <div class="title">Interactive Roadmap</div>
   <div class="links">
-    <button *ngIf="auth.isAuthorized">Presets</button>
+    <button *ngIf="auth.isAuthorized" (click)="openPresets()">Presets</button>
     <button (click)="openSettings()">Settings</button>
     <button *ngIf="auth.isAuthorized">Profile</button>
     <ng-container>

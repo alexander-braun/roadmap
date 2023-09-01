@@ -34,11 +34,6 @@
 }
 
 .wrapper {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  justify-self: center;
   margin-left: auto;
   margin-right: auto;
   margin-top: 25vh;
@@ -105,4 +100,18 @@
   background: #429cad;
   color: white;
   font-weight: 600;
+}
+
+.heading,
+.subheading {
+  word-break: break-word;
+  font-family: $raleway;
+  border: 2px dashed transparent;
+  max-width: 50vw;
+  width: fit-content;
+  margin: 0 auto;
+
+  &:hover {
+    border: 2px dashed rgba(0, 0, 0, 0.35);
+  }
 }
