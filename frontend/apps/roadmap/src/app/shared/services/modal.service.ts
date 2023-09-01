@@ -4,11 +4,13 @@ import { ModalComponents, ModalTypes } from '../models/modal.types';
 import { LoginComponent } from '../../features/login/login.component';
 import { SettingsComponent } from '../../features/map/settings/settings.component';
 import { SignupComponent } from '../../features/signup/signup.component';
+import { PresetsComponent } from '../../features/presets/presets.component';
 
 export const identifierToComponentMap: ModalTypes = {
   settingsComponent: SettingsComponent,
   loginComponent: LoginComponent,
   signupComponent: SignupComponent,
+  presetsComponent: PresetsComponent,
 } as const;
 
 @Injectable({

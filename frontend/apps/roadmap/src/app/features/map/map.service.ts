@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, EMPTY, forkJoin, of, Subject, take } from 'rxjs';
-import { CardData, CardDataTree, CardPropertyCollection, PresetInfo, RoadmapPatchResponse } from './map.model';
+import { BehaviorSubject, catchError, EMPTY, forkJoin, Observable, Subject, take, tap } from 'rxjs';
+import { CardData, CardDataTree, CardCoordinateCollection, PresetInfo, RoadmapPatchResponse } from './map.model';
 import { v4 as uuidv4 } from 'uuid';
 import { SettingsService } from './settings/settings.service';
 import { Categories } from './settings/settings.model';
@@ -13,14 +13,17 @@ import { Roadmap } from './map.model';
   providedIn: 'root',
 })
 export class MapService {
-  private cardPropertyCollection$$ = new BehaviorSubject<Readonly<CardPropertyCollection>>([]);
-  public cardPropertyCollection$ = this.cardPropertyCollection$$.asObservable();
+  private cardCoordinateCollection$$ = new BehaviorSubject<Readonly<CardCoordinateCollection>>([]);
+  public cardCoordinateCollection$ = this.cardCoordinateCollection$$.asObservable();
   private nodes$$ = new BehaviorSubject<Readonly<Nodes>>({});
   public nodes$ = this.nodes$$.asObservable();
   private cardDataTree$$ = new BehaviorSubject<Readonly<CardDataTree>>({});
   public cardDataTree$ = this.cardDataTree$$.asObservable();
-  public presetInfo$$ = new BehaviorSubject<PresetInfo>({} as PresetInfo);
-  public loading$ = new Subject<boolean>();
+  public presetInfo$$ = new BehaviorSubject<Readonly<PresetInfo>>({} as PresetInfo);
+  private availableRoadmaps$$ = new BehaviorSubject<Readonly<Roadmap[]>>([]);
+  public availableRoadmaps$ = this.availableRoadmaps$$.asObservable();
+  public loading$$ = new Subject<boolean>();
+  public loading$ = this.loading$$.asObservable();
 
   constructor(private settingsService: SettingsService, private http: HttpClient, private authService: AuthService) {
     this.handleCategoriesUpdates();
@@ -30,34 +33,60 @@ export class MapService {
   }
 
   public getData(): void {
-    this.loading$.next(true);
+    this.loading$$.next(true);
     this.removeCurrentRoadmap();
+
     if (!this.authService.isUserAuthorized()) {
-      forkJoin([
-        this.http.get<[{ nodes: Nodes; defaultMap: boolean }]>('/api/default-nodes'),
-        this.http.get<[{ cards: CardDataTree; defaultMap: boolean }]>('/api/default-card-data'),
-      ]).subscribe(([nodesData, cardData]) => {
-        this.presetInfo$$.next({
-          ...this.presetInfo$$.value,
-          title: 'Frontend Developer',
-          subtitle: 'Default Frontend Roadmap',
-        });
-        const nodes = nodesData?.[0]?.nodes;
-        this.appendEndingNode(nodes || {});
-        this.cardDataTree$$.next(cardData?.[0]?.cards);
-        this.loading$.next(false);
-      });
+      this.getDefaultRoadmap();
     } else if (localStorage.getItem('lastVisitedMapId') !== null) {
-      this.http.get<Roadmap>(`/api/roadmaps/${localStorage.getItem('lastVisitedMapId')}`).subscribe((roadmap) => {
-        this.handleMapResponse(roadmap);
-        this.loading$.next(false);
-      });
+      this.getRoadmapByLastUsedFromLocalStorage();
     } else {
-      this.http.get<Roadmap[]>('/api/roadmaps').subscribe((roadmaps) => {
-        this.handleMapResponse(roadmaps[0]);
-        this.loading$.next(false);
-      });
+      this.getAllRoadmapsAndAssignFirst();
     }
+  }
+
+  private getAllRoadmapsAndAssignFirst(): void {
+    this.getAllRoadmaps().subscribe((roadmaps) => {
+      this.handleMapResponse(roadmaps[0]);
+      this.loading$$.next(false);
+    });
+  }
+
+  private getAllRoadmaps(): Observable<Roadmap[]> {
+    return this.http.get<Roadmap[]>('/api/roadmaps').pipe(
+      tap((roadmaps) => {
+        this.availableRoadmaps$$.next(roadmaps);
+      })
+    );
+  }
+
+  private getDefaultRoadmap(): void {
+    forkJoin([
+      this.http.get<[{ nodes: Nodes; defaultMap: boolean }]>('/api/default-nodes'),
+      this.http.get<[{ cards: CardDataTree; defaultMap: boolean }]>('/api/default-card-data'),
+    ]).subscribe(([nodesData, cardData]) => {
+      this.presetInfo$$.next({
+        ...this.presetInfo$$.value,
+        title: 'Frontend Developer',
+        subtitle: 'Default Frontend Roadmap',
+      });
+      const nodes = nodesData?.[0]?.nodes;
+      const newNodes = this.appendEndingNode(nodes || {});
+      this.setNodes(newNodes);
+      this.cardDataTree$$.next(cardData?.[0]?.cards);
+      this.loading$$.next(false);
+    });
+  }
+
+  private getRoadmapByLastUsedFromLocalStorage(): void {
+    this.http.get<Roadmap>(`/api/roadmaps/${localStorage.getItem('lastVisitedMapId')}`).subscribe((roadmap) => {
+      this.handleMapResponse(roadmap);
+      this.loading$$.next(false);
+    });
+  }
+
+  public getAllPresets(): Roadmap[] {
+    return this.availableRoadmaps$$.value.slice();
   }
 
   public setPresetInformation(title: string, subtitle: string): void {
@@ -92,21 +121,28 @@ export class MapService {
   }
 
   private removeCurrentRoadmap() {
-    this.handleMapResponse({} as Roadmap);
+    this.cardDataTree$$.next({});
+    this.setNodes({});
+    this.presetInfo$$.next({} as PresetInfo);
+    this.availableRoadmaps$$.next([]);
   }
 
   private handleMapResponse(roadmap: Roadmap) {
-    // Extract cardData and nodesdata and put them in appropriate structure
+    this.setCardDataTreeFromRoadmap(roadmap);
+    this.setPresetInfoFromRoadmap(roadmap);
+    this.generateNodesFromRoadmap(roadmap);
+  }
+
+  private setCardDataTreeFromRoadmap(roadmap: Roadmap): void {
     const cardDataTree: CardDataTree = {};
-    const nodes: Nodes = {};
     roadmap?.map?.forEach((node) => {
-      const { title, date, notes, categoryId, status, mainKnot, children } = node;
+      const { title, date, notes, categoryId, status } = node;
       cardDataTree[node.id] = { title, date, notes, categoryId, status };
-      nodes[node.id] = { mainKnot, children };
     });
     this.cardDataTree$$.next(cardDataTree);
+  }
 
-    // Extract preset data (title, subtitle important for header)
+  private setPresetInfoFromRoadmap(roadmap: Roadmap) {
     const { title, subtitle, _id, createdAt, date, updatedAt } = roadmap;
     this.presetInfo$$.next({
       title,
@@ -116,22 +152,31 @@ export class MapService {
       date,
       updatedAt,
     });
+  }
+
+  private generateNodesFromRoadmap(roadmap: Roadmap): void {
+    const nodes: Nodes = {};
+    roadmap?.map?.forEach((node) => {
+      const { mainKnot, children } = node;
+      nodes[node.id] = { mainKnot, children };
+    });
 
     // If the map is not empty an ending-node is added and if not just show empty (something went wrong / no map)
     if (Object.keys(nodes).length > 0) {
-      this.appendEndingNode(nodes);
+      const newNodes = this.appendEndingNode(nodes);
+      this.setNodes(newNodes);
     } else {
       this.setNodes({});
     }
   }
 
-  private appendEndingNode(nodes: Nodes): void {
-    const newNodes = nodes;
+  private appendEndingNode(nodes: Nodes): Nodes {
+    const newNodes = Object.assign({}, nodes);
     newNodes['last-node'] = {
       mainKnot: true,
       children: [],
     };
-    this.setNodes(newNodes);
+    return newNodes;
   }
 
   private handleCategoriesUpdates(): void {
@@ -161,8 +206,8 @@ export class MapService {
   }
 
   // Communicates to svg-path component to draw new svg
-  public setCardPropertyCollection(collection: CardPropertyCollection): void {
-    this.cardPropertyCollection$$.next(collection);
+  public setCardCoordinateCollection(collection: CardCoordinateCollection): void {
+    this.cardCoordinateCollection$$.next(collection);
   }
 
   public getNodes(): Nodes {
@@ -219,7 +264,8 @@ export class MapService {
         mainKnot: true,
         children: [],
       };
-      this.appendEndingNode(tempNodesTree);
+      const newNodes = this.appendEndingNode(tempNodesTree);
+      this.setNodes(newNodes);
       this.cardDataTree$$.next({});
     } else {
       this.cardDataTree$$.next(tempCardDataTree);

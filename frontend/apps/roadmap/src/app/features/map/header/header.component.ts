@@ -19,7 +19,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(private mapService: MapService, private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    this.loading$ = this.mapService.loading$.asObservable().pipe(startWith(true));
+    this.loading$ = this.mapService.loading$.pipe(startWith(true));
     this.patchForm();
   }
 
