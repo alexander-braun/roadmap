@@ -7,8 +7,9 @@ import {
   QueryList,
   ViewChildren,
   ChangeDetectorRef,
+  OnDestroy,
 } from '@angular/core';
-import { BehaviorSubject, tap, merge, switchMap } from 'rxjs';
+import { BehaviorSubject, merge, takeUntil, Subject } from 'rxjs';
 import { MapService } from './map.service';
 import { CardCoordinateCollection, Direction } from './map.model';
 import { faPlus, faWrench } from '@fortawesome/free-solid-svg-icons';
@@ -21,7 +22,7 @@ import { ResizeObserverService } from '../../shared/services/resize-observer.ser
   styleUrls: ['./map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MapComponent implements AfterViewInit, OnInit {
+export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChildren('cardContainer') cardContainer?: QueryList<ElementRef<HTMLDivElement>>;
   public centerNodes$$ = new BehaviorSubject<NodeId[]>([]);
   private htmlCardCollection$$ = new BehaviorSubject<HTMLCollection[]>([]);
@@ -31,6 +32,7 @@ export class MapComponent implements AfterViewInit, OnInit {
   public childrenRight: NodeId[][] = [];
   public subChildrenMapLeft: { [key: NodeId]: NodeId[] } = {};
   public subChildrenMapRight: { [key: NodeId]: NodeId[] } = {};
+  private destroy$ = new Subject<void>();
 
   constructor(
     private mapService: MapService,
@@ -47,10 +49,22 @@ export class MapComponent implements AfterViewInit, OnInit {
     this.getCards();
   }
 
+  ngOnDestroy(): void {
+    this.cdr.detach();
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   private getCards(): void {
-    merge(this.mapService.nodes$, this.mapService.cardDataTree$).subscribe(() => {
-      this.updateNodes();
-    });
+    merge(this.mapService.nodes$, this.mapService.cardDataTree$)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.updateNodes();
+      });
+  }
+
+  public trackById(_: number, item: NodeId): NodeId {
+    return item;
   }
 
   private updateNodes(): void {
@@ -62,13 +76,12 @@ export class MapComponent implements AfterViewInit, OnInit {
   }
 
   private handleResize(): void {
-    this.resizeObserver.resize$.subscribe({
-      next: () => this.updateNodes(),
+    this.resizeObserver.resize$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.updateNodes();
+      },
     });
   }
-  public identify = (index: number, item: string): number => {
-    return index;
-  };
 
   private createChildNodeMaps(): void {
     this.childrenLeft = [];

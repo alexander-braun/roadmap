@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CardData, Status } from '../map.model';
 import { MapService } from '../map.service';
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { faTrashAlt, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { SettingsService } from '../settings/settings.service';
-import { BehaviorSubject, take } from 'rxjs';
+import { BehaviorSubject, Subject, skip, take, takeUntil } from 'rxjs';
 import { Categories, Category } from '../settings/settings.model';
 import { iconsMap } from '../settings/icons-preset.data';
 import { NodeId } from 'apps/roadmap/src/assets/data';
@@ -16,7 +16,7 @@ import { ResizeObserverService } from '../../../shared/services/resize-observer.
   styleUrls: ['./card.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CardComponent implements OnInit {
+export class CardComponent implements OnInit, OnDestroy {
   @Input() nodeId!: NodeId;
   @Input() position!: 'subchild-left' | 'left' | 'center' | 'right' | 'subchild-right';
   public readonly iconsMap = iconsMap;
@@ -28,6 +28,7 @@ export class CardComponent implements OnInit {
   public isHover = false;
   public hoverDelays: string[] = [];
   public statusChoices$ = this.settingsService.statusChoices$;
+  private destroy$ = new Subject<void>();
 
   public cardForm = this.fb.group({
     title: this.fb.nonNullable.control<string>('Edit me!', Validators.required),
@@ -49,16 +50,21 @@ export class CardComponent implements OnInit {
   ngOnInit(): void {
     this.patchForm();
     this.resizeFormOnValueChange();
-    this.settingsService.categories$.subscribe((categories) => {
+    this.settingsService.categories$.pipe(takeUntil(this.destroy$)).subscribe((categories) => {
       this.currentCategory$$.next(this.findCurrentCategory() || ({} as Category));
       this.setAnimationDelay(categories);
     });
     this.mapService.cardDataTree$.pipe(take(1)).subscribe(() => {
       this.patchForm();
     });
-    this.cardForm.valueChanges.subscribe(() => {
+    this.cardForm.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.save();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   save() {
@@ -117,7 +123,7 @@ export class CardComponent implements OnInit {
   }
 
   private resizeFormOnValueChange(): void {
-    this.cardForm.valueChanges.subscribe(() => {
+    this.cardForm.valueChanges.pipe(skip(1), takeUntil(this.destroy$)).subscribe(() => {
       this.resize();
     });
   }

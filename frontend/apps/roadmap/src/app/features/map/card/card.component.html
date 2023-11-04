@@ -1,11 +1,4 @@
-<div
-  [id]="nodeId"
-  class="card-container"
-  [ngClass]="{ center: position === 'center' }"
-  (blur)="save()"
-  tabindex="0"
-  (blur)="save()"
->
+<div [id]="nodeId" class="card-container" [ngClass]="{ center: position === 'center' }" tabindex="0">
   <ng-container *ngIf="position !== 'center'">
     <div class="categories" (mouseenter)="handleMouseEnter()" (mouseleave)="handleMouseLeave()">
       <div

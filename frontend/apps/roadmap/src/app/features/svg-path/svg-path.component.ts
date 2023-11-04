@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { ChangeDetectorRef, ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
 import { CardCoordinates, CardCoordinateCollection, PaathCoordinateCollection, PaathProperty } from '../map/map.model';
 import { MapService } from '../map/map.service';
 import { ResizeObserverService } from '../../shared/services/resize-observer.service';
@@ -11,13 +11,14 @@ import { ResizeObserverService } from '../../shared/services/resize-observer.ser
   styleUrls: ['./svg-path.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SvgPathComponent implements OnInit {
+export class SvgPathComponent implements OnInit, OnDestroy {
   private readonly insetSvg = 25;
   private cardCoordinateCollection: Readonly<CardCoordinateCollection> = [];
   private pathCoords$$ = new BehaviorSubject<PaathCoordinateCollection>([]);
   public pathCoords$ = this.pathCoords$$.asObservable();
   public cardCoordinateCollection$: Observable<Readonly<CardCoordinateCollection>> =
     this.mapService.cardCoordinateCollection$;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private resizeObserver: ResizeObserverService,
@@ -30,8 +31,14 @@ export class SvgPathComponent implements OnInit {
     this.handleCardCoordinateCollectionChanges();
   }
 
+  ngOnDestroy(): void {
+    this.cdr.detach();
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   private handleCardCoordinateCollectionChanges(): void {
-    this.mapService.cardCoordinateCollection$.subscribe((cardCoordinateCollection) => {
+    this.mapService.cardCoordinateCollection$.pipe(takeUntil(this.destroy$)).subscribe((cardCoordinateCollection) => {
       this.cardCoordinateCollection = cardCoordinateCollection;
       this.calculateNewCoordinates();
       this.cdr.detectChanges();
@@ -39,7 +46,7 @@ export class SvgPathComponent implements OnInit {
   }
 
   private handleResize(): void {
-    this.resizeObserver.resize$.subscribe(() => {
+    this.resizeObserver.resize$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.calculateNewCoordinates();
     });
   }
