@@ -3,10 +3,12 @@ require("../db/mongoose");
 import { catchError, EMPTY, tap, from, switchMap, throwError } from "rxjs";
 import { auth } from "../middleware/auth";
 import { RoadmapModel, IRoadmap } from "../models/roadmap";
+import { defaultRoadmap } from "../data/default-roadmap";
 
 const router = express.Router();
 
 router.post("/roadmaps", auth, (req, res) => {
+  console.log("NORMAL");
   const roadmap = new RoadmapModel({
     ...req.body,
     owner: req.user._id,
@@ -23,6 +25,31 @@ router.post("/roadmaps", auth, (req, res) => {
       })
     )
     .subscribe();
+});
+
+// Create Users own instance of default frontend roadmap
+router.post("/roadmaps/default", auth, (req, res) => {
+  const roadmap = new RoadmapModel({
+    ...defaultRoadmap,
+    owner: req.user._id,
+  });
+
+  from(roadmap.save())
+    .pipe(
+      catchError((e) => {
+        res.status(400).send(e.message);
+        return EMPTY;
+      }),
+      tap((roadmap) => {
+        res.status(201).send(roadmap);
+      })
+    )
+    .subscribe();
+});
+
+// Get General version of default roadmap
+router.get("/roadmaps/default", (req, res) => {
+  res.status(200).send(defaultRoadmap);
 });
 
 router.get("/roadmaps", auth, (req, res) => {

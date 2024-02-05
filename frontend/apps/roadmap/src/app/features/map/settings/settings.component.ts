@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormGroup, NonNullableFormBuilder } from '@angular/forms';
 import { SettingsService } from './settings.service';
 import { faPencil, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Categories, Category } from './settings.model';
+import { Categories, Category, CategoryFormGroup, IconChoice } from './settings.model';
 import { icons, iconsMap } from './icons-preset.data';
 import { v4 } from 'uuid';
 import { ModalService } from '../../../shared/services/modal.service';
@@ -29,12 +29,12 @@ export class SettingsComponent implements OnInit {
   public innerWidth$: Observable<number>;
   public modal: ModalService | null = null;
   public settingsForm = this.fb.group({
-    categories: this.fb.array<FormGroup>([]),
+    categories: this.fb.array<FormGroup<CategoryFormGroup>>([]),
   });
 
   constructor(
     private resizeService: ResizeObserverService,
-    private fb: FormBuilder,
+    private fb: NonNullableFormBuilder,
     private settingsService: SettingsService,
     private modalService: ModalService
   ) {
@@ -52,12 +52,12 @@ export class SettingsComponent implements OnInit {
   public addCategory(): void {
     this.categories.controls.push(
       this.fb.group({
-        categoryName: this.fb.nonNullable.control('New'),
-        categoryIcon: this.fb.nonNullable.control('faQuestion'),
-        categoryBgColor: this.fb.nonNullable.control('#ff0000'),
-        categoryIconColor: this.fb.nonNullable.control('#fff'),
-        categoryId: this.fb.nonNullable.control(v4()),
-      })
+        categoryName: this.fb.control('New'),
+        categoryIcon: this.fb.control<IconChoice>('faQuestion'),
+        categoryBgColor: this.fb.control('#ff0000'),
+        categoryIconColor: this.fb.control('#fff'),
+        categoryId: this.fb.control(v4()),
+      } as CategoryFormGroup)
     );
     this.showBgColors.push('#ff0000');
     this.showIconColors.push('#fff');
@@ -83,7 +83,7 @@ export class SettingsComponent implements OnInit {
   }
 
   public getName(i: number): string {
-    return this.categories.controls[i].get('categoryName')?.value;
+    return this.categories.controls[i].controls['categoryName'].value;
   }
 
   public flipShowIcons(index: number): void {
@@ -114,11 +114,11 @@ export class SettingsComponent implements OnInit {
       const { categoryName, categoryIcon, categoryBgColor, categoryIconColor, categoryId } = category;
       this.categories.controls.push(
         this.fb.group({
-          categoryName: this.fb.nonNullable.control(categoryName),
-          categoryIcon: this.fb.nonNullable.control(categoryIcon),
-          categoryBgColor: this.fb.nonNullable.control(categoryBgColor),
-          categoryIconColor: this.fb.nonNullable.control(categoryIconColor),
-          categoryId: this.fb.nonNullable.control(categoryId),
+          categoryName: this.fb.control(categoryName),
+          categoryIcon: this.fb.control(categoryIcon),
+          categoryBgColor: this.fb.control(categoryBgColor),
+          categoryIconColor: this.fb.control(categoryIconColor),
+          categoryId: this.fb.control(categoryId),
         })
       );
       this.showBgColors.push(categoryBgColor);
@@ -131,10 +131,10 @@ export class SettingsComponent implements OnInit {
   }
 
   public getCategoryInformation(i: number): Category {
-    return this.categories.controls[i].value;
+    return (this.settingsForm.controls.categories.controls[i] as FormGroup<CategoryFormGroup>).getRawValue();
   }
 
-  get categories(): FormArray<FormGroup> {
+  get categories(): FormArray<FormGroup<CategoryFormGroup>> {
     return this.settingsForm.controls.categories;
   }
 
@@ -185,7 +185,7 @@ export class SettingsComponent implements OnInit {
 
   public saveCategories(): void {
     if (this.checkIfCategoriesAreValid()) {
-      this.settingsService.saveCategoriesForm(this.categories.value);
+      this.settingsService.saveCategoriesForm(this.categories.getRawValue());
       this.flipEdit();
     }
   }
@@ -193,12 +193,12 @@ export class SettingsComponent implements OnInit {
   private checkIfCategoriesAreValid(): boolean {
     const names: string[] = [];
     let isValid = true;
-    this.categories.controls.forEach((control) => {
-      const name = control.get('categoryName')?.value;
+    this.settingsForm.controls.categories.controls.forEach((control) => {
+      const name = control.controls['categoryName'].value;
       if (names.indexOf(name) >= 0) {
         isValid = false;
       } else {
-        names.push(control.get('categoryName')?.value);
+        names.push(control.controls['categoryName'].value);
       }
     });
     return isValid;

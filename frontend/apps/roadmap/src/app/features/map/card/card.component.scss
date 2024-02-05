@@ -38,7 +38,6 @@ input {
   transition: border 0.2s, background 0.2s;
   width: fit-content;
   margin-left: 0;
-  margin-bottom: 0.5rem;
 
   &:hover {
     background: #f8f8f8;
@@ -54,8 +53,8 @@ input {
   text-align: left;
   font-size: 1.25rem;
   font-style: italic;
-  margin-bottom: 1rem;
-  margin-top: 0.25rem;
+  margin-bottom: 2rem;
+  margin-top: 0rem;
   margin-left: auto;
   font-family: $raleway;
 }

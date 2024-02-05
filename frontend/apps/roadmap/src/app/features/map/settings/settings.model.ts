@@ -1,3 +1,4 @@
+import { FormControl } from '@angular/forms';
 import { Status } from '../map.model';
 
 export interface Category {
@@ -6,6 +7,14 @@ export interface Category {
   categoryBgColor: string;
   categoryIconColor: string;
   categoryId: string;
+}
+
+export interface CategoryFormGroup {
+  categoryName: FormControl<string>;
+  categoryIcon: FormControl<IconChoice>;
+  categoryBgColor: FormControl<string>;
+  categoryIconColor: FormControl<string>;
+  categoryId: FormControl<string>;
 }
 
 export type Categories = Category[];

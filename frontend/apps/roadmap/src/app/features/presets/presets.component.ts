@@ -15,19 +15,23 @@ import { FormBuilder, Validators } from '@angular/forms';
 export class PresetsComponent implements OnInit {
   public loading$ = new Subject<void>();
   public readonly faTimes = faTimes;
-  public availableRoadmaps$: Observable<Readonly<Roadmap[]>>;
+  public availableRoadmaps$!: Observable<Readonly<Roadmap[]>>;
   public newTemplateForm = this.fb.nonNullable.group({
     presetTitle: ['', Validators.required],
     presetSubtitle: [''],
   });
 
-  constructor(private modalService: ModalService, private mapService: MapService, private fb: FormBuilder) {
+  constructor(private modalService: ModalService, private mapService: MapService, private fb: FormBuilder) {}
+
+  ngOnInit(): void {
     this.availableRoadmaps$ = this.mapService.availableRoadmaps$;
   }
 
-  ngOnInit(): void {}
-
   public close(): void {
     this.modalService.close();
+  }
+
+  public setMap(roadmap: Roadmap): void {
+    this.mapService.handleMapResponse(roadmap);
   }
 }

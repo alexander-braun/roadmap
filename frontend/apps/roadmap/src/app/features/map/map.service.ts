@@ -61,20 +61,24 @@ export class MapService {
   }
 
   private getDefaultRoadmap(): void {
-    forkJoin([
-      this.http.get<[{ nodes: Nodes; defaultMap: boolean }]>('/api/default-nodes'),
-      this.http.get<[{ cards: CardDataTree; defaultMap: boolean }]>('/api/default-card-data'),
-    ]).subscribe(([nodesData, cardData]) => {
-      this.presetInfo$$.next({
-        ...this.presetInfo$$.value,
-        title: 'Frontend Developer',
-        subtitle: 'Default Frontend Roadmap',
-      });
-      const nodes = nodesData?.[0]?.nodes;
-      const newNodes = this.appendEndingNode(nodes || {});
-      this.setNodes(newNodes);
-      this.cardDataTree$$.next(cardData?.[0]?.cards);
-      this.loading$$.next(false);
+    this.http.get<Roadmap>('/api/roadmaps/default').subscribe({
+      next: (roadmap) => {
+        this.presetInfo$$.next({
+          ...this.presetInfo$$.value,
+          title: roadmap.title,
+          subtitle: roadmap.subtitle,
+        });
+
+        const nodesMap: Nodes = {};
+        roadmap.map.forEach((node) => {
+          nodesMap[node.id] = node;
+        });
+        const newNodes = this.appendEndingNode(nodesMap || {});
+        this.setNodes(newNodes);
+
+        this.cardDataTree$$.next(nodesMap as Readonly<CardDataTree>);
+        this.loading$$.next(false);
+      },
     });
   }
 
@@ -83,10 +87,6 @@ export class MapService {
       this.handleMapResponse(roadmap);
       this.loading$$.next(false);
     });
-  }
-
-  public getAllPresets(): Roadmap[] {
-    return this.availableRoadmaps$$.value.slice();
   }
 
   public setPresetInformation(title: string, subtitle: string): void {
@@ -127,7 +127,8 @@ export class MapService {
     this.availableRoadmaps$$.next([]);
   }
 
-  private handleMapResponse(roadmap: Roadmap) {
+  // Make all this to 1 roadmap
+  public handleMapResponse(roadmap: Roadmap) {
     this.setCardDataTreeFromRoadmap(roadmap);
     this.setPresetInfoFromRoadmap(roadmap);
     this.generateNodesFromRoadmap(roadmap);
@@ -236,6 +237,15 @@ export class MapService {
   }
 
   public deleteNode(id: NodeId): void {
+    const newTree: any[] = [];
+    Object.keys(this.nodes$$.value).forEach((node, i) => {
+      newTree[i] = {
+        ...this.nodes$$.value[node],
+        ...this.cardDataTree$$.value[node],
+        id: node,
+      };
+    });
+
     const tempNodesTree = { ...this.nodes$$.value };
     const tempCardDataTree = { ...this.cardDataTree$$.value };
 

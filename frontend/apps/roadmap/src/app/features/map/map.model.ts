@@ -54,6 +54,13 @@ export interface Roadmap {
     status: Status;
     date: string;
   }[];
+  settings: {
+    categoryName: string;
+    categoryIcon: string;
+    categoryBgColor: string;
+    categoryIconColor: string;
+    categoryId: string;
+  }[];
 }
 
 export interface PresetInfo {

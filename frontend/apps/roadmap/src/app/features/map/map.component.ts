@@ -25,7 +25,6 @@ import { ResizeObserverService } from '../../shared/services/resize-observer.ser
 export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChildren('cardContainer') cardContainer?: QueryList<ElementRef<HTMLDivElement>>;
   public centerNodes$$ = new BehaviorSubject<NodeId[]>([]);
-  private htmlCardCollection$$ = new BehaviorSubject<HTMLCollection[]>([]);
   public readonly faPlus = faPlus;
   public readonly faGear = faWrench;
   public childrenLeft: NodeId[][] = [];
@@ -70,7 +69,6 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
   private updateNodes(): void {
     this.cdr.detectChanges();
     this.centerNodes$$.next(this.generateCenterNodes());
-    this.htmlCardCollection$$.next(this.getAllCardElements());
     this.createChildNodeMaps();
     this.mapService.setCardCoordinateCollection(this.generateCardCoordinateCollection());
   }
@@ -120,7 +118,7 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private generateCardCoordinateCollection(): CardCoordinateCollection {
     const pairs = this.getConnectedCardPairs() as NodeId[][];
-    const htmlCollection = this.htmlCardCollection$$.value;
+    const htmlCollection = this.getAllCardElements();
     const scrollHeight = window.scrollY;
     const width = window.innerWidth;
     const cardCoordinateCollection: CardCoordinateCollection = [];

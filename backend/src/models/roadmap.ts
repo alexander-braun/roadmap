@@ -14,6 +14,13 @@ export interface IRoadmap {
     categoryId: string;
     status: string;
   }[];
+  settings: {
+    categoryName: string;
+    categoryIcon: string;
+    categoryBgColor: string;
+    categoryIconColor: string;
+    categoryId: string;
+  };
 }
 
 const roadmapSchema = new mongoose.Schema<IRoadmap>(
@@ -59,6 +66,30 @@ const roadmapSchema = new mongoose.Schema<IRoadmap>(
         status: {
           type: String,
           default: "pending",
+        },
+      },
+    ],
+    settings: [
+      {
+        categoryName: {
+          type: String,
+          required: true,
+        },
+        categoryIcon: {
+          type: String,
+          required: true,
+        },
+        categoryBgColor: {
+          type: String,
+          required: true,
+        },
+        categoryIconColor: {
+          type: String,
+          required: true,
+        },
+        categoryId: {
+          type: String,
+          required: true,
         },
       },
     ],
