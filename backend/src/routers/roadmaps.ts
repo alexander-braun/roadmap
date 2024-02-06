@@ -8,7 +8,6 @@ import { defaultRoadmap } from "../data/default-roadmap";
 const router = express.Router();
 
 router.post("/roadmaps", auth, (req, res) => {
-  console.log("NORMAL");
   const roadmap = new RoadmapModel({
     ...req.body,
     owner: req.user._id,

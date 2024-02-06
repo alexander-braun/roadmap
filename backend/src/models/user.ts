@@ -18,6 +18,7 @@ import jwt from "jsonwebtoken";
 import { RoadmapModel } from "./roadmap";
 import { v4 as uuid } from "uuid";
 import { Model } from "mongoose";
+import { defaultRoadmap } from "../data/default-roadmap";
 
 export interface IUser {
   email: string;
@@ -107,6 +108,50 @@ userSchema.pre(
   }
 );
 
+userSchema.pre(
+  "save",
+  { document: true },
+  function (next: CallbackWithoutResultAndOptionalError) {
+    const id = this._id;
+    generateDefaultFrontendRoadmap(id, next);
+  }
+);
+
+export const generateDefaultFrontendRoadmap = (
+  id: mongoose.Types.ObjectId,
+  next: CallbackWithoutResultAndOptionalError
+) => {
+  from(RoadmapModel.find({ owner: id }))
+    .pipe(
+      switchMap((roadmaps) => {
+        if (Array.isArray(roadmaps)) {
+          let exists = false;
+          roadmaps.forEach((roadmap) => {
+            if (roadmap.title === "Frontend Developer") {
+              exists = true;
+            }
+          });
+
+          if (!exists) {
+            const roadmap = new RoadmapModel({
+              ...defaultRoadmap,
+              owner: id,
+            });
+            return from(roadmap.save()).pipe(
+              catchError(() => {
+                return EMPTY;
+              })
+            );
+          }
+        }
+        return EMPTY;
+      })
+    )
+    .subscribe({
+      complete: () => next(),
+    });
+};
+
 export const generateDefaultRoadmapForUser = (
   id: mongoose.Types.ObjectId,
   next: CallbackWithoutResultAndOptionalError
@@ -190,7 +235,7 @@ userSchema.methods.generateAuthToken = function () {
     { _id: this._id.toString() },
     process.env.JWT_SECRET || "",
     {
-      expiresIn: "1week",
+      expiresIn: "1minute",
     }
   );
   this.tokens = this.tokens.concat({ token });

@@ -8,8 +8,8 @@ const sendMail = require("../emails/account");
 const router = express.Router();
 
 router.post("/users", (req, res) => {
-  const user = new UserModel(req.body);
-  from(user.save())
+  const newUser = new UserModel(req.body);
+  from(newUser.save())
     .pipe(
       switchMap((user) =>
         user

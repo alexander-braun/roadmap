@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, EMPTY, forkJoin, Observable, Subject, take, tap } from 'rxjs';
+import { BehaviorSubject, catchError, EMPTY, Observable, Subject, take, tap } from 'rxjs';
 import { CardData, CardDataTree, CardCoordinateCollection, PresetInfo, RoadmapPatchResponse } from './map.model';
 import { v4 as uuidv4 } from 'uuid';
 import { SettingsService } from './settings/settings.service';
@@ -38,9 +38,9 @@ export class MapService {
 
     if (!this.authService.isUserAuthorized()) {
       this.getDefaultRoadmap();
-    } else if (localStorage.getItem('lastVisitedMapId') !== null) {
+    } else if (this.authService.isUserAuthorized() && localStorage.getItem('lastVisitedMapId') !== null) {
       this.getRoadmapByLastUsedFromLocalStorage();
-    } else {
+    } else if (this.authService.isUserAuthorized()) {
       this.getAllRoadmapsAndAssignFirst();
     }
   }
