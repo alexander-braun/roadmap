@@ -10,6 +10,7 @@ import { AuthService } from '../../shared/services/auth.service';
 })
 export class NavigationComponent {
   public isAuthorized$: Observable<boolean>;
+  public open = false;
 
   constructor(private modalService: ModalService, private authService: AuthService) {
     this.isAuthorized$ = this.authService.isAuthorized$;
@@ -17,21 +18,40 @@ export class NavigationComponent {
 
   public logout(): void {
     this.authService.logout().subscribe();
+    this.closeMenu();
   }
 
   public openSettings(): void {
     this.modalService.open('settingsComponent');
+    this.closeMenu();
   }
 
   public openLogin(): void {
     this.modalService.open('loginComponent');
+    this.closeMenu();
   }
 
   public singup(): void {
     this.modalService.open('signupComponent');
+    this.closeMenu();
   }
 
   public openPresets(): void {
     this.modalService.open('presetsComponent');
+    this.closeMenu();
+  }
+
+  public switchMenu(): void {
+    this.open = !this.open;
+  }
+
+  public clickOutsideSidenav(): void {
+    if (this.open) {
+      this.closeMenu();
+    }
+  }
+
+  public closeMenu(): void {
+    this.open = false;
   }
 }

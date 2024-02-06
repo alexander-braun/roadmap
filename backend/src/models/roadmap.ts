@@ -53,7 +53,6 @@ const roadmapSchema = new mongoose.Schema<IRoadmap>(
         id: {
           type: String,
           required: true,
-          unique: true,
         },
         title: {
           type: String,

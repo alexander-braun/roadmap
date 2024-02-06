@@ -1,13 +1,30 @@
-<div class="menu-bar" *ngIf="{ isAuthorized: isAuthorized$ | async } as auth">
-  <div class="title">Interactive Roadmap</div>
-  <div class="links">
-    <button *ngIf="auth.isAuthorized" (click)="openPresets()">Presets</button>
-    <button (click)="openSettings()">Settings</button>
-    <button *ngIf="auth.isAuthorized">Profile</button>
-    <ng-container>
-      <button (click)="singup()" *ngIf="!auth.isAuthorized">Signup</button>
-      <button (click)="openLogin()" *ngIf="!auth.isAuthorized">Login</button>
-      <button (click)="logout()" *ngIf="auth.isAuthorized">Logout</button>
-    </ng-container>
+<ng-container *ngIf="{ isAuthorized: isAuthorized$ | async } as auth">
+  <div rdmpClickOutside (clickOutside)="clickOutsideSidenav()">
+    <div class="menu-bar">
+      <div class="title">Interactive Roadmap</div>
+      <div class="links">
+        <button (click)="openPresets()" *ngIf="auth.isAuthorized">Presets</button>
+        <button (click)="openSettings()">Settings</button>
+        <button *ngIf="auth.isAuthorized">Profile</button>
+        <button (click)="singup()" *ngIf="!auth.isAuthorized">Signup</button>
+        <button (click)="openLogin()" *ngIf="!auth.isAuthorized">Login</button>
+        <button (click)="logout()" *ngIf="auth.isAuthorized">Logout</button>
+      </div>
+      <div role="button" class="burger-container" [ngClass]="{ open: open }" (click)="switchMenu()">
+        <div class="burger-stripes"></div>
+      </div>
+    </div>
+
+    <nav class="sidenav" [ngClass]="{ visible: open }">
+      <div class="links">
+        <button class="link" (click)="openPresets()" *ngIf="auth.isAuthorized">Presets</button>
+        <button class="link" (click)="openSettings()">Settings</button>
+        <button class="link" *ngIf="auth.isAuthorized">Profile</button>
+        <button class="link" (click)="singup()" *ngIf="!auth.isAuthorized">Signup</button>
+        <button class="link" (click)="openLogin()" *ngIf="!auth.isAuthorized">Login</button>
+        <button class="link" (click)="logout()" *ngIf="auth.isAuthorized">Logout</button>
+      </div>
+    </nav>
   </div>
-</div>
+</ng-container>
+<div class="backdrop" [ngClass]="{ visible: open }"></div>

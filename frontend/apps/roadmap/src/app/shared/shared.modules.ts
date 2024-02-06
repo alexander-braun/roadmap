@@ -17,6 +17,7 @@ import { LoadingSpinnerComponent } from './components/loading-spinner/loading-sp
     ReactiveFormsModule,
     CommonModule,
     LoadingSpinnerComponent,
+    ClickOutsideDirective,
   ],
   providers: [],
 })
