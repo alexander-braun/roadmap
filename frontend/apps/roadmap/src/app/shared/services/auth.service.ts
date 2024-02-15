@@ -4,6 +4,7 @@ import { tap, BehaviorSubject, Observable, take, catchError, EMPTY } from 'rxjs'
 import { CookieService } from 'ngx-cookie-service';
 import { ExpiresAt, LoginResponse, Token, User } from './auth.model';
 import { WorkerService } from './worker.service';
+import { ModalService } from './modal.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,12 @@ export class AuthService {
   private isAuthorized$$ = new BehaviorSubject(false);
   public isAuthorized$ = this.isAuthorized$$.asObservable();
 
-  constructor(private http: HttpClient, private cookieService: CookieService, private workerService: WorkerService) {
+  constructor(
+    private http: HttpClient,
+    private cookieService: CookieService,
+    private workerService: WorkerService,
+    private modalService: ModalService
+  ) {
     this.token = this.cookieService.get('token');
     this.expiresAt = Number(this.cookieService.get('expiresAt'));
     if (this.token && this.expiresAt) {
@@ -91,6 +97,7 @@ export class AuthService {
     this.cookieService.set('token', '');
     this.cookieService.set('expiresAt', '');
     this.isAuthorized$$.next(false);
+    this.modalService.close();
   }
 
   public getToken(): Token | undefined {

@@ -10,7 +10,7 @@
           <div class="roadmap-title">{{ roadmap.title }}</div>
         </td>
         <td class="align-center"><button class="load" (click)="setMap(roadmap)">Load</button></td>
-        <td class="align-center"><button class="delete">Delete</button></td>
+        <td class="align-center"><button (click)="deleteMap(roadmap._id)" class="delete">Delete</button></td>
       </tr>
     </tbody>
   </table>
@@ -29,7 +29,7 @@
       <label for="presetSubtitle">Subtitle</label>
       <input id="presetSubtitle" type="text" formControlName="presetSubtitle" />
     </div>
-    <button class="create-new">Create</button>
+    <button class="create-new" (click)="createNewDefaultMap()">Create</button>
   </form>
   <!--
     <form [formGroup]="loginForm">

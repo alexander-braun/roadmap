@@ -1,19 +1,21 @@
 import mongoose from "mongoose";
 
+export interface MapElement {
+  title: string;
+  mainKnot: boolean;
+  children: string[];
+  id: string;
+  notes: string[];
+  categoryId: string;
+  status: string;
+}
+
 export interface IRoadmap {
   title: string;
   subtitle: string;
   owner: typeof mongoose.Schema.Types.ObjectId;
   date: Date;
-  map: {
-    mainKnot: boolean;
-    children: string[];
-    id: string;
-    title: string;
-    notes: string[];
-    categoryId: string;
-    status: string;
-  }[];
+  map: MapElement[];
   settings: {
     categoryName: string;
     categoryIcon: string;
@@ -29,6 +31,7 @@ const roadmapSchema = new mongoose.Schema<IRoadmap>(
       type: String,
       trim: true,
       required: true,
+      unique: true,
     },
     subtitle: {
       type: String,

@@ -13,7 +13,7 @@ import { BehaviorSubject, merge, takeUntil, Subject } from 'rxjs';
 import { MapService } from './map.service';
 import { CardCoordinateCollection, Direction } from './map.model';
 import { faPlus, faWrench } from '@fortawesome/free-solid-svg-icons';
-import { NodeId } from 'apps/roadmap/src/assets/data';
+import { NodeId, Nodes } from 'apps/roadmap/src/assets/data';
 import { ResizeObserverService } from '../../shared/services/resize-observer.service';
 
 @Component({
@@ -40,7 +40,6 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.mapService.getData();
     this.handleResize();
   }
 
@@ -92,7 +91,6 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
       this.childrenLeft[i].forEach((child) => {
         this.subChildrenMapLeft[child] = this.generateChildrenOfNode(child, 'left', true);
       });
-
       this.childrenRight.push(this.generateChildrenOfNode(centerNode, 'right'));
       this.childrenRight[i].forEach((child) => {
         this.subChildrenMapRight[child] = this.generateChildrenOfNode(child, 'right', true);
@@ -105,8 +103,16 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   public generateChildrenOfNode(id: NodeId, direction: Direction, isSubchild = false): NodeId[] {
-    const nodes = this.mapService.getNodes();
-    const children = nodes[id].children;
+    const nodes = this.mapService.getNodesValue();
+    if (!nodes[id]?.children) {
+      return [];
+    }
+    const children = [...nodes[id]?.children];
+    children.forEach((child, i) => {
+      if (nodes[child].mainKnot) {
+        children.splice(i, 1);
+      }
+    });
     if (isSubchild) {
       return children;
     }
@@ -151,29 +157,26 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   private getConnectedCardPairs(): NodeId[][] {
-    const nodes = this.mapService.getNodes();
-    const nodeIds = Object.keys(nodes) as NodeId[];
+    const nodes = this.mapService.getNodesValue();
     const pairs: NodeId[][] = [];
-    const mainKnots: NodeId[] = [];
-
-    for (const id of nodeIds) {
-      const childIds = nodes[id].children;
-
-      if (nodes[id].mainKnot) {
-        mainKnots.push(id);
+    Object.entries(nodes).forEach(([id, node], i) => {
+      // This will now always be in order
+      if (node.mainKnot) {
+        node.children.forEach((childId) => {
+          const childNode = nodes[childId];
+          if (childNode?.mainKnot) {
+            pairs.push([id, childId]);
+          }
+        });
       }
 
-      for (const childId of childIds) {
-        pairs.push([id, childId]);
-      }
-    }
-
-    for (let i = 0; i < mainKnots.length; i++) {
-      if (mainKnots[i + 1]) {
-        pairs.push([mainKnots[i], mainKnots[i + 1]]);
-      }
-    }
-
+      // Now children
+      node.children.forEach((childId) => {
+        if (!nodes[childId]?.mainKnot) {
+          pairs.push([id, childId]);
+        }
+      });
+    });
     return pairs;
   }
 
@@ -188,11 +191,54 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
     return list;
   }
 
-  private generateCenterNodes(): NodeId[] {
-    const nodes = this.mapService.getNodes();
-    return Object.keys(nodes).reduce((acc, curr) => {
-      return nodes[curr].mainKnot ? [...acc, curr] : acc;
-    }, [] as string[]);
+  private getStartingKnot(nodes: Nodes): string {
+    // First get all mainKnots
+    const allMainKnots: string[] = [];
+    Object.entries(nodes).forEach(([id, node]) => {
+      if (node.mainKnot) {
+        allMainKnots.push(id);
+      }
+    });
+    // Now find all the children in childrens array of all main knots
+    const nodeIdsInChildrenArray: string[] = [];
+    allMainKnots.forEach((mainKnotId) => {
+      if (nodes[mainKnotId].children?.length) {
+        nodeIdsInChildrenArray.push(...nodes[mainKnotId].children);
+      }
+    });
+    let startingKnot = '';
+    // Now find the diff between the arrays
+    allMainKnots.forEach((knot) => {
+      if (nodeIdsInChildrenArray.indexOf(knot) < 0) {
+        startingKnot = knot;
+      }
+    });
+    return startingKnot;
+  }
+
+  private getMainKnotChildFromChildren(children: NodeId[], nodes: Nodes): string | undefined {
+    let mainKnot: string | undefined = undefined;
+    children.forEach((child) => {
+      if (nodes[child].mainKnot) {
+        mainKnot = child;
+      }
+    });
+    return mainKnot;
+  }
+
+  private generateCenterNodes(): string[] {
+    const nodes = this.mapService.getNodesValue();
+    const startingKnot = this.getStartingKnot(nodes);
+    let nextMainKnotChild = this.getMainKnotChildFromChildren(nodes[startingKnot]?.children || [], nodes);
+    const mainKnotOrder: string[] = nextMainKnotChild ? [startingKnot, nextMainKnotChild] : [startingKnot];
+    while (nextMainKnotChild) {
+      const nextMainKnot = this.getMainKnotChildFromChildren(nodes[nextMainKnotChild].children || [], nodes);
+      if (nextMainKnot) {
+        mainKnotOrder.push(nextMainKnot);
+      }
+      nextMainKnotChild = nextMainKnot;
+    }
+    return mainKnotOrder;
   }
 
   private getHtmlElementFromId(collections: HTMLCollection[], id: NodeId): Element | undefined {

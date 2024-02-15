@@ -10,9 +10,9 @@
       <ng-container *ngIf="signupForm.controls.email.touched">
         <div class="form-error" *ngIf="signupForm.controls.email.errors?.['required']">Email is required.</div>
         <div class="form-error" *ngIf="signupForm.controls.email.errors?.['email']">Email not valid.</div>
+        <div class="form-error" *ngIf="signupForm.controls.email.errors?.['duplicateEmail']">User already exists</div>
       </ng-container>
     </div>
-
     <div class="form-control">
       <label for="password">Password</label>
       <input id="password" type="password" formControlName="password" />

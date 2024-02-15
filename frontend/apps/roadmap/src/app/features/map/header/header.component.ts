@@ -29,7 +29,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public patchForm() {
-    this.mapService.presetInfo$$.asObservable().subscribe({
+    this.mapService.presetInfo$.subscribe({
       next: (preset) => {
         this.form.patchValue({
           title: preset.title,

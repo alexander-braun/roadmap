@@ -4,6 +4,8 @@ import { catchError, EMPTY, tap, from, switchMap, throwError } from "rxjs";
 import { auth } from "../middleware/auth";
 import { RoadmapModel, IRoadmap } from "../models/roadmap";
 import { defaultRoadmap } from "../data/default-roadmap";
+import { v4 as uuid } from "uuid";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -27,7 +29,7 @@ router.post("/roadmaps", auth, (req, res) => {
 });
 
 // Create Users own instance of default frontend roadmap
-router.post("/roadmaps/default", auth, (req, res) => {
+router.post("/roadmaps/default-frontend", auth, (req, res) => {
   const roadmap = new RoadmapModel({
     ...defaultRoadmap,
     owner: req.user._id,
@@ -46,8 +48,26 @@ router.post("/roadmaps/default", auth, (req, res) => {
     .subscribe();
 });
 
+router.post("/roadmaps/default", auth, (req, res) => {
+  createDefaultMap(
+    req.user._id,
+    req.body.newDefault,
+    req.body.title,
+    req.body.subtitle
+  ).subscribe({
+    next: (roadmap) => {
+      res.status(201).send(roadmap);
+    },
+    error: (err) => {
+      res
+        .status(401)
+        .send({ message: "Something went wrong", error: err.message });
+    },
+  });
+});
+
 // Get General version of default roadmap
-router.get("/roadmaps/default", (req, res) => {
+router.get("/roadmaps/default-frontend", (req, res) => {
   res.status(200).send(defaultRoadmap);
 });
 
@@ -63,6 +83,9 @@ router.get("/roadmaps", auth, (req, res) => {
           res.status(400).send();
         }
         res.status(200).send(roadmaps);
+
+        // try to issue new token right here
+        // either send it back or set as cookie (prefered)
       })
     )
     .subscribe();
@@ -112,6 +135,43 @@ router.patch("/roadmaps/:id", auth, (req, res) => {
       })
     )
     .subscribe();
+});
+
+// Patch one
+router.patch("/roadmaps/:mapId/mapnode/:nodeId", auth, (req, res) => {
+  from(
+    RoadmapModel.findOneAndUpdate(
+      { _id: req.params.mapId, owner: req.user._id },
+      {
+        $set: {
+          ...(req.body.title && { "map.$[element].title": req.body.title }),
+          ...(req.body.mainKnot && {
+            "map.$[element].mainKnot": req.body.mainKnot,
+          }),
+          ...(req.body.children && {
+            "map.$[element].children": req.body.children,
+          }),
+          ...(req.body.id && { "map.$[element].id": req.body.id }),
+          ...(req.body.notes && { "map.$[element].notes": req.body.notes }),
+          ...(req.body.categoryId && {
+            "map.$[element].categoryId": req.body.categoryId,
+          }),
+          ...(req.body.status && { "map.$[element].status": req.body.status }),
+        },
+      },
+      {
+        arrayFilters: [{ "element.id": req.params.nodeId }],
+        new: true,
+      }
+    )
+  ).subscribe({
+    next: (map) => {
+      res.status(201).send(map);
+    },
+    error: (err) => {
+      res.status(401).send(err);
+    },
+  });
 });
 
 router.patch("/roadmaps/node/:id", auth, (req, res) => {
@@ -234,3 +294,67 @@ router.delete("/roadmaps/:id", auth, (req, res) => {
 });
 
 export default router;
+
+export const createDefaultMap = (
+  ownerId: mongoose.Types.ObjectId,
+  newDefault?: boolean,
+  title?: string,
+  subtitle?: string
+) => {
+  return from(RoadmapModel.find({ owner: ownerId })).pipe(
+    switchMap((roadmaps) => {
+      let defaultMapIndex = -1;
+      if (Array.isArray(roadmaps)) {
+        defaultMapIndex = roadmaps.findIndex(
+          (roadmap) => roadmap.title === "Default Roadmap Preset"
+        );
+      }
+
+      if (
+        (Array.isArray(roadmaps) &&
+          (roadmaps.length === 0 || defaultMapIndex === -1)) ||
+        newDefault
+      ) {
+        const center = uuid();
+        const child = uuid();
+        const roadmap = new RoadmapModel({
+          owner: ownerId,
+          title: title ? title : "Default Roadmap Preset",
+          subtitle: subtitle ? subtitle : "edit me!",
+          map: [
+            {
+              mainKnot: true,
+              children: [child, "last-node"],
+              id: center,
+              title: "Edit me!",
+              categoryId: "1",
+              subtitle: "",
+            },
+            {
+              children: [],
+              id: child,
+              title: "Edit me!",
+              subtitle: "",
+              notes: ["My first note..."],
+            },
+            {
+              children: [],
+              mainKnot: true,
+              id: "last-node",
+              title: "last-node",
+              subtitle: "",
+            },
+          ],
+          settings: defaultRoadmap.settings,
+        });
+        return from(roadmap.save()).pipe(
+          catchError((err) => {
+            throw new Error(err.message);
+          })
+        );
+      } else {
+        throw new Error(`Map already exists`);
+      }
+    })
+  );
+};

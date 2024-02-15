@@ -19,6 +19,7 @@ import { RoadmapModel } from "./roadmap";
 import { v4 as uuid } from "uuid";
 import { Model } from "mongoose";
 import { defaultRoadmap } from "../data/default-roadmap";
+import { createDefaultMap } from "../routers/roadmaps";
 
 export interface IUser {
   email: string;
@@ -156,45 +157,10 @@ export const generateDefaultRoadmapForUser = (
   id: mongoose.Types.ObjectId,
   next: CallbackWithoutResultAndOptionalError
 ) => {
-  from(RoadmapModel.find({ owner: id }))
-    .pipe(
-      switchMap((roadmaps) => {
-        if (Array.isArray(roadmaps) && roadmaps.length === 0) {
-          const center = uuid();
-          const child = uuid();
-          const roadmap = new RoadmapModel({
-            owner: id,
-            title: "Default Roadmap Preset",
-            subtitle: "edit me!",
-            map: [
-              {
-                mainKnot: true,
-                children: [child],
-                id: center,
-                title: "Edit me!",
-                categoryId: "1",
-              },
-              {
-                children: [],
-                id: child,
-                title: "Edit me!",
-                notes: ["My first note..."],
-              },
-            ],
-          });
-          return from(roadmap.save()).pipe(
-            catchError(() => {
-              return EMPTY;
-            })
-          );
-        } else {
-          return EMPTY;
-        }
-      })
-    )
-    .subscribe({
-      complete: () => next(),
-    });
+  createDefaultMap(id).subscribe({
+    complete: () => next(),
+    error: () => next(),
+  });
 };
 
 // Delte all related roadmaps and nodes
@@ -235,7 +201,7 @@ userSchema.methods.generateAuthToken = function () {
     { _id: this._id.toString() },
     process.env.JWT_SECRET || "",
     {
-      expiresIn: "1minute",
+      expiresIn: "1hour",
     }
   );
   this.tokens = this.tokens.concat({ token });

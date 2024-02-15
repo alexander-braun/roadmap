@@ -1,4 +1,5 @@
 import { NodeId } from 'apps/roadmap/src/assets/data';
+import { Category } from './settings/settings.model';
 
 export interface CardCoordinates {
   parentRect: DOMRect;
@@ -44,23 +45,19 @@ export interface Roadmap {
   title: string;
   subtitle: string;
   owner: string;
-  map: {
-    mainKnot: boolean;
-    children: string[];
-    id: string;
-    title: string;
-    notes: string[];
-    categoryId: string;
-    status: Status;
-    date: string;
-  }[];
-  settings: {
-    categoryName: string;
-    categoryIcon: string;
-    categoryBgColor: string;
-    categoryIconColor: string;
-    categoryId: string;
-  }[];
+  map: NodeEntry[];
+  settings: Category[];
+}
+
+export interface NodeEntry {
+  mainKnot?: boolean;
+  children: string[];
+  id: string;
+  title?: string;
+  notes?: string[];
+  categoryId?: string;
+  status?: Status;
+  date?: string;
 }
 
 export interface PresetInfo {

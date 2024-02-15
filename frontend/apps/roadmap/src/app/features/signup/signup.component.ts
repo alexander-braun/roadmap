@@ -47,7 +47,10 @@ export class SignupComponent implements OnDestroy {
       .signup(this.signupForm.controls.email.value, this.signupForm.controls.password.value)
       .pipe(
         takeUntil(this.destroy$),
-        catchError(() => {
+        catchError((err) => {
+          if (err.error.indexOf('E11000 duplicate key error') >= 0) {
+            this.signupForm.controls.email.setErrors({ duplicateEmail: true });
+          }
           this.loading$.next(false);
           return EMPTY;
         })

@@ -3,8 +3,7 @@ import { CardData, Status } from '../map.model';
 import { MapService } from '../map.service';
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { faTrashAlt, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { SettingsService } from '../settings/settings.service';
-import { BehaviorSubject, Subject, skip, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subject, debounceTime, skip, take, takeUntil } from 'rxjs';
 import { Categories, Category } from '../settings/settings.model';
 import { iconsMap } from '../settings/icons-preset.data';
 import { NodeId } from 'apps/roadmap/src/assets/data';
@@ -23,11 +22,11 @@ export class CardComponent implements OnInit, OnDestroy {
   public readonly faTrashAlt = faTrashAlt;
   public readonly faPlus = faPlus;
   public readonly faTrash = faTrash;
-  public categories$ = this.settingsService.categories$;
+  public categories$ = this.mapService.categories$;
   public currentCategory$$ = new BehaviorSubject({} as Category);
   public isHover = false;
   public hoverDelays: string[] = [];
-  public statusChoices$ = this.settingsService.statusChoices$;
+  public statusChoices$ = this.mapService.statusChoices$;
   private destroy$ = new Subject<void>();
 
   public cardForm = this.fb.group({
@@ -43,21 +42,20 @@ export class CardComponent implements OnInit, OnDestroy {
   constructor(
     private mapService: MapService,
     private fb: FormBuilder,
-    private resizeObserverService: ResizeObserverService,
-    private settingsService: SettingsService
+    private resizeObserverService: ResizeObserverService
   ) {}
 
   ngOnInit(): void {
     this.patchForm();
     this.resizeFormOnValueChange();
-    this.settingsService.categories$.pipe(takeUntil(this.destroy$)).subscribe((categories) => {
+    this.mapService.categories$.pipe(takeUntil(this.destroy$)).subscribe((categories) => {
       this.currentCategory$$.next(this.findCurrentCategory() || ({} as Category));
       this.setAnimationDelay(categories);
     });
     this.mapService.cardDataTree$.pipe(take(1)).subscribe(() => {
       this.patchForm();
     });
-    this.cardForm.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+    this.cardForm.valueChanges.pipe(takeUntil(this.destroy$), debounceTime(2000)).subscribe(() => {
       this.save();
     });
   }
@@ -78,7 +76,7 @@ export class CardComponent implements OnInit, OnDestroy {
   }
 
   public getStatusColor(statusName?: string): string {
-    return this.settingsService.statusChoices.find((choice) => choice.statusName === statusName)?.statusColor || '';
+    return this.mapService.statusChoices.find((choice) => choice.statusName === statusName)?.statusColor || '';
   }
 
   public addNode(): void {
@@ -107,7 +105,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
   public setCategory(i: number): void {
     this.cardForm.patchValue({
-      categoryId: this.settingsService.categories[i].categoryId,
+      categoryId: this.mapService.categories[i].categoryId,
     });
     this.currentCategory$$.next(this.findCurrentCategory() || ({} as Category));
   }
@@ -117,7 +115,7 @@ export class CardComponent implements OnInit, OnDestroy {
   }
 
   private findCurrentCategory(): Category | undefined {
-    return this.settingsService.categories.find(
+    return this.mapService.categories.find(
       (category) => category.categoryId === this.cardForm.controls.categoryId?.value
     );
   }
@@ -163,7 +161,7 @@ export class CardComponent implements OnInit, OnDestroy {
   }
 
   private getCardDataFromTree(): CardData {
-    return this.mapService.getCardDataForNode(this.nodeId);
+    return this.mapService.getCardDataTreeValue()[this.nodeId];
   }
 
   get notes(): FormArray<FormControl<string>> | undefined {

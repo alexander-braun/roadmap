@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormArray, FormGroup, NonNullableFormBuilder } from '@angular/forms';
-import { SettingsService } from './settings.service';
 import { faPencil, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Categories, Category, CategoryFormGroup, IconChoice } from './settings.model';
@@ -8,6 +7,7 @@ import { icons, iconsMap } from './icons-preset.data';
 import { v4 } from 'uuid';
 import { ModalService } from '../../../shared/services/modal.service';
 import { ResizeObserverService } from '../../../shared/services/resize-observer.service';
+import { MapService } from '../map.service';
 
 @Component({
   selector: 'rdmp-settings',
@@ -35,8 +35,8 @@ export class SettingsComponent implements OnInit {
   constructor(
     private resizeService: ResizeObserverService,
     private fb: NonNullableFormBuilder,
-    private settingsService: SettingsService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private mapService: MapService
   ) {
     this.innerWidth$ = this.resizeService.innerWidth$;
   }
@@ -65,8 +65,9 @@ export class SettingsComponent implements OnInit {
   }
 
   private handleCategoriesChanges(): void {
-    this.settingsService.categories$.subscribe((categories) => {
+    this.mapService.categories$.subscribe((categories) => {
       this.patchCategories(categories);
+      this.mapService.patchCardDataOnCategoriesChange(categories);
     });
   }
 
@@ -179,13 +180,13 @@ export class SettingsComponent implements OnInit {
   }
 
   public cancelCategoriesForm(): void {
-    this.settingsService.cancelCategoriesForm();
+    this.mapService.cancelCategories();
     this.flipEdit();
   }
 
   public saveCategories(): void {
     if (this.checkIfCategoriesAreValid()) {
-      this.settingsService.saveCategoriesForm(this.categories.getRawValue());
+      this.mapService.setCategories(this.categories.getRawValue());
       this.flipEdit();
     }
   }

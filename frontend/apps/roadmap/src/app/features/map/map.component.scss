@@ -16,13 +16,13 @@
     'right-side sub-right';
   grid-template-columns: 1fr 1fr;
 
-  grid-gap: 6rem;
+  grid-gap: 4rem;
   margin-left: 3vw;
   margin-right: 3vw;
 
   @media only screen and (min-width: 1100px) {
     grid-template-columns: 4fr 4fr 3fr 4fr 4fr;
-    grid-gap: 6rem;
+    grid-gap: 4rem;
     grid-template-areas: 'sub-left left-side centered right-side sub-right';
     margin-left: 4vw;
     margin-right: 4vw;
@@ -39,7 +39,7 @@
   }
 
   &__side-elements {
-    gap: 5rem;
+    gap: 4rem;
     position: relative;
     height: 100%;
     display: flex;

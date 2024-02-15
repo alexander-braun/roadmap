@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Observable, Subject, take } from 'rxjs';
 import { ModalService } from '../../shared/services/modal.service';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { MapService } from '../map/map.service';
@@ -33,5 +33,17 @@ export class PresetsComponent implements OnInit {
 
   public setMap(roadmap: Roadmap): void {
     this.mapService.handleMapResponse(roadmap);
+    this.close();
+  }
+
+  public deleteMap(id: string): void {
+    this.mapService.deleteRoadmapById(id).pipe(take(1)).subscribe();
+  }
+
+  public createNewDefaultMap() {
+    this.mapService.generateNewDefaultMap(
+      this.newTemplateForm.controls.presetTitle.value,
+      this.newTemplateForm.controls.presetSubtitle.value
+    );
   }
 }
