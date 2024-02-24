@@ -41,6 +41,11 @@ export class NavigationComponent {
     this.closeMenu();
   }
 
+  public openProfile(): void {
+    this.modalService.open('profileComponent');
+    this.closeMenu();
+  }
+
   public switchMenu(): void {
     this.open = !this.open;
   }

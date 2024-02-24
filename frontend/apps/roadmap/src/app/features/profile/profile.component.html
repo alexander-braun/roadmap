@@ -1,0 +1,6 @@
+<div class="modal-container">
+  <fa-icon class="close fa-w-11" [icon]="faTimes" (click)="close()"></fa-icon>
+  <rdmp-loading-spinner [height]="120" *ngIf="loading$ | async"></rdmp-loading-spinner>
+  <rdmp-profile-icon *ngIf="!(loading$.asObservable() | async)"></rdmp-profile-icon>
+  <h3 class="header-title">Profile</h3>
+</div>
