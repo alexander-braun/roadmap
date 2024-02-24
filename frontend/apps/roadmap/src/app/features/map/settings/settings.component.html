@@ -62,10 +62,15 @@
                   *ngIf="isEdit"
                   class="category-name-input hide-animation"
                   formControlName="categoryName"
-                  [ngStyle]="{ opacity: choiceVisible.value === i ? '0' : '1' }"
+                  [ngStyle]="{
+                    opacity: choiceVisible.value === i ? '0' : '1',
+                    'border-color': categories.controls[i].hasError('nonUniqueName') ? '#ff0000' : '#8080801a'
+                  }"
                   (input)="updateForm()"
                 />
-                <p *ngIf="!isEdit" class="category-name-show">{{ getName(i) }}</p>
+                <p *ngIf="!isEdit" class="category-name-show">
+                  {{ categories.controls[i].controls['categoryName'].value }}
+                </p>
               </td>
               <td *ngIf="isEdit">
                 <input

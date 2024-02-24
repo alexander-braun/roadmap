@@ -47,6 +47,7 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.handleCategoriesChanges();
+    this.settingsForm.valueChanges.subscribe(() => this.checkIfCategoriesAreValid());
   }
 
   public addCategory(): void {
@@ -81,10 +82,6 @@ export class SettingsComponent implements OnInit {
     if (e instanceof InputEvent) {
       e.preventDefault();
     }
-  }
-
-  public getName(i: number): string {
-    return this.categories.controls[i].controls['categoryName'].value;
   }
 
   public flipShowIcons(index: number): void {
@@ -185,24 +182,23 @@ export class SettingsComponent implements OnInit {
   }
 
   public saveCategories(): void {
-    if (this.checkIfCategoriesAreValid()) {
-      this.mapService.setCategories(this.categories.getRawValue());
+    this.settingsForm.controls.categories.updateValueAndValidity();
+    if (this.settingsForm.controls.categories.valid) {
+      this.mapService.patchSettings(this.categories.getRawValue());
       this.flipEdit();
     }
   }
 
-  private checkIfCategoriesAreValid(): boolean {
+  private checkIfCategoriesAreValid() {
     const names: string[] = [];
-    let isValid = true;
-    this.settingsForm.controls.categories.controls.forEach((control) => {
+    this.settingsForm.controls.categories.controls.forEach((control, i) => {
       const name = control.controls['categoryName'].value;
       if (names.indexOf(name) >= 0) {
-        isValid = false;
+        this.settingsForm.controls.categories.controls[i].setErrors({ nonUniqueName: true });
       } else {
         names.push(control.controls['categoryName'].value);
       }
     });
-    return isValid;
   }
 
   public updateForm(): void {

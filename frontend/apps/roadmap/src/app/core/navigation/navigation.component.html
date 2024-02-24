@@ -5,7 +5,7 @@
       <div class="links">
         <button (click)="openPresets()" *ngIf="auth.isAuthorized">Presets</button>
         <button (click)="openSettings()">Settings</button>
-        <button *ngIf="auth.isAuthorized">Profile</button>
+        <button (click)="openProfile()" *ngIf="auth.isAuthorized">Profile</button>
         <button (click)="singup()" *ngIf="!auth.isAuthorized">Signup</button>
         <button (click)="openLogin()" *ngIf="!auth.isAuthorized">Login</button>
         <button (click)="logout()" *ngIf="auth.isAuthorized">Logout</button>
@@ -19,7 +19,7 @@
       <div class="links">
         <button class="link" (click)="openPresets()" *ngIf="auth.isAuthorized">Presets</button>
         <button class="link" (click)="openSettings()">Settings</button>
-        <button class="link" *ngIf="auth.isAuthorized">Profile</button>
+        <button class="link" (click)="openProfile()" *ngIf="auth.isAuthorized">Profile</button>
         <button class="link" (click)="singup()" *ngIf="!auth.isAuthorized">Signup</button>
         <button class="link" (click)="openLogin()" *ngIf="!auth.isAuthorized">Login</button>
         <button class="link" (click)="logout()" *ngIf="auth.isAuthorized">Logout</button>

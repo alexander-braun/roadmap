@@ -15,9 +15,10 @@
 }
 
 .modal {
-  margin: 15% auto;
   display: flex;
+  align-items: center;
   justify-content: center;
+  height: 100vh;
 }
 
 .modal-container {

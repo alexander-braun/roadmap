@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 
 const router = express.Router();
 
+// Not used
 router.post("/roadmaps", auth, (req, res) => {
   const roadmap = new RoadmapModel({
     ...req.body,
@@ -28,7 +29,7 @@ router.post("/roadmaps", auth, (req, res) => {
     .subscribe();
 });
 
-// Create Users own instance of default frontend roadmap
+// Add default Frontend Roadmap
 router.post("/roadmaps/default-frontend", auth, (req, res) => {
   const roadmap = new RoadmapModel({
     ...defaultRoadmap,
@@ -48,6 +49,7 @@ router.post("/roadmaps/default-frontend", auth, (req, res) => {
     .subscribe();
 });
 
+// Add new default Roadmap
 router.post("/roadmaps/default", auth, (req, res) => {
   createDefaultMap(
     req.user._id,
@@ -71,6 +73,7 @@ router.get("/roadmaps/default-frontend", (req, res) => {
   res.status(200).send(defaultRoadmap);
 });
 
+// Get all of users Roadmaps
 router.get("/roadmaps", auth, (req, res) => {
   from(RoadmapModel.find({ owner: req.user._id }))
     .pipe(
@@ -91,6 +94,7 @@ router.get("/roadmaps", auth, (req, res) => {
     .subscribe();
 });
 
+// Get roadmap by ID
 router.get("/roadmaps/:id", auth, (req, res) => {
   from(RoadmapModel.findOne({ _id: req.params.id, owner: req.user._id }))
     .pipe(
@@ -109,6 +113,7 @@ router.get("/roadmaps/:id", auth, (req, res) => {
     .subscribe();
 });
 
+// Patch whole map
 router.patch("/roadmaps/:id", auth, (req, res) => {
   from(RoadmapModel.findOne({ _id: req.params.id, owner: req.user._id }))
     .pipe(
@@ -137,7 +142,34 @@ router.patch("/roadmaps/:id", auth, (req, res) => {
     .subscribe();
 });
 
-// Patch one
+// Post Settings
+router.post("/roadmaps/settings/:mapId", auth, (req, res) => {
+  from(RoadmapModel.findOne({ _id: req.params.mapId, owner: req.user._id }))
+    .pipe(
+      switchMap((roadmap) => {
+        if (roadmap) {
+          roadmap.settings = req.body;
+          return from(roadmap.save());
+        } else {
+          return throwError(() => new Error("Roadmap not found"));
+        }
+      }),
+      catchError((e) => {
+        res.status(404).send(e.message);
+        return EMPTY;
+      }),
+      tap((roadmap) => {
+        if (!roadmap) {
+          res.status(404).send();
+        } else {
+          res.status(200).send(roadmap);
+        }
+      })
+    )
+    .subscribe();
+});
+
+// Patch one Node
 router.patch("/roadmaps/:mapId/mapnode/:nodeId", auth, (req, res) => {
   from(
     RoadmapModel.findOneAndUpdate(
@@ -174,6 +206,7 @@ router.patch("/roadmaps/:mapId/mapnode/:nodeId", auth, (req, res) => {
   });
 });
 
+// Not used patch node by ID
 router.patch("/roadmaps/node/:id", auth, (req, res) => {
   from(
     RoadmapModel.findOneAndUpdate(
@@ -200,6 +233,7 @@ router.patch("/roadmaps/node/:id", auth, (req, res) => {
     .subscribe();
 });
 
+// Not used delete node by ID
 router.delete("/roadmaps/node/:id", auth, (req, res) => {
   from(RoadmapModel.findOne({ _id: req.params.id }))
     .pipe(
@@ -247,6 +281,7 @@ router.delete("/roadmaps/node/:id", auth, (req, res) => {
     .subscribe();
 });
 
+// Not used Patch update node by ID
 router.post("/roadmaps/node/:id", auth, (req, res) => {
   from(
     RoadmapModel.findOneAndUpdate(
@@ -275,6 +310,7 @@ router.post("/roadmaps/node/:id", auth, (req, res) => {
     .subscribe();
 });
 
+// Delete Roadmap By ID
 router.delete("/roadmaps/:id", auth, (req, res) => {
   from(RoadmapModel.findOneAndDelete({ _id: req.params.id }))
     .pipe(

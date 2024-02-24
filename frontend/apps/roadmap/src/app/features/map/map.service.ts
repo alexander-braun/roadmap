@@ -9,7 +9,7 @@ import {
   NodeEntry,
 } from './map.model';
 import { v4 as uuidv4 } from 'uuid';
-import { Categories, StatusChoices } from './settings/settings.model';
+import { Categories, Category, StatusChoices } from './settings/settings.model';
 import { HttpClient } from '@angular/common/http';
 import { NodeId, Nodes, statusChoices } from 'apps/roadmap/src/assets/data';
 import { AuthService } from '../../shared/services/auth.service';
@@ -135,6 +135,17 @@ export class MapService {
     });
   }
 
+  public patchSettings(settings: Category[]) {
+    return this.http.post(`/api/roadmaps/settings/${this.presetInfo$$.value.id}`, settings).subscribe({
+      next: () => {
+        this.categories$$.next(settings);
+      },
+      error: () => {
+        this.cancelCategories();
+      },
+    });
+  }
+
   private getDefaultRoadmap(): void {
     this.http.get<Roadmap>('/api/roadmaps/default-frontend').subscribe({
       next: (roadmap) => {
@@ -211,10 +222,6 @@ export class MapService {
     this.setNodes({});
     this.presetInfo$$.next({} as PresetInfo);
     this.availableRoadmaps$$.next([]);
-  }
-
-  public setCategories(categories: Categories): void {
-    this.categories$$.next(categories);
   }
 
   public cancelCategories(): void {
