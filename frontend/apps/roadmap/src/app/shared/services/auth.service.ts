@@ -45,6 +45,18 @@ export class AuthService {
     );
   }
 
+  public deleteUser(): void {
+    this.http.delete('/api/users/me').subscribe({
+      next: () => {
+        localStorage.removeItem('lastVisitedMapId');
+        this.logout().subscribe();
+      },
+      error: () => {
+        // Message delete failed (create toast)
+      },
+    });
+  }
+
   public signup(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>('/api/users', { email, password }).pipe(
       tap((response) => {
@@ -61,12 +73,17 @@ export class AuthService {
     );
   }
 
+  public setNewPassword(password: string): Observable<User | boolean> {
+    return this.http.patch<User | boolean>('/api/users/me', { password });
+  }
+
   public logout(): Observable<User> {
     return this.http
       .post<{ _id: string; name: string; email: string; createdAt: string; updatedAt: string }>('api/users/logout', {})
       .pipe(
-        catchError((e) => {
+        catchError(() => {
           this.removeToken();
+          this.workerService.removeWorker('auth-timer');
           return EMPTY;
         }),
         tap(() => {

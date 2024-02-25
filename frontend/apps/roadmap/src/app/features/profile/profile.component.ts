@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Observable, Subject, take } from 'rxjs';
+import { Subject, catchError, of, tap } from 'rxjs';
 import { ModalService } from '../../shared/services/modal.service';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { MapService } from '../map/map.service';
-import { Roadmap } from '../map/map.model';
-import { FormBuilder, Validators } from '@angular/forms';
+import { NonNullableFormBuilder, Validators } from '@angular/forms';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
   selector: 'rdmp-profile',
@@ -12,14 +11,43 @@ import { FormBuilder, Validators } from '@angular/forms';
   styleUrls: ['./profile.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent {
   public readonly faTimes = faTimes;
   public loading$ = new Subject<void>();
-  constructor(private modalService: ModalService, private mapService: MapService, private fb: FormBuilder) {}
+  public passwordControl = this.fb.control('', [Validators.required, Validators.minLength(7)]);
 
-  ngOnInit(): void {}
+  constructor(
+    private modalService: ModalService,
+    private authService: AuthService,
+    private fb: NonNullableFormBuilder
+  ) {}
 
   public close(): void {
     this.modalService.close();
+  }
+
+  public deleteMe(): void {
+    this.authService.deleteUser();
+    this.close();
+  }
+
+  public setNewPassword(): void {
+    if (this.passwordControl.valid) {
+      this.authService
+        .setNewPassword(this.passwordControl.value)
+        .pipe(
+          catchError(() => {
+            // TODO: Error message here
+            return of(false);
+          }),
+          tap((res) => {
+            if (res) {
+              // TODO: Success message here
+            }
+          })
+        )
+        .subscribe();
+      this.close();
+    }
   }
 }

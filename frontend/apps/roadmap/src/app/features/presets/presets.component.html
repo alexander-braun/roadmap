@@ -1,7 +1,7 @@
 <div class="modal-container">
-  <fa-icon class="close fa-w-11" [icon]="faTimes" (click)="close()"></fa-icon>
-  <rdmp-loading-spinner [height]="120" *ngIf="loading$ | async"></rdmp-loading-spinner>
-  <rdmp-presets-icon *ngIf="!(loading$.asObservable() | async)"></rdmp-presets-icon>
+  <fa-icon class="close" [icon]="faTimes" (click)="close()"></fa-icon>
+  <rdmp-loading-spinner [height]="100" *ngIf="loading$ | async"></rdmp-loading-spinner>
+  <rdmp-presets-icon *ngIf="!(loading$ | async)"></rdmp-presets-icon>
   <h3 class="header-title">Load Preset</h3>
   <table *ngIf="availableRoadmaps$ | async; let roadmaps">
     <tbody>
@@ -22,6 +22,9 @@
       <ng-container *ngIf="newTemplateForm.controls.presetTitle.touched">
         <div class="form-error" *ngIf="newTemplateForm.controls.presetTitle.errors?.['required']">
           Title is required.
+        </div>
+        <div class="form-error" *ngIf="newTemplateForm.controls.presetTitle.errors?.['duplicateTitle']">
+          There already is a roadmap with that name.
         </div>
       </ng-container>
     </div>

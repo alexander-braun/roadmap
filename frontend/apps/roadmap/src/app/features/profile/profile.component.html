@@ -1,6 +1,21 @@
 <div class="modal-container">
   <fa-icon class="close fa-w-11" [icon]="faTimes" (click)="close()"></fa-icon>
-  <rdmp-loading-spinner [height]="120" *ngIf="loading$ | async"></rdmp-loading-spinner>
+  <rdmp-loading-spinner [height]="120" *ngIf="loading$.asObservable() | async"></rdmp-loading-spinner>
   <rdmp-profile-icon *ngIf="!(loading$.asObservable() | async)"></rdmp-profile-icon>
-  <h3 class="header-title">Profile</h3>
+  <h3 class="header-title">Delete Profile</h3>
+  <form>
+    <button type="button" (click)="deleteMe()" class="delete-user">Delete my profile!</button>
+    <h3 class="header-title">Change Password</h3>
+    <div class="form-control">
+      <label for="password">Password</label>
+      <input id="password" type="password" [formControl]="passwordControl" />
+      <ng-container *ngIf="passwordControl.touched">
+        <div class="form-error" *ngIf="passwordControl.errors?.['required']">Password is required.</div>
+        <div class="form-error" *ngIf="passwordControl.errors?.['minlength']">
+          Password must have at least 7 characters.
+        </div>
+      </ng-container>
+    </div>
+    <button type="button" (click)="setNewPassword()" class="change-password">Change my password!</button>
+  </form>
 </div>

@@ -48,69 +48,19 @@ form {
     cursor: pointer;
     font-family: 'Raleway';
     border: 1px solid transparent;
+
+    &.delete-user {
+      background: #ff0000;
+      color: white;
+      font-weight: 600;
+    }
+
+    &.change-password {
+      background: #429cad;
+      color: white;
+      font-weight: 600;
+    }
   }
-
-  button.login {
-    background: #429cad;
-    color: white;
-    font-weight: 600;
-  }
-
-  button.signup {
-    background-color: white;
-    color: #323232;
-    border: 1px solid #b4b4b4;
-  }
-}
-
-.buttongroup {
-  display: flex;
-  gap: 1rem;
-  margin-top: 4rem;
-}
-
-.forgot-password {
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #0b45e4;
-  font-weight: 500;
-}
-
-//
-
-button {
-  padding: 1rem 2rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-family: 'Raleway';
-  border: 1px solid transparent;
-}
-
-button.load {
-  background: #429cad;
-  color: white;
-  font-weight: 600;
-}
-
-button.delete {
-  background-color: white;
-  color: #323232;
-  border: 1px solid #b4b4b4;
-}
-
-button.create-new {
-  background: #429cad;
-  color: white;
-  font-weight: 600;
-}
-
-.roadmap-title {
-  font-size: 2rem;
-}
-
-.align-center {
-  text-align: center;
 }
 
 .header-title {

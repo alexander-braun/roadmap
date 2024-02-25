@@ -1,5 +1,5 @@
 <div class="modal-container">
-  <fa-icon class="close fa-w-11" [icon]="faTimes" (click)="close()"></fa-icon>
+  <fa-icon class="close" [icon]="faTimes" (click)="close()"></fa-icon>
   <rdmp-loading-spinner [height]="120" *ngIf="loading$ | async"></rdmp-loading-spinner>
   <rdmp-login-icon *ngIf="!(loading$ | async)"></rdmp-login-icon>
   <h3 class="header-title">Login</h3>

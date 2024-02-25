@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Observable, Subject, take } from 'rxjs';
+import { EMPTY, Observable, Subject, catchError, of, take } from 'rxjs';
 import { ModalService } from '../../shared/services/modal.service';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { MapService } from '../map/map.service';
@@ -13,7 +13,7 @@ import { FormBuilder, Validators } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PresetsComponent implements OnInit {
-  public loading$ = new Subject<void>();
+  public loading$ = new Subject<boolean>();
   public readonly faTimes = faTimes;
   public availableRoadmaps$!: Observable<Readonly<Roadmap[]>>;
   public newTemplateForm = this.fb.nonNullable.group({
@@ -37,13 +37,32 @@ export class PresetsComponent implements OnInit {
   }
 
   public deleteMap(id: string): void {
-    this.mapService.deleteRoadmapById(id).pipe(take(1)).subscribe();
+    this.loading$.next(true);
+    this.mapService
+      .deleteRoadmapById(id)
+      .pipe(take(1))
+      .subscribe(() => this.loading$.next(false));
   }
 
   public createNewDefaultMap() {
-    this.mapService.generateNewDefaultMap(
-      this.newTemplateForm.controls.presetTitle.value,
-      this.newTemplateForm.controls.presetSubtitle.value
-    );
+    this.loading$.next(true);
+    this.mapService
+      .generateNewDefaultMap(
+        this.newTemplateForm.controls.presetTitle.value,
+        this.newTemplateForm.controls.presetSubtitle.value
+      )
+      .pipe(
+        catchError((err) => {
+          if (err.error.error.indexOf('duplicate key error') > -1) {
+            this.newTemplateForm.controls.presetTitle.setErrors({ duplicateTitle: true });
+          }
+          this.loading$.next(false);
+          return EMPTY;
+        })
+      )
+      .subscribe(() => {
+        this.newTemplateForm.reset();
+        this.loading$.next(false);
+      });
   }
 }

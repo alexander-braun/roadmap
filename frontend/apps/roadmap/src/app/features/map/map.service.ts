@@ -1,5 +1,17 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, debounceTime, EMPTY, map, merge, Observable, Subject, take, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  debounceTime,
+  EMPTY,
+  map,
+  merge,
+  Observable,
+  Subject,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs';
 import {
   CardData,
   CardDataTree,
@@ -123,16 +135,11 @@ export class MapService {
     );
   }
 
-  public generateNewDefaultMap(title: string, subtitle: string): void {
+  public generateNewDefaultMap(title: string, subtitle: string): Observable<Roadmap[]> {
     // FIRST SAVE WHOLE ROADMAP THEN CREATE NEW THEN FETCH WITH GETDATA
-    this.http.post('/api/roadmaps/default', { newDefault: true, title, subtitle }).subscribe({
-      next: (res) => {
-        // TODO reload maps, save current map here
-      },
-      error: (err) => {
-        // TODO Show toast here
-      },
-    });
+    return this.http
+      .post('/api/roadmaps/default', { newDefault: true, title, subtitle })
+      .pipe(switchMap(() => this.getAllRoadmaps()));
   }
 
   public patchSettings(settings: Category[]) {
@@ -162,9 +169,7 @@ export class MapService {
       .pipe(take(1))
       .subscribe((roadmaps) => {
         const newCurrentRoadmap = roadmaps.find((roadmap) => roadmap._id === localStorage.getItem('lastVisitedMapId'));
-        if (newCurrentRoadmap) {
-          this.handleMapResponse(newCurrentRoadmap);
-        }
+        this.handleMapResponse(newCurrentRoadmap || ({} as Roadmap));
         this.loading$$.next(false);
       });
   }
@@ -247,7 +252,9 @@ export class MapService {
     this.setCardDataTreeFromRoadmap(roadmap);
     this.setPresetInfoFromRoadmap(roadmap);
     this.generateNodesFromRoadmap(roadmap);
-    this.categories$$.next(roadmap.settings);
+    if (roadmap.settings) {
+      this.categories$$.next(roadmap.settings);
+    }
     if (roadmap._id) {
       localStorage.setItem('lastVisitedMapId', roadmap._id);
     }

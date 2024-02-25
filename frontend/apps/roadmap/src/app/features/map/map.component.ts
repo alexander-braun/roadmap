@@ -191,7 +191,7 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
     return list;
   }
 
-  private getStartingKnot(nodes: Nodes): string {
+  private getStartingKnot(nodes: Nodes): string | undefined {
     // First get all mainKnots
     const allMainKnots: string[] = [];
     Object.entries(nodes).forEach(([id, node]) => {
@@ -206,7 +206,7 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
         nodeIdsInChildrenArray.push(...nodes[mainKnotId].children);
       }
     });
-    let startingKnot = '';
+    let startingKnot = undefined;
     // Now find the diff between the arrays
     allMainKnots.forEach((knot) => {
       if (nodeIdsInChildrenArray.indexOf(knot) < 0) {
@@ -229,6 +229,9 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
   private generateCenterNodes(): string[] {
     const nodes = this.mapService.getNodesValue();
     const startingKnot = this.getStartingKnot(nodes);
+    if (!startingKnot) {
+      return [];
+    }
     let nextMainKnotChild = this.getMainKnotChildFromChildren(nodes[startingKnot]?.children || [], nodes);
     const mainKnotOrder: string[] = nextMainKnotChild ? [startingKnot, nextMainKnotChild] : [startingKnot];
     while (nextMainKnotChild) {
