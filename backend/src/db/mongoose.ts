@@ -9,7 +9,7 @@ if (!mongoURI) {
   console.error("MongoDB URI is not set.");
   process.exit(1);
 }
-mongoose.set("debug", process.env.ENV === "DEVELOPMENT");
+mongoose.set("debug", process.env.NODE_ENV === "DEVELOPMENT");
 of(
   mongoose.connect(mongoURI, {
     dbName: process.env.DATABASE_NAME,
