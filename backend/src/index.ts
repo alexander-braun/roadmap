@@ -23,7 +23,7 @@ app.listen(port, () => {
 
 if (process.env.NODE_ENV === "PRODUCTION") {
   console.log("IS PRODUCTION");
-  app.use(express.static("../client/build"));
+  app.use(express.static("../frontend/dist"));
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "../frontend", "dist", "index.html"));
   });
