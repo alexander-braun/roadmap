@@ -27,7 +27,7 @@ console.log(
   process.env.NODE_ENV === "PRODUCTION",
   "-------------"
 );
-if (process.env.NODE_ENV === "PRODUCTION") {
+if (process.env.NODE_ENV?.toUpperCase() === "PRODUCTION") {
   console.log("IS PRODUCTION");
   console.log("Static files served from:", basePath);
   console.log("Index file served from:", path.join(basePath, "index.html"));

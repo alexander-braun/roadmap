@@ -3,7 +3,11 @@ const { of } = require("rxjs");
 const dotenv = require("dotenv");
 dotenv.config();
 
-console.log(process.env.MONGO_DB_URL, process.env.DATABASE_NAME);
+console.log(
+  process.env.MONGO_DB_URL,
+  process.env.DATABASE_NAME,
+  process.env.NODE_ENV
+);
 const mongoURI = process.env.MONGO_DB_URL;
 if (!mongoURI) {
   console.error("MongoDB URI is not set.");
