@@ -143,14 +143,18 @@ export class MapService {
   }
 
   public patchSettings(settings: Category[]) {
-    return this.http.post(`/api/roadmaps/settings/${this.presetInfo$$.value.id}`, settings).subscribe({
-      next: () => {
-        this.categories$$.next(settings);
-      },
-      error: () => {
-        this.cancelCategories();
-      },
-    });
+    if (this.authService.isUserAuthorized()) {
+      this.http.post(`/api/roadmaps/settings/${this.presetInfo$$.value.id}`, settings).subscribe({
+        next: () => {
+          this.categories$$.next(settings);
+        },
+        error: () => {
+          this.cancelCategories();
+        },
+      });
+    } else {
+      this.categories$$.next(settings);
+    }
   }
 
   private getDefaultRoadmap(): void {
@@ -326,19 +330,21 @@ export class MapService {
   }
 
   private patchCardDataById(id: NodeId) {
-    this.http
-      .patch(`api/roadmaps/${this.presetInfo$$.value.id}/mapnode/${id}`, {
-        ...this.getCardDataTreeValue()[id],
-        ...this.nodes$$.value[id],
-      })
-      .subscribe({
-        next: (res) => {
-          // do nothing
-        },
-        error: (err) => {
-          // show toast something went wrong
-        },
-      });
+    if (this.authService.isUserAuthorized()) {
+      this.http
+        .patch(`api/roadmaps/${this.presetInfo$$.value.id}/mapnode/${id}`, {
+          ...this.getCardDataTreeValue()[id],
+          ...this.nodes$$.value[id],
+        })
+        .subscribe({
+          next: (res) => {
+            // do nothing
+          },
+          error: (err) => {
+            // show toast something went wrong
+          },
+        });
+    }
   }
 
   // Save here
