@@ -22,6 +22,7 @@ app.use(function (req, res, next) {
 const basePath = path.join(__dirname, "../frontend/dist/apps/roadmap");
 
 console.log(
+  process.env.NODE_ENV,
   "------------IS PRODUCTION? ",
   process.env.NODE_ENV === "PRODUCTION",
   "-------------"
