@@ -18,6 +18,11 @@ app.use(function (req, res, next) {
 // Determine the correct directory for static files
 const basePath = path.join(__dirname, "../frontend/dist/apps/roadmap");
 
+console.log(
+  "------------IS PRODUCTION? ",
+  process.env.NODE_ENV === "PRODUCTION",
+  "-------------"
+);
 if (process.env.NODE_ENV === "PRODUCTION") {
   console.log("IS PRODUCTION");
   console.log("Static files served from:", basePath);
