@@ -8,7 +8,7 @@
     "client": "cd frontend && npm ci && npm start",
     "server": "cd backend && npm ci && npm run dev",
     "startapp": "concurrently \"npm run client\" \"npm run server\"",
-    "serverprod": "cd backend && npm ci && npm run start",
+    "serverprod": "cd backend && npm ci && npm run build && npm run start",
     "clientprod": "cd frontend && npm ci && npm run build",
     "start": "concurrently \"npm run clientprod\" \"npm run serverprod\""
   },
