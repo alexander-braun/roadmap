@@ -2,6 +2,9 @@ import express, { Express, Request, Response } from "express";
 import path from "path";
 import app from "./app";
 
+const dotenv = require("dotenv");
+dotenv.config();
+
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
