@@ -19,7 +19,7 @@ app.use(function (req, res, next) {
 });
 
 // Determine the correct directory for static files
-const basePath = path.join(__dirname, "../../../frontend/dist/apps/roadmap");
+const basePath = "./frontend/dist/apps/roadmap";
 
 console.log(
   process.env.NODE_ENV,
