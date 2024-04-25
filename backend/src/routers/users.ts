@@ -7,7 +7,7 @@ const sendMail = require("../emails/account");
 
 const router = express.Router();
 
-router.post("/users", (req, res) => {
+router.post("/", (req, res) => {
   const newUser = new UserModel(req.body);
   from(newUser.save())
     .pipe(
@@ -41,7 +41,7 @@ router.post("/users", (req, res) => {
     .subscribe();
 });
 
-router.post("/users/login", (req, res) => {
+router.post("/login", (req, res) => {
   UserModel.findByCredentials(req.body.email, req.body.password)
     .pipe(
       switchMap((user) =>
@@ -64,7 +64,7 @@ router.post("/users/login", (req, res) => {
     .subscribe();
 });
 
-router.post("/users/logout", auth, (req, res) => {
+router.post("/logout", auth, (req, res) => {
   req.user.tokens = (req.user as UserType).tokens.filter(
     (tokenObj) => tokenObj.token !== req.token
   );
@@ -84,7 +84,7 @@ router.post("/users/logout", auth, (req, res) => {
     .subscribe();
 });
 
-router.post("/users/logoutAll", auth, (req, res) => {
+router.post("/logoutAll", auth, (req, res) => {
   req.user.tokens = [];
   from(req.user.save())
     .pipe(
@@ -102,12 +102,12 @@ router.post("/users/logoutAll", auth, (req, res) => {
     .subscribe();
 });
 
-router.get("/users/me", auth, (req, res) => {
+router.get("/me", auth, (req, res) => {
   // user is added to request in auth middleware
   res.send(req.user);
 });
 
-router.patch("/users/me", auth, (req, res) => {
+router.patch("/me", auth, (req, res) => {
   const changedFields = Object.keys(req.body);
   const allowedOperations = ["email", "password"];
   const isValidOperation = changedFields.every((field) =>
@@ -139,7 +139,7 @@ router.patch("/users/me", auth, (req, res) => {
     .subscribe();
 });
 
-router.delete("/users/me", auth, (req, res) => {
+router.delete("/me", auth, (req, res) => {
   from(req.user.deleteOne())
     .pipe(
       catchError((e) => {

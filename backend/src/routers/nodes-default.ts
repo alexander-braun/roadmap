@@ -7,7 +7,7 @@ const router = express.Router();
 // No auth so every user/non-user can fetch the default data
 // TODO: Make it possible for only ADMIN to update data here
 
-router.post("/default-nodes", (req, res) => {
+router.post("/", (req, res) => {
   const nodesDefault = new NodesDefault(req.body);
 
   from(nodesDefault.save())
@@ -23,7 +23,7 @@ router.post("/default-nodes", (req, res) => {
     .subscribe();
 });
 
-router.patch("/default-nodes", (req, res) => {
+router.patch("/", (req, res) => {
   from(NodesDefault.findOne({ defaultMap: true }))
     .pipe(
       switchMap((node) => {
@@ -44,7 +44,7 @@ router.patch("/default-nodes", (req, res) => {
     .subscribe();
 });
 
-router.get("/default-nodes", (req, res) => {
+router.get("/", (req, res) => {
   from(NodesDefault.find({ defaultMap: true }))
     .pipe(
       catchError((e) => {

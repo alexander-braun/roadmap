@@ -16,9 +16,9 @@ const app = express();
 
 app.use(express.json());
 
-app.use(UserRouter);
-app.use(DefaultNodes);
-app.use(DefaultCardDataRouter);
-app.use(RoadmapRouter);
+app.use("/api/users", UserRouter);
+app.use("/api/default-nodes", DefaultNodes);
+app.use("/api/default-card-data", DefaultCardDataRouter);
+app.use("/api/roadmaps", RoadmapRouter);
 
 export default app;

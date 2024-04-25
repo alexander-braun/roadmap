@@ -8,7 +8,7 @@ const router = express.Router();
 // No auth so every user/non-user can fetch the default data
 // TODO: Make it possible for only ADMIN to update data here
 
-router.post("/default-card-data", (req, res) => {
+router.post("/", (req, res) => {
   const cardDataDefault = new CardDataDefault(req.body);
 
   from(cardDataDefault.save())
@@ -24,7 +24,7 @@ router.post("/default-card-data", (req, res) => {
     .subscribe();
 });
 
-router.patch("/default-card-data", (req, res) => {
+router.patch("/", (req, res) => {
   from(CardDataDefault.findOne({ defaultMap: true }))
     .pipe(
       switchMap((card) => {
@@ -45,7 +45,7 @@ router.patch("/default-card-data", (req, res) => {
     .subscribe();
 });
 
-router.get("/default-card-data", (req, res) => {
+router.get("/", (req, res) => {
   from(CardDataDefault.find({ defaultMap: true }))
     .pipe(
       catchError((e) => {
