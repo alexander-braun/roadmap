@@ -201,7 +201,7 @@ userSchema.methods.generateAuthToken = function () {
     { _id: this._id.toString() },
     process.env.JWT_SECRET || "",
     {
-      expiresIn: "1hour",
+      expiresIn: "24hour",
     }
   );
   this.tokens = this.tokens.concat({ token });
