@@ -106,4 +106,14 @@
       </div>
     </div>
   </form>
+  <button
+    *ngIf="position === 'center'"
+    type="button"
+    class="icon-container collapse-toggle"
+    [attr.aria-expanded]="!collapsed"
+    [attr.aria-label]="collapsed ? 'Expand section' : 'Collapse section'"
+    (click)="toggleCollapse.emit()"
+  >
+    <fa-icon [icon]="collapsed ? faChevronDown : faChevronUp"></fa-icon>
+  </button>
 </div>

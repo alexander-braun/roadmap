@@ -1,3 +1,13 @@
+<button
+  *ngIf="!isDesktop || desktopHidden"
+  type="button"
+  class="roadmap-navigator__collapse-all roadmap-navigator__collapse-all--floating"
+  [attr.aria-label]="allCollapsed ? 'Expand all sections' : 'Collapse all sections'"
+  [attr.title]="allCollapsed ? 'Expand all' : 'Collapse all'"
+  (click)="toggleAllSections.emit()"
+>
+  <fa-icon [icon]="allCollapsed ? faChevronDown : faChevronUp"></fa-icon>
+</button>
 <aside
   class="roadmap-navigator"
   [class.roadmap-navigator--open]="isOpen"
@@ -22,9 +32,27 @@
     <div class="roadmap-navigator__heading">
       <span>Jump to section</span>
 
-      <button type="button" class="roadmap-navigator__hide" aria-label="Hide roadmap navigator" (click)="hideDesktop()">
-        &times;
-      </button>
+      <div class="roadmap-navigator__heading-actions">
+        <button
+          *ngIf="isDesktop && !desktopHidden"
+          type="button"
+          class="roadmap-navigator__collapse-all roadmap-navigator__collapse-all--panel"
+          [attr.aria-label]="allCollapsed ? 'Expand all sections' : 'Collapse all sections'"
+          [attr.title]="allCollapsed ? 'Expand all' : 'Collapse all'"
+          (click)="toggleAllSections.emit()"
+        >
+          <fa-icon [icon]="allCollapsed ? faChevronDown : faChevronUp"></fa-icon>
+        </button>
+
+        <button
+          type="button"
+          class="roadmap-navigator__hide"
+          aria-label="Hide roadmap navigator"
+          (click)="hideDesktop()"
+        >
+          &times;
+        </button>
+      </div>
     </div>
 
     <ul class="roadmap-navigator__list">

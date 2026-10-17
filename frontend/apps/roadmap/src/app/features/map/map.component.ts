@@ -39,13 +39,15 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
         .map((id) => ({
           id,
           title: cards[id]?.title || 'Untitled section',
-        })),
-    ),
+        }))
+    )
   );
+  public collapsedSections = new Set<NodeId>();
+
   constructor(
     private mapService: MapService,
     private resizeObserver: ResizeObserverService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -60,6 +62,31 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
     this.cdr.detach();
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  public isCollapsed(id: NodeId): boolean {
+    return this.collapsedSections.has(id);
+  }
+
+  public toggleSection(id: NodeId): void {
+    const next = new Set(this.collapsedSections);
+
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
+
+    this.collapsedSections = next;
+
+    this.cdr.detectChanges();
+    this.resizeObserver.setResizeNext();
+  }
+
+  public onSectionTransitionEnd(event: TransitionEvent): void {
+    if (event.propertyName === 'grid-template-rows') {
+      this.resizeObserver.setResizeNext();
+    }
   }
 
   private getCards(): void {
@@ -116,7 +143,7 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
     if (!nodes[id]?.children) {
       return [];
     }
-    const children = [...nodes[id]?.children];
+    const children = [...(nodes[id]?.children || [])];
     children.forEach((child, i) => {
       if (nodes[child].mainKnot) {
         children.splice(i, 1);
@@ -132,22 +159,30 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   private generateCardCoordinateCollection(): CardCoordinateCollection {
-    const pairs = this.getConnectedCardPairs() as NodeId[][];
+    const pairs = this.getConnectedCardPairs();
     const htmlCollection = this.getAllCardElements();
     const scrollHeight = window.scrollY;
     const width = window.innerWidth;
     const cardCoordinateCollection: CardCoordinateCollection = [];
 
-    for (let i = 0; i < pairs.length; i++) {
-      const pair = pairs[i];
-      const parent = this.getHtmlElementFromId(htmlCollection, pair[0] as NodeId);
-      const child = this.getHtmlElementFromId(htmlCollection, pair[1] as NodeId);
+    const isCollapsedChild = (element: Element): boolean =>
+      !!element.closest('.section--collapsed') && !element.classList.contains('card--center');
 
-      if (
-        !parent ||
-        !child ||
-        (width < 1100 && parent.classList.contains('card--center') && !child.classList.contains('card--center'))
-      ) {
+    for (const [parentId, childId] of pairs) {
+      const parent = this.getHtmlElementFromId(htmlCollection, parentId);
+      const child = this.getHtmlElementFromId(htmlCollection, childId);
+
+      if (!parent || !child) {
+        continue;
+      }
+
+      // Skip connections involving collapsed child nodes
+      if (isCollapsedChild(parent) || isCollapsedChild(child)) {
+        continue;
+      }
+
+      // Skip connections to child nodes on narrow screens
+      if (width < 1100 && parent.classList.contains('card--center') && !child.classList.contains('card--center')) {
         continue;
       }
 
@@ -168,7 +203,7 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
   private getConnectedCardPairs(): NodeId[][] {
     const nodes = this.mapService.getNodesValue();
     const pairs: NodeId[][] = [];
-    Object.entries(nodes).forEach(([id, node], i) => {
+    Object.entries(nodes).forEach(([id, node]) => {
       // This will now always be in order
       if (node.mainKnot) {
         node.children.forEach((childId) => {
@@ -267,5 +302,22 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private getElementFromCollection(collection: HTMLCollection, id: NodeId): Element | undefined {
     return Array.from(collection).find((el) => el.id === id);
+  }
+
+  public get allSectionsCollapsed(): boolean {
+    const ids = this.centerNodes$$.value.filter((id) => id !== 'last-node');
+    return ids.length > 0 && ids.every((id) => this.collapsedSections.has(id));
+  }
+
+  public toggleAllSections(): void {
+    const ids = this.centerNodes$$.value.filter((id) => id !== 'last-node');
+    if (!ids.length) {
+      return;
+    }
+
+    const shouldCollapse = !this.allSectionsCollapsed;
+    this.collapsedSections = shouldCollapse ? new Set<NodeId>(ids) : new Set<NodeId>();
+    this.cdr.detectChanges();
+    this.resizeObserver.setResizeNext();
   }
 }

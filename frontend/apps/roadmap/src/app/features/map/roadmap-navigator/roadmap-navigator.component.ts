@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input } from '@angular/core';
 import { faListUl } from '@fortawesome/free-solid-svg-icons';
 import { ChangeDetectorRef, OnChanges, OnDestroy } from '@angular/core';
+import { EventEmitter, Output } from '@angular/core';
+import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 export interface RoadmapNavigationItem {
   id: string;
@@ -14,8 +16,13 @@ export interface RoadmapNavigationItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoadmapNavigatorComponent implements OnChanges, OnDestroy {
-  private readonly activationRatio = 0.65;
+  readonly faChevronUp = faChevronUp;
+  readonly faChevronDown = faChevronDown;
+
   @Input() navigationItems: RoadmapNavigationItem[] = [];
+  @Input() allCollapsed = false;
+  @Output() toggleAllSections = new EventEmitter<void>();
+
   readonly faListUl = faListUl;
   isOpen = false;
   activeId: string | null = null;
@@ -124,30 +131,28 @@ export class RoadmapNavigatorComponent implements OnChanges, OnDestroy {
     });
   }
 
+  private updateActiveSection(): void {
+    const activationLine = window.innerHeight * 0.65;
 
-private updateActiveSection(): void {
-  const activationLine = window.innerHeight * 0.65;
+    let activeId = this.navigationItems[0]?.id ?? null;
 
-  let activeId = this.navigationItems[0]?.id ?? null;
+    for (const item of this.navigationItems) {
+      const element = document.getElementById(item.id);
 
-  for (const item of this.navigationItems) {
-    const element = document.getElementById(item.id);
+      if (!element) {
+        continue;
+      }
 
-    if (!element) {
-      continue;
+      if (element.getBoundingClientRect().top <= activationLine) {
+        activeId = item.id;
+      } else {
+        break;
+      }
     }
 
-    if (element.getBoundingClientRect().top <= activationLine) {
-      activeId = item.id;
-    } else {
-      break;
+    if (this.activeId !== activeId) {
+      this.activeId = activeId;
+      this.cdr.markForCheck();
     }
   }
-
-  if (this.activeId !== activeId) {
-    this.activeId = activeId;
-    this.cdr.markForCheck();
-  }
-}
-
 }

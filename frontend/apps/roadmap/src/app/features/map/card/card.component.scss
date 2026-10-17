@@ -306,3 +306,28 @@ fa-icon {
     }
   }
 }
+
+//
+.card-container {
+  position: relative;
+}
+
+.collapse-toggle {
+  position: absolute;
+  bottom: -1.5rem;
+  right: -12px;
+  z-index: 3;
+
+  margin-right: 0;
+  border: none;
+  background-color: #f6b93b;
+
+  &:hover {
+    background-color: #e6a626;
+  }
+}
+
+.card-container.center:hover .collapse-toggle {
+  opacity: 1;
+  transform: scale(1);
+}

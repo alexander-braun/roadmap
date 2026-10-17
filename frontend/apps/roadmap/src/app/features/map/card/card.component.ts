@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { CardData, Status } from '../map.model';
 import { MapService } from '../map.service';
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
@@ -8,7 +8,10 @@ import { Categories, Category } from '../settings/settings.model';
 import { iconsMap } from '../settings/icons-preset.data';
 import { NodeId } from 'apps/roadmap/src/assets/data';
 import { ResizeObserverService } from '../../../shared/services/resize-observer.service';
-
+import {
+  faChevronUp,
+  faChevronDown,
+} from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'rdmp-card',
   templateUrl: './card.component.html',
@@ -16,8 +19,14 @@ import { ResizeObserverService } from '../../../shared/services/resize-observer.
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardComponent implements OnInit, OnDestroy {
+  readonly faChevronUp = faChevronUp;
+  readonly faChevronDown = faChevronDown;
+
   @Input() nodeId!: NodeId;
   @Input() position!: 'subchild-left' | 'left' | 'center' | 'right' | 'subchild-right';
+  @Input() collapsed = false;
+  @Output() toggleCollapse = new EventEmitter<void>();
+
   public readonly iconsMap = iconsMap;
   public readonly faTrashAlt = faTrashAlt;
   public readonly faPlus = faPlus;
@@ -81,6 +90,9 @@ export class CardComponent implements OnInit, OnDestroy {
 
   public addNode(): void {
     this.mapService.addNode(this.nodeId);
+    if (this.collapsed) {
+          this.toggleCollapse.emit();
+    }
   }
 
   public deleteNode(): void {

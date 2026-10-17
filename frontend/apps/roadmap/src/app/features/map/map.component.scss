@@ -611,3 +611,72 @@
   width: fit-content;
   color: white;
 }
+
+
+
+.section {
+  // The four child columns
+  &__side-elements:not(&__side-elements--center-section) {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+
+    min-height: 0;
+    height: auto;
+    gap: 0;
+    justify-content: stretch;
+
+    transition:
+      grid-template-rows 0.35s ease-in-out,
+      opacity 0.25s ease,
+      transform 0.35s ease;
+  }
+
+  // Inner content holding the actual cards
+  &__items {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4rem;
+
+    min-height: 0;
+  }
+
+  // Collapsed state
+  &--collapsed {
+    .section__side-elements:not(
+      .section__side-elements--center-section
+    ) {
+      grid-template-rows: minmax(0, 0fr);
+      opacity: 0;
+      transform: translateY(-24px);
+
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .section__items {
+      overflow: hidden;
+      visibility: hidden;
+      transition: visibility 0s 0.35s;
+    }
+  }
+}
+
+// On smaller screens the roadmap uses multiple rows.
+// Remove their spacing when a section is collapsed.
+@media (max-width: 1099px) {
+  .section--collapsed {
+    grid-template-rows: auto 0fr 0fr;
+    row-gap: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section__side-elements {
+    transition: none !important;
+  }
+
+  .section--collapsed .section__items {
+    transition: none;
+  }
+}
