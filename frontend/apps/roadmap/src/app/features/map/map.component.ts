@@ -9,7 +9,7 @@ import {
   ChangeDetectorRef,
   OnDestroy,
 } from '@angular/core';
-import { BehaviorSubject, merge, takeUntil, Subject, combineLatest, map } from 'rxjs';
+import { BehaviorSubject, merge, takeUntil, Subject, combineLatest, map, debounceTime } from 'rxjs';
 import { MapService } from './map.service';
 import { CardCoordinateCollection, Direction } from './map.model';
 import { faPlus, faWrench } from '@fortawesome/free-solid-svg-icons';
@@ -109,7 +109,7 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   private handleResize(): void {
-    this.resizeObserver.resize$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.resizeObserver.resize$.pipe(debounceTime(5), takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.updateNodes();
       },
@@ -317,7 +317,5 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
 
     const shouldCollapse = !this.allSectionsCollapsed;
     this.collapsedSections = shouldCollapse ? new Set<NodeId>(ids) : new Set<NodeId>();
-    this.cdr.detectChanges();
-    this.resizeObserver.setResizeNext();
   }
 }

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, Observable, Subject, takeUntil } from 'rxjs';
 import { CardCoordinates, CardCoordinateCollection, PaathCoordinateCollection, PaathProperty } from '../map/map.model';
 import { MapService } from '../map/map.service';
 import { ResizeObserverService } from '../../shared/services/resize-observer.service';
@@ -46,7 +46,7 @@ export class SvgPathComponent implements OnInit, OnDestroy {
   }
 
   private handleResize(): void {
-    this.resizeObserver.resize$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+    this.resizeObserver.resize$.pipe(debounceTime(5), takeUntil(this.destroy$)).subscribe(() => {
       this.calculateNewCoordinates();
     });
   }

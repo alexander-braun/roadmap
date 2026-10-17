@@ -62,6 +62,4 @@ export class LoginComponent implements OnDestroy {
     this.modalService.close();
     this.modalService.open('signupComponent');
   }
-
-  public handleForgotPassword() {}
 }
