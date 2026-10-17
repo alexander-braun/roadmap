@@ -82,10 +82,8 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     this.collapsedTopics = next;
-
-    requestAnimationFrame(() => {
-      this.mapService.setCardCoordinateCollection(this.generateCardCoordinateCollection());
-    });
+    this.cdr.detectChanges();
+    this.mapService.setCardCoordinateCollection(this.generateCardCoordinateCollection());
   }
 
   public toggleSection(id: NodeId): void {
@@ -98,9 +96,6 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     this.collapsedSections = next;
-
-    this.cdr.detectChanges();
-    this.resizeObserver.setResizeNext();
   }
 
   public onSectionTransitionEnd(event: TransitionEvent): void {
@@ -331,11 +326,24 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
 
   public toggleAllSections(): void {
     const ids = this.centerNodes$$.value.filter((id) => id !== 'last-node');
+
     if (!ids.length) {
       return;
     }
 
     const shouldCollapse = !this.allSectionsCollapsed;
+
+    // Collapse/expand all center sections
     this.collapsedSections = shouldCollapse ? new Set<NodeId>(ids) : new Set<NodeId>();
+
+    // Get all child IDs that have subchildren
+    const topicIds = [...Object.entries(this.subChildrenMapLeft), ...Object.entries(this.subChildrenMapRight)]
+      .filter(([, children]) => children.length > 0)
+      .map(([id]) => id);
+
+    // Collapse/expand all subchildren
+    this.collapsedTopics = shouldCollapse ? new Set<NodeId>(topicIds) : new Set<NodeId>();
+    this.cdr.detectChanges();
+    this.mapService.setCardCoordinateCollection(this.generateCardCoordinateCollection());
   }
 }
