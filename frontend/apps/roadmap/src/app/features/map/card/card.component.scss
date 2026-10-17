@@ -324,6 +324,10 @@ fa-icon {
   &:hover {
     background-color: #e6a626;
   }
+
+  &--collapsed {
+    opacity: 1;
+  }
 }
 
 .card-container.center:hover .collapse-toggle {

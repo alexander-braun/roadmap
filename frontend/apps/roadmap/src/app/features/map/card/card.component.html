@@ -110,6 +110,7 @@
     *ngIf="position === 'center' || canCollapse"
     type="button"
     class="icon-container collapse-toggle"
+    [class.collapse-toggle--collapsed]="collapsed"
     [attr.aria-expanded]="!collapsed"
     [attr.aria-label]="collapsed ? 'Expand section' : 'Collapse section'"
     (click)="toggleCollapse.emit()"
