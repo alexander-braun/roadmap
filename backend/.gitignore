@@ -3,3 +3,4 @@ node_modules
 dist
 config
 api-key.txt
+.env

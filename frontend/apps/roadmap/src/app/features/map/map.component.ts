@@ -9,7 +9,7 @@ import {
   ChangeDetectorRef,
   OnDestroy,
 } from '@angular/core';
-import { BehaviorSubject, merge, takeUntil, Subject } from 'rxjs';
+import { BehaviorSubject, merge, takeUntil, Subject, combineLatest, map } from 'rxjs';
 import { MapService } from './map.service';
 import { CardCoordinateCollection, Direction } from './map.model';
 import { faPlus, faWrench } from '@fortawesome/free-solid-svg-icons';
@@ -32,11 +32,20 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
   public subChildrenMapLeft: { [key: NodeId]: NodeId[] } = {};
   public subChildrenMapRight: { [key: NodeId]: NodeId[] } = {};
   private destroy$ = new Subject<void>();
-
+  public readonly navigationItems$ = combineLatest([this.centerNodes$$, this.mapService.cardDataTree$]).pipe(
+    map(([ids, cards]) =>
+      ids
+        .filter((id) => id !== 'last-node')
+        .map((id) => ({
+          id,
+          title: cards[id]?.title || 'Untitled section',
+        })),
+    ),
+  );
   constructor(
     private mapService: MapService,
     private resizeObserver: ResizeObserverService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {

@@ -1,0 +1,252 @@
+
+@import '../../../../assets/styles/variables';
+
+$navigator-color: #306671;
+$navigator-hover: #e8f1f0;
+$navigator-width: 300px;
+$header-height: 75px;
+$desktop-breakpoint: 1600px;
+$trigger-size: 48px;
+$panel-gap: 12px;
+
+.roadmap-navigator {
+  position: fixed;
+  top: calc(#{$header-height} + 20px);
+  right: 20px;
+  width: $trigger-size;
+  height: $trigger-size;
+  z-index: 6;
+  font-family: $raleway;
+
+  &--open {
+    width: $navigator-width;
+    height: calc(#{$trigger-size} + #{$panel-gap});
+  }
+
+  // Floating trigger button
+  &__trigger {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: $trigger-size;
+    height: $trigger-size;
+    border: none;
+    border-radius: 8px;
+    background: $navigator-color;
+    color: white;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: darken($navigator-color, 8%);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $navigator-color;
+      outline-offset: 3px;
+    }
+  }
+
+  // Expandable navigation panel
+  &__panel {
+    position: absolute;
+    top: calc(#{$trigger-size} + #{$panel-gap});
+    right: 0;
+    width: $navigator-width;
+    max-width: calc(100vw - 40px);
+    max-height: calc(100dvh - #{$header-height} - 100px);
+    overflow-y: auto;
+    box-sizing: border-box;
+
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+    padding: 16px;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-8px);
+
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease,
+      visibility 0.2s;
+  }
+
+  &--open &__panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  // Panel heading
+  &__heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+
+    font-size: 16px;
+    font-weight: 700;
+    color: $navigator-color;
+    margin-bottom: 12px;
+  }
+
+  // Hide button (desktop only)
+  &__hide {
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+
+    background: transparent;
+    color: #777;
+    font-family: inherit;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover {
+      background: $navigator-hover;
+      color: $navigator-color;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $navigator-color;
+      outline-offset: 2px;
+    }
+  }
+
+  // Category list
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__item {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    margin: 2px 0;
+    border: none;
+    border-radius: 5px;
+
+    background: transparent;
+    color: #333;
+    text-align: left;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    cursor: pointer;
+
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+
+    &:hover {
+      background: $navigator-hover;
+      color: $navigator-color;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $navigator-color;
+      outline-offset: -2px;
+    }
+
+    // Currently visible roadmap section
+    &--active {
+      background: $navigator-color;
+      color: white;
+      font-weight: 600;
+
+      &:hover {
+        background: darken($navigator-color, 5%);
+        color: white;
+      }
+    }
+  }
+}
+
+// Wide desktop: visible by default, but collapsible
+@media (min-width: $desktop-breakpoint) {
+  .roadmap-navigator {
+    width: $navigator-width;
+    height: auto;
+
+    &--open {
+      width: $navigator-width;
+      height: auto;
+    }
+
+    &__trigger {
+      display: none;
+    }
+
+    &__panel {
+      position: static;
+      top: auto;
+      width: 100%;
+      max-height: calc(100dvh - 120px);
+
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: none;
+      transition: none;
+    }
+
+    &__hide {
+      display: flex;
+    }
+
+    // Collapsed desktop state
+    &--desktop-hidden {
+      width: $trigger-size;
+      height: $trigger-size;
+
+      .roadmap-navigator__trigger {
+        display: flex;
+      }
+
+      .roadmap-navigator__panel {
+        display: none;
+      }
+    }
+  }
+}
+
+// Small screens
+@media (max-width: 480px) {
+  .roadmap-navigator {
+    right: 12px;
+
+    &__panel {
+      max-width: calc(100vw - 24px);
+    }
+  }
+}
+
+// Accessibility: reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .roadmap-navigator {
+    &__panel,
+    &__item {
+      transition: none;
+    }
+  }
+}

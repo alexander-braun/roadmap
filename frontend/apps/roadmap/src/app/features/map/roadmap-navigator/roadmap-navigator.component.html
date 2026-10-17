@@ -1,0 +1,44 @@
+<aside
+  class="roadmap-navigator"
+  [class.roadmap-navigator--open]="isOpen"
+  [class.roadmap-navigator--desktop-hidden]="desktopHidden"
+  (mouseenter)="open()"
+  (mouseleave)="close()"
+  (focusin)="open()"
+  (focusout)="onFocusOut($event)"
+>
+  <button
+    type="button"
+    class="roadmap-navigator__trigger"
+    aria-label="Jump to roadmap section"
+    aria-controls="roadmap-navigator-panel"
+    [attr.aria-expanded]="isNavigatorOpen"
+    (click)="toggle()"
+  >
+    <fa-icon [icon]="faListUl"></fa-icon>
+  </button>
+
+  <nav id="roadmap-navigator-panel" class="roadmap-navigator__panel" aria-label="Roadmap sections">
+    <div class="roadmap-navigator__heading">
+      <span>Jump to section</span>
+
+      <button type="button" class="roadmap-navigator__hide" aria-label="Hide roadmap navigator" (click)="hideDesktop()">
+        &times;
+      </button>
+    </div>
+
+    <ul class="roadmap-navigator__list">
+      <li *ngFor="let item of navigationItems; trackBy: trackById">
+        <button
+          type="button"
+          class="roadmap-navigator__item"
+          [class.roadmap-navigator__item--active]="activeId === item.id"
+          [attr.aria-current]="activeId === item.id ? 'location' : null"
+          (click)="navigateTo(item.id)"
+        >
+          {{ item.title }}
+        </button>
+      </li>
+    </ul>
+  </nav>
+</aside>

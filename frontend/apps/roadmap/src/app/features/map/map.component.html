@@ -1,4 +1,7 @@
 <rdmp-header></rdmp-header>
+<rdmp-roadmap-navigator
+  [navigationItems]="(navigationItems$ | async) || []"
+></rdmp-roadmap-navigator>
 <ng-container *ngIf="{ centerNodes: centerNodes$$.asObservable() | async } as center">
   <div class="map" *ngIf="center.centerNodes?.length">
     <div *ngFor="let centerNode of center.centerNodes; let i = index; trackBy: trackById" class="section">

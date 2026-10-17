@@ -191,6 +191,7 @@
     color: $color-center;
     z-index: 1;
     margin-top: calc(8rem + (2px * 2));
+    scroll-margin-top: 100px;
   }
 
   &--center &__inner-text {
