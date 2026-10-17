@@ -43,6 +43,10 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
     )
   );
   public collapsedSections = new Set<NodeId>();
+  public collapsedTopics = new Set<NodeId>();
+  public isTopicCollapsed(id: NodeId): boolean {
+    return this.collapsedTopics.has(id);
+  }
 
   constructor(
     private mapService: MapService,
@@ -66,6 +70,22 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
 
   public isCollapsed(id: NodeId): boolean {
     return this.collapsedSections.has(id);
+  }
+
+  public toggleTopic(id: NodeId): void {
+    const next = new Set(this.collapsedTopics);
+
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
+
+    this.collapsedTopics = next;
+
+    requestAnimationFrame(() => {
+      this.mapService.setCardCoordinateCollection(this.generateCardCoordinateCollection());
+    });
   }
 
   public toggleSection(id: NodeId): void {

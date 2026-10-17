@@ -1,3 +1,4 @@
+
 <rdmp-header></rdmp-header>
 
 <rdmp-roadmap-navigator
@@ -18,13 +19,15 @@
       <div class="section__side-elements section__side-elements--left section__side-elements--subchild">
         <div #cardContainer class="section__items">
           <ng-container *ngFor="let child of childrenLeft[i]; trackBy: trackById">
-            <ng-container *ngFor="let subChild of subChildrenMapLeft[child]; trackBy: trackById">
-              <rdmp-card
-                [id]="subChild"
-                class="card card--element card--subchild card--left"
-                [nodeId]="subChild"
-                position="subchild-left"
-              ></rdmp-card>
+            <ng-container *ngIf="!isTopicCollapsed(child)">
+              <ng-container *ngFor="let subChild of subChildrenMapLeft[child]; trackBy: trackById">
+                <rdmp-card
+                  [id]="subChild"
+                  class="card card--element card--subchild card--left"
+                  [nodeId]="subChild"
+                  position="subchild-left"
+                ></rdmp-card>
+              </ng-container>
             </ng-container>
           </ng-container>
         </div>
@@ -39,6 +42,9 @@
               class="card card--element card--recommended card--left"
               [nodeId]="child"
               position="left"
+              [canCollapse]="!!subChildrenMapLeft[child]?.length"
+              [collapsed]="isTopicCollapsed(child)"
+              (toggleCollapse)="toggleTopic(child)"
             ></rdmp-card>
           </ng-container>
         </div>
@@ -80,6 +86,9 @@
               class="card card--element card--recommended card--right"
               [nodeId]="child"
               position="right"
+              [canCollapse]="!!subChildrenMapRight[child]?.length"
+              [collapsed]="isTopicCollapsed(child)"
+              (toggleCollapse)="toggleTopic(child)"
             ></rdmp-card>
           </ng-container>
         </div>
@@ -89,13 +98,15 @@
       <div class="section__side-elements section__side-elements--right section__side-elements--subchild">
         <div #cardContainer class="section__items">
           <ng-container *ngFor="let child of childrenRight[i]; trackBy: trackById">
-            <ng-container *ngFor="let subChild of subChildrenMapRight[child]; trackBy: trackById">
-              <rdmp-card
-                [id]="subChild"
-                class="card card--element card--subchild card--right"
-                [nodeId]="subChild"
-                position="subchild-right"
-              ></rdmp-card>
+            <ng-container *ngIf="!isTopicCollapsed(child)">
+              <ng-container *ngFor="let subChild of subChildrenMapRight[child]; trackBy: trackById">
+                <rdmp-card
+                  [id]="subChild"
+                  class="card card--element card--subchild card--right"
+                  [nodeId]="subChild"
+                  position="subchild-right"
+                ></rdmp-card>
+              </ng-container>
             </ng-container>
           </ng-container>
         </div>

@@ -26,6 +26,7 @@ export class CardComponent implements OnInit, OnDestroy {
   @Input() position!: 'subchild-left' | 'left' | 'center' | 'right' | 'subchild-right';
   @Input() collapsed = false;
   @Output() toggleCollapse = new EventEmitter<void>();
+  @Input() canCollapse = false;
 
   public readonly iconsMap = iconsMap;
   public readonly faTrashAlt = faTrashAlt;

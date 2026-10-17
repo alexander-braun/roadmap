@@ -107,7 +107,7 @@
     </div>
   </form>
   <button
-    *ngIf="position === 'center'"
+    *ngIf="position === 'center' || canCollapse"
     type="button"
     class="icon-container collapse-toggle"
     [attr.aria-expanded]="!collapsed"
