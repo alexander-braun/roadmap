@@ -1,7 +1,7 @@
 <ng-container *ngIf="{ isAuthorized: isAuthorized$ | async } as auth">
   <div rdmpClickOutside (clickOutside)="clickOutsideSidenav()">
     <div class="menu-bar">
-      <div class="title">Interactive Roadmap</div>
+      <div class="title">interactive roadmap</div>
       <div class="links">
         <button (click)="openPresets()" *ngIf="auth.isAuthorized">Presets</button>
         <button (click)="openSettings()">Settings</button>
