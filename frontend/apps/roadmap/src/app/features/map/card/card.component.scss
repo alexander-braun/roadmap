@@ -8,6 +8,11 @@ input {
   background-color: transparent;
 }
 
+.note-input,
+.title {
+  white-space: pre-wrap;
+  tab-size: 4;
+}
 .title {
   word-break: break-word;
   min-width: 2rem;

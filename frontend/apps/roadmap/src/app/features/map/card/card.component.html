@@ -44,6 +44,7 @@
         class="title card__inner-text"
         rdmp-editable="true"
         unformattedPaste
+        propValueAccessor="innerText"
       ></div>
     </div>
     <div class="control" *ngIf="position !== 'center'">
@@ -58,6 +59,7 @@
             <span class="note">
               <div
                 rdmp-editable="true"
+                propValueAccessor="innerText"
                 unformattedPaste
                 class="note-input"
                 type="text"
